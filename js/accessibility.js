@@ -19,6 +19,7 @@ function applyAccessibilityPreferences(preferences) {
   const fontSize = preferences.fontSize || 'normal';
   document.body.classList.toggle('accessibility-large-text', fontSize === 'large');
   document.body.classList.toggle('accessibility-small-text', fontSize === 'small');
+  document.body.classList.toggle('accessibility-xlarge-text', fontSize === 'xlarge');
   document.body.classList.toggle('accessibility-high-contrast', Boolean(preferences.contrast));
   document.body.classList.toggle('accessibility-reduced-motion', Boolean(preferences.motion));
   document.body.classList.toggle('dark-theme', Boolean(preferences.darkmode));
