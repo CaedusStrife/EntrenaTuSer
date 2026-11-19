@@ -298,7 +298,9 @@ function beginTrainingTimer() {
       stopTrainingTimer();
       trainingPhase.textContent = 'Tiempo completado';
       trainingPauseButton.textContent = 'Repetir';
-      showNotification('Tiempo completado. Puedes marcar el ejercicio como terminado.', 'success');
+      if (!trainingSession?.completedIds.has(exercise.id)) {
+        completeSelectedExercise();
+      }
     }
   }, 1000);
 }
