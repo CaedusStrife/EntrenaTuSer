@@ -165,42 +165,36 @@ body::before {
 /* Layout Dashboard Web — Ebru Design System */
 .app-layout {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--water);
 }
 
-/* Sidebar as a paper sheet - hidden by default, shown via hamburger */
+/* Sidebar as a top bar - logo + hamburger, menu drops down */
 .sidebar {
-  width: 260px;
-  min-height: 100vh;
+  width: 100%;
+  height: auto;
+  min-height: 0;
   background: var(--paper);
-  border-right: 1px solid var(--fiber);
+  border-bottom: 1px solid var(--fiber);
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 100;
+  padding: 15px 20px;
+  position: relative;
+  z-index: 1000;
   box-shadow:
-    4px 0 24px var(--lift-shadow),
-    inset -1px 0 0 rgba(255,255,255,0.5);
+    0 4px 24px var(--lift-shadow),
+    inset 0 -1px 0 rgba(255,255,255,0.5);
   flex-shrink: 0;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
 }
 
-.sidebar.open {
-  transform: translateX(0);
-}
-
-/* Overlay when sidebar is open on mobile */
+/* Overlay when the navigation menu is open */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.3);
-  z-index: 99;
+  z-index: 999;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -210,7 +204,7 @@ body::before {
   opacity: 1;
 }
 
-/* Main content takes full width when sidebar is hidden */
+/* Main content takes full width below the top bar */
 .main-content {
   flex: 1;
   min-height: 100vh;
@@ -219,13 +213,7 @@ body::before {
   background: var(--water);
   width: 100%;
   transition: margin-left 0.3s ease;
-}
-
-/* When sidebar is open on desktop, add margin to main content */
-@media (min-width: 769px) {
-  .sidebar.open ~ .main-content {
-    margin-left: 260px;
-  }
+  padding: 15px;
 }
 
 .sidebar::before {
@@ -242,9 +230,8 @@ body::before {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px dashed var(--fiber);
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .sidebar-brand .brand-logo {
@@ -261,13 +248,19 @@ body::before {
   color: var(--ink);
   letter-spacing: -0.02em;
   margin: 0;
+  flex: 1;
 }
 
 .sidebar-menu {
-  display: flex;
+  display: none;
   flex-direction: column;
+  width: 100%;
   gap: 6px;
-  flex: 1;
+  padding-top: 12px;
+}
+
+.sidebar.open .sidebar-menu {
+  display: flex;
 }
 
 .nav-btn {
@@ -870,94 +863,15 @@ body.dark-theme .places-empty { color: var(--ink-muted); }
 /* ==================== ADAPTACIÓN MÓVIL (RESPONSIVE) ==================== */
 @media (max-width: 768px) {
   .accessibility-widget { right: 16px; bottom: 86px; }
-  .sidebar { position: relative; z-index: 1000; transform: none; }
-
-  /* 1. Transformar el Layout de horizontal a vertical */
-  .app-layout {
-    flex-direction: column;
-  }
-
-  /* 2. Convertir la barra lateral en barra superior */
-  .sidebar {
-    width: 100% !important;
-    height: auto;
-    min-height: 0;
-    transform: none;
-    border-right: none;
-    border-bottom: 1px solid var(--fiber);
-    padding: 15px 20px;
-    background: var(--paper);
-    box-shadow:
-      0 4px 24px var(--lift-shadow),
-      inset 0 -1px 0 rgba(255,255,255,0.5);
-  }
-
-  .sidebar::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    background-size: 256px 256px;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  .sidebar-brand {
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    padding-bottom: 12px;
-    border-bottom: 1px dashed var(--fiber);
-  }
-
-  .sidebar-brand h2 { flex: 1; }
-
-  /* Opciones del menú horizontales y scrollables */
-  .sidebar-menu {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    gap: 6px;
-    padding-top: 12px;
-  }
-
-  .sidebar.open .sidebar-menu { display: flex; }
 
   .nav-btn {
     width: 100%;
     white-space: normal;
-    padding: 14px 16px;
-    font-size: 14px;
     justify-content: flex-start;
-    border: 1.5px solid transparent;
-    border-radius: 12px;
-    background: transparent;
-    color: var(--ink-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-
-  .nav-btn:hover {
-    background: rgba(0,122,111,0.06);
-    border-color: var(--pigment-teal);
-    color: var(--pigment-teal);
-  }
-
-  .nav-btn.active {
-    background: var(--pigment-teal);
-    border-color: var(--pigment-teal);
-    color: white;
-    box-shadow: 0 4px 16px rgba(0,122,111,0.25);
   }
 
   .logout-btn {
     display: none; /* Ocultar botón de cerrar sesión directo en móviles */
-  }
-
-  /* 3. Ajustar el área de contenido principal */
-  .main-content {
-    padding: 15px;
   }
 
   .page-header h2 {
