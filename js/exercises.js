@@ -3,7 +3,7 @@ const selectedExercisePanel = document.getElementById('selected-exercise-panel')
 const selectedExerciseTitle = document.getElementById('selected-exercise-title');
 const selectedExerciseDescription = document.getElementById('selected-exercise-description');
 const exerciseVideo = document.getElementById('exercise-video');
-const exerciseYoutube = document.getElementById('exercise-youtube');
+const getYoutubeIframe = () => document.getElementById('exercise-youtube');
 const trainingControls = document.getElementById('training-controls');
 const trainingProgressLabel = document.getElementById('training-progress-label');
 const trainingTimer = document.getElementById('training-timer');
@@ -20,9 +20,37 @@ const exercisesEndpoint = `${apiBaseUrl}/api/exercises`;
 let trainingTimerId = null;
 let trainingSecondsRemaining = 0;
 let trainingIsPaused = false;
+let trainingTimerStarted = false;
 let trainingRestTimerId = null;
 let trainingRestSecondsRemaining = 0;
 let trainingSession = null;
+let youtubePlayer = null;
+let youtubePlayerReady = false;
+let pendingYoutubeId = null;
+
+window.onYouTubeIframeAPIReady = function () {
+  if (!getYoutubeIframe() || !window.YT?.Player) return;
+  youtubePlayer = new YT.Player('exercise-youtube', {
+    events: {
+      onReady: () => {
+        youtubePlayerReady = true;
+        if (pendingYoutubeId) {
+          youtubePlayer.cueVideoById(pendingYoutubeId);
+          pendingYoutubeId = null;
+        }
+      },
+      onStateChange: (event) => {
+        if (event.data === YT.PlayerState.PLAYING) beginTrainingTimer();
+        else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) pauseTrainingTimer();
+      }
+    }
+  });
+};
+
+if (exerciseVideo) {
+  exerciseVideo.addEventListener('play', () => beginTrainingTimer());
+  exerciseVideo.addEventListener('pause', () => pauseTrainingTimer());
+}
 
 function renderExercises(exercises, routineExerciseIds = null, routineExercises = null) {
   if (!exerciseList) return;
@@ -155,17 +183,25 @@ function selectExercise(exercise, selectedCard) {
 
   // Preferir el video de YouTube del ejercicio si existe; si no, usar video_url de la API
   const youtubeId = window.EXERCISE_YOUTUBE_VIDEOS?.[exercise.id];
-  if (youtubeId && exerciseYoutube) {
+  const youtubeIframe = getYoutubeIframe();
+  if (youtubeId && youtubeIframe) {
     exerciseVideo.pause();
     exerciseVideo.removeAttribute('src');
     exerciseVideo.load();
     exerciseVideo.classList.add('hidden');
-    exerciseYoutube.src = `https://www.youtube.com/embed/${youtubeId}?rel=0`;
-    exerciseYoutube.classList.remove('hidden');
+    youtubeIframe.classList.remove('hidden');
+    if (youtubePlayerReady && youtubePlayer?.cueVideoById) {
+      youtubePlayer.cueVideoById(youtubeId);
+    } else {
+      pendingYoutubeId = youtubeId;
+      youtubeIframe.src = `https://www.youtube.com/embed/${youtubeId}?rel=0&enablejsapi=1`;
+    }
   } else {
-    if (exerciseYoutube) {
-      exerciseYoutube.removeAttribute('src');
-      exerciseYoutube.classList.add('hidden');
+    if (youtubeIframe) {
+      if (youtubePlayerReady && youtubePlayer?.stopVideo) {
+        youtubePlayer.stopVideo();
+      }
+      youtubeIframe.classList.add('hidden');
     }
     exerciseVideo.classList.remove('hidden');
     if (exercise.videoUrl) {
@@ -192,9 +228,12 @@ function closeSelectedExercise() {
   exerciseVideo.pause();
   exerciseVideo.removeAttribute('src');
   exerciseVideo.load();
-  if (exerciseYoutube) {
-    exerciseYoutube.removeAttribute('src');
-    exerciseYoutube.classList.add('hidden');
+  const youtubeIframe = getYoutubeIframe();
+  if (youtubeIframe) {
+    if (youtubePlayerReady && youtubePlayer?.stopVideo) {
+      youtubePlayer.stopVideo();
+    }
+    youtubeIframe.classList.add('hidden');
   }
   exerciseVideo.classList.remove('hidden');
   selectedExercisePanel.classList.add('hidden');
@@ -211,6 +250,21 @@ function startTrainingTimer(exercise) {
   trainingControls.classList.remove('hidden');
   trainingSecondsRemaining = Math.max(1, Number(exercise.durationSeconds) || 1);
   trainingIsPaused = false;
+  trainingTimerStarted = false;
+  updateTrainingTimerUI(exercise);
+  trainingPhase.textContent = 'Reproduce el video para comenzar';
+}
+
+function beginTrainingTimer() {
+  const exercise = window.selectedExercise;
+  if (!exercise || trainingSecondsRemaining <= 0) return;
+  if (trainingTimerStarted) {
+    trainingIsPaused = false;
+    updateTrainingTimerUI(exercise);
+    return;
+  }
+  trainingTimerStarted = true;
+  trainingIsPaused = false;
   updateTrainingTimerUI(exercise);
   trainingTimerId = window.setInterval(() => {
     if (trainingIsPaused) return;
@@ -223,6 +277,12 @@ function startTrainingTimer(exercise) {
       showNotification('Tiempo completado. Puedes marcar el ejercicio como terminado.', 'success');
     }
   }, 1000);
+}
+
+function pauseTrainingTimer() {
+  if (!trainingTimerStarted || trainingSecondsRemaining <= 0) return;
+  trainingIsPaused = true;
+  if (window.selectedExercise) updateTrainingTimerUI(window.selectedExercise);
 }
 
 function stopTrainingTimer() {
@@ -290,7 +350,7 @@ function updateTrainingTimerUI(exercise) {
   trainingProgressBar.style.width = `${percentage}%`;
   trainingProgressTrack.setAttribute('aria-valuenow', String(percentage));
   trainingProgressLabel.textContent = `Ejercicio ${(window.trainingExerciseIndex || 0) + 1} de ${window.trainingExercises.length}`;
-  trainingPhase.textContent = trainingIsPaused ? 'Pausado' : 'En progreso';
+  trainingPhase.textContent = !trainingTimerStarted ? 'Reproduce el video para comenzar' : (trainingIsPaused ? 'Pausado' : 'En progreso');
   trainingPauseButton.textContent = trainingIsPaused ? 'Continuar' : 'Pausar';
   trainingPreviousButton.disabled = window.trainingExerciseIndex <= 0;
   trainingNextButton.disabled = window.trainingExerciseIndex >= window.trainingExercises.length - 1;
@@ -300,6 +360,10 @@ function toggleTrainingTimer() {
   if (!window.selectedExercise) return;
   if (trainingSecondsRemaining <= 0) {
     startTrainingTimer(window.selectedExercise);
+    return;
+  }
+  if (!trainingTimerStarted) {
+    showNotification('Reproduce el video para iniciar el contador.', 'info');
     return;
   }
   trainingIsPaused = !trainingIsPaused;
@@ -382,6 +446,9 @@ async function completeSelectedExercise() {
     }
 
     exerciseVideo.pause();
+    if (youtubePlayerReady && youtubePlayer?.stopVideo) {
+      youtubePlayer.stopVideo();
+    }
     stopTrainingTimer();
     trainingPhase.textContent = 'Ejercicio completado';
     if (trainingSession && !trainingSession.completedIds.has(exercise.id)) {
