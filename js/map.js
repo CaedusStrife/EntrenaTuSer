@@ -230,10 +230,12 @@ function initializeMap() {
 
   workoutMap = L.map('workout-map').setView([20.6736, -103.344], 13);
 
-  // Aquí se cargan las calles y lugares de OpenStreetMap dentro del mapa.
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
+  // Tiles de CARTO (Positron) sobre datos de OpenStreetMap. El servidor público
+  // de tile.openstreetmap.org bloquea apps en producción por su política de uso.
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    subdomains: 'abcd',
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(workoutMap);
 
   placesLayer = L.layerGroup().addTo(workoutMap);
