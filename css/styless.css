@@ -677,6 +677,8 @@ body.accessibility-large-text > #screen-login,
 body.accessibility-large-text > #app-layout { zoom: 1.15; }
 body.accessibility-small-text > #screen-login,
 body.accessibility-small-text > #app-layout { zoom: .9; }
+body.accessibility-xlarge-text > #screen-login,
+body.accessibility-xlarge-text > #app-layout { zoom: 1.3; }
 body.accessibility-high-contrast { --accessibility-contrast: 1; }
 body.accessibility-high-contrast,
 body.accessibility-high-contrast #screen-login {
@@ -771,6 +773,24 @@ body.accessibility-high-contrast .nearby-place:hover a,
 body.accessibility-high-contrast .nearby-place:focus-within a {
   color: #000 !important;
 }
+
+/* Grayscale mode */
+body.accessibility-grayscale {
+  filter: grayscale(100%);
+}
+
+body.accessibility-grayscale img,
+body.accessibility-grayscale video,
+body.accessibility-grayscale canvas {
+  filter: grayscale(100%);
+}
+
+body.accessibility-grayscale .accessibility-option[aria-pressed="true"] {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+
 body.accessibility-high-contrast .btn,
 body.accessibility-high-contrast .accessibility-toggle,
 body.accessibility-high-contrast .chatbot-toggle {
@@ -5475,6 +5495,15 @@ body.dark-theme .accessibility-reset:hover {
   background: rgba(0,122,111,0.08);
   border-color: var(--pigment-teal);
   border-style: solid;
+  color: var(--pigment-teal);
+}
+
+body.dark-theme .accessibility-option[aria-pressed="true"] {
+  border-color: var(--pigment-teal);
+  background: rgba(0,122,111,0.08);
+}
+
+body.dark-theme .accessibility-option[aria-pressed="true"] i {
   color: var(--pigment-teal);
 }
 
