@@ -151,52 +151,53 @@ async function findNearbyExercisePlaces(latitude, longitude) {
     return;
   }
 
-  const latDelta = PLACE_RADIUS_METERS / 111000;
-  const lonDelta = PLACE_RADIUS_METERS / (111000 * Math.max(Math.cos(latitude * Math.PI / 180), 0.1));
-  const viewbox = [
-    longitude - lonDelta,
-    latitude + latDelta,
-    longitude + lonDelta,
-    latitude - latDelta
-  ].join(',');
-  const searchParams = new URLSearchParams({
-    format: 'jsonv2',
-    q: 'park',
-    bounded: '1',
-    limit: '30',
-    addressdetails: '1',
-    'accept-language': 'es',
-    viewbox
-  });
-
+  // Photon (komoot): buscador sobre datos de OpenStreetMap, sin API key.
+  // Overpass es la herramienta adecuada para POIs pero no es alcanzable desde
+  // todas las redes (406/timeout en todos los mirrors probados). Nominatim
+  // prohíbe búsquedas de POIs en su política de uso. Se filtra en cliente por
+  // distancia (2 km) y por tipo de zona verde.
   status.textContent = `Buscando zonas verdes cerca de ${formatCoordinates(latitude, longitude)}...`;
 
-  const endpoint = `https://nominatim.openstreetmap.org/search?${searchParams}`;
+  const searchParams = new URLSearchParams({
+    q: 'parque',
+    lat: String(latitude),
+    lon: String(longitude),
+    limit: '30'
+  });
+  const endpoint = `https://photon.komoot.io/api/?${searchParams}`;
 
   try {
     const response = await fetch(endpoint, {
       method: 'GET',
-      headers: { 'Accept-Language': 'es' },
       signal: request.signal
     });
 
-    if (!response.ok) throw new Error(`Nominatim respondió con ${response.status}`);
+    if (!response.ok) throw new Error(`Photon respondió con ${response.status}`);
     const results = await response.json();
-    const places = deduplicatePlaces(results
-      .filter((place) => place.lat && place.lon && place.display_name)
-      .map((place) => ({
-        ...place,
-        tags: {
-          leisure: 'park',
-          name: place.name || place.display_name.split(',')[0]
-        },
-        coordinates: [Number(place.lat), Number(place.lon)]
-      }))
-      .filter((place) => {
-        const tags = place.tags || {};
-        return place.coordinates
-          && tags.leisure === 'park';
+    const GREEN_VALUES = new Set(['park', 'garden', 'forest', 'nature_reserve', 'recreation_ground', 'dog_park']);
+    const places = deduplicatePlaces((results.features || [])
+      .map((feature) => {
+        const coords = feature.geometry?.coordinates;
+        const props = feature.properties || {};
+        if (!Array.isArray(coords) || coords.length < 2) return null;
+
+        const lon = Number(coords[0]);
+        const lat = Number(coords[1]);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+        if (props.osm_value && !GREEN_VALUES.has(props.osm_value)) return null;
+
+        return {
+          tags: {
+            leisure: 'park',
+            name: props.name || 'Zona verde',
+            operator: props.operator,
+            description: props.description
+          },
+          coordinates: [lat, lon]
+        };
       })
+      .filter(Boolean)
+      .filter((place) => workoutMap.distance([latitude, longitude], place.coordinates) <= PLACE_RADIUS_METERS)
       .sort((a, b) => {
         const distanceA = workoutMap.distance([latitude, longitude], a.coordinates);
         const distanceB = workoutMap.distance([latitude, longitude], b.coordinates);
