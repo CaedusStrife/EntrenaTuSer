@@ -3,7 +3,7 @@ const selectedExercisePanel = document.getElementById('selected-exercise-panel')
 const selectedExerciseTitle = document.getElementById('selected-exercise-title');
 const selectedExerciseDescription = document.getElementById('selected-exercise-description');
 const exerciseVideo = document.getElementById('exercise-video');
-const getYoutubeIframe = () => document.getElementById('exercise-youtube');
+const getYoutubeContainer = () => document.getElementById('exercise-youtube');
 const trainingControls = document.getElementById('training-controls');
 const trainingProgressLabel = document.getElementById('training-progress-label');
 const trainingTimer = document.getElementById('training-timer');
@@ -28,9 +28,24 @@ let youtubePlayer = null;
 let youtubePlayerReady = false;
 let pendingYoutubeId = null;
 
-window.onYouTubeIframeAPIReady = function () {
-  if (!getYoutubeIframe() || !window.YT?.Player) return;
+function handleYoutubeStateChange(event) {
+  if (event.data === YT.PlayerState.PLAYING) beginTrainingTimer();
+  else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) pauseTrainingTimer();
+}
+
+function ensureYoutubePlayer(youtubeId) {
+  if (!window.YT?.Player || !getYoutubeContainer()) return false;
+  if (youtubePlayer) {
+    if (youtubePlayerReady) {
+      youtubePlayer.cueVideoById(youtubeId);
+    } else {
+      pendingYoutubeId = youtubeId;
+    }
+    return true;
+  }
   youtubePlayer = new YT.Player('exercise-youtube', {
+    videoId: youtubeId,
+    playerVars: { rel: 0 },
     events: {
       onReady: () => {
         youtubePlayerReady = true;
@@ -39,12 +54,18 @@ window.onYouTubeIframeAPIReady = function () {
           pendingYoutubeId = null;
         }
       },
-      onStateChange: (event) => {
-        if (event.data === YT.PlayerState.PLAYING) beginTrainingTimer();
-        else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) pauseTrainingTimer();
-      }
+      onStateChange: handleYoutubeStateChange
     }
   });
+  return true;
+}
+
+window.onYouTubeIframeAPIReady = function () {
+  if (pendingYoutubeId) {
+    const id = pendingYoutubeId;
+    pendingYoutubeId = null;
+    ensureYoutubePlayer(id);
+  }
 };
 
 if (exerciseVideo) {
@@ -183,25 +204,22 @@ function selectExercise(exercise, selectedCard) {
 
   // Preferir el video de YouTube del ejercicio si existe; si no, usar video_url de la API
   const youtubeId = window.EXERCISE_YOUTUBE_VIDEOS?.[exercise.id];
-  const youtubeIframe = getYoutubeIframe();
-  if (youtubeId && youtubeIframe) {
+  const youtubeContainer = getYoutubeContainer();
+  if (youtubeId && youtubeContainer) {
     exerciseVideo.pause();
     exerciseVideo.removeAttribute('src');
     exerciseVideo.load();
     exerciseVideo.classList.add('hidden');
-    youtubeIframe.classList.remove('hidden');
-    if (youtubePlayerReady && youtubePlayer?.cueVideoById) {
-      youtubePlayer.cueVideoById(youtubeId);
-    } else {
+    youtubeContainer.classList.remove('hidden');
+    if (!ensureYoutubePlayer(youtubeId)) {
       pendingYoutubeId = youtubeId;
-      youtubeIframe.src = `https://www.youtube.com/embed/${youtubeId}?rel=0&enablejsapi=1`;
     }
   } else {
-    if (youtubeIframe) {
+    if (youtubeContainer) {
       if (youtubePlayerReady && youtubePlayer?.stopVideo) {
         youtubePlayer.stopVideo();
       }
-      youtubeIframe.classList.add('hidden');
+      youtubeContainer.classList.add('hidden');
     }
     exerciseVideo.classList.remove('hidden');
     if (exercise.videoUrl) {
@@ -228,12 +246,12 @@ function closeSelectedExercise() {
   exerciseVideo.pause();
   exerciseVideo.removeAttribute('src');
   exerciseVideo.load();
-  const youtubeIframe = getYoutubeIframe();
-  if (youtubeIframe) {
+  const youtubeContainer = getYoutubeContainer();
+  if (youtubeContainer) {
     if (youtubePlayerReady && youtubePlayer?.stopVideo) {
       youtubePlayer.stopVideo();
     }
-    youtubeIframe.classList.add('hidden');
+    youtubeContainer.classList.add('hidden');
   }
   exerciseVideo.classList.remove('hidden');
   selectedExercisePanel.classList.add('hidden');
