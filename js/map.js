@@ -230,12 +230,13 @@ function initializeMap() {
 
   workoutMap = L.map('workout-map').setView([20.6736, -103.344], 13);
 
-  // Tiles de CARTO (Positron) sobre datos de OpenStreetMap. El servidor público
-  // de tile.openstreetmap.org bloquea apps en producción por su política de uso.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    subdomains: 'abcd',
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  // Tiles de OpenTopoMap sobre datos de OpenStreetMap. No requieren API key.
+  // El servidor público de tile.openstreetmap.org bloquea apps en producción
+  // y CARTO exige key desde 2026.
+  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    maxZoom: 17,
+    subdomains: 'abc',
+    attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)'
   }).addTo(workoutMap);
 
   placesLayer = L.layerGroup().addTo(workoutMap);
