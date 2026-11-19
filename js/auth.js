@@ -96,7 +96,7 @@
   // Form validation & submission
   // ============================================================================
   function setFormStatus(formId, message, isError = false) {
-    const statusEl = document.getElementById(formId + '-status');
+    const statusEl = document.getElementById(formId.replace('-form', '') + '-status');
     if (!statusEl) return;
     statusEl.textContent = message;
     statusEl.className = 'form-status' + (isError ? ' form-status-error' : '');
