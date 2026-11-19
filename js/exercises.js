@@ -3,6 +3,7 @@ const selectedExercisePanel = document.getElementById('selected-exercise-panel')
 const selectedExerciseTitle = document.getElementById('selected-exercise-title');
 const selectedExerciseDescription = document.getElementById('selected-exercise-description');
 const exerciseVideo = document.getElementById('exercise-video');
+const exerciseYoutube = document.getElementById('exercise-youtube');
 const trainingControls = document.getElementById('training-controls');
 const trainingProgressLabel = document.getElementById('training-progress-label');
 const trainingTimer = document.getElementById('training-timer');
@@ -151,22 +152,36 @@ function selectExercise(exercise, selectedCard) {
   selectedExerciseDescription.textContent = `${exercise.description}. Observa la postura y repite el ejercicio con movimientos controlados.`;
   selectedExercisePanel.classList.remove('hidden');
   exerciseVideo.loop = true;
-  
-  // Set video source if available
-  if (exercise.videoUrl) {
-    // Use absolute URL for video (prepend API base URL if relative)
-    const videoUrl = exercise.videoUrl.startsWith('http') 
-      ? exercise.videoUrl 
-      : `${window.API_BASE_URL || 'http://localhost:5143'}${exercise.videoUrl}`;
-    exerciseVideo.src = videoUrl;
-    exerciseVideo.poster = 'images/video-entrenamiento.svg';
-  } else {
+
+  // Preferir el video de YouTube del ejercicio si existe; si no, usar video_url de la API
+  const youtubeId = window.EXERCISE_YOUTUBE_VIDEOS?.[exercise.id];
+  if (youtubeId && exerciseYoutube) {
+    exerciseVideo.pause();
     exerciseVideo.removeAttribute('src');
-    exerciseVideo.poster = 'images/video-entrenamiento.svg';
+    exerciseVideo.load();
+    exerciseVideo.classList.add('hidden');
+    exerciseYoutube.src = `https://www.youtube.com/embed/${youtubeId}?rel=0`;
+    exerciseYoutube.classList.remove('hidden');
+  } else {
+    if (exerciseYoutube) {
+      exerciseYoutube.removeAttribute('src');
+      exerciseYoutube.classList.add('hidden');
+    }
+    exerciseVideo.classList.remove('hidden');
+    if (exercise.videoUrl) {
+      // Use absolute URL for video (prepend API base URL if relative)
+      const videoUrl = exercise.videoUrl.startsWith('http')
+        ? exercise.videoUrl
+        : `${window.API_BASE_URL || 'http://localhost:5143'}${exercise.videoUrl}`;
+      exerciseVideo.src = videoUrl;
+      exerciseVideo.poster = 'images/video-entrenamiento.svg';
+    } else {
+      exerciseVideo.removeAttribute('src');
+      exerciseVideo.poster = 'images/video-entrenamiento.svg';
+    }
+    exerciseVideo.currentTime = 0;
+    exerciseVideo.load();
   }
-  
-  exerciseVideo.currentTime = 0;
-  exerciseVideo.load();
   startTrainingTimer(exercise);
   selectedExercisePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -177,6 +192,11 @@ function closeSelectedExercise() {
   exerciseVideo.pause();
   exerciseVideo.removeAttribute('src');
   exerciseVideo.load();
+  if (exerciseYoutube) {
+    exerciseYoutube.removeAttribute('src');
+    exerciseYoutube.classList.add('hidden');
+  }
+  exerciseVideo.classList.remove('hidden');
   selectedExercisePanel.classList.add('hidden');
   document.querySelector('.printed-form')?.classList.remove('exercise-selected-layout');
   exerciseList.querySelectorAll('.exercise-printed-card').forEach((card) => card.classList.remove('selected'));
