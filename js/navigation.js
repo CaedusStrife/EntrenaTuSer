@@ -47,6 +47,15 @@ function mostrarRecuperacion() {
   document.getElementById('login-card-recovery').classList.remove('hidden');
 }
 
+function goHome() {
+  const progressBtn = document.querySelector('.sidebar-menu .nav-btn[onclick*="screen-progress"]');
+  switchTab('screen-progress', progressBtn);
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && sidebar.classList.contains('open')) {
+    document.getElementById('mobile-menu-toggle')?.click();
+  }
+}
+
 function switchTab(tabId, btnElement) {
   console.log('switchTab called with tabId:', tabId);
   

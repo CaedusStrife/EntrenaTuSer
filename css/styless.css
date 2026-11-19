@@ -234,21 +234,38 @@ body::before {
   padding-bottom: 0;
 }
 
-.sidebar-brand .brand-logo {
-  width: 40px;
-  height: 40px;
-  color: var(--pigment-orange);
-  flex-shrink: 0;
+.brand-home {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
 }
 
-.sidebar-brand h2 {
+.brand-home:hover .brand-title {
+  color: var(--pigment-teal);
+}
+
+.brand-title {
   font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--ink);
   letter-spacing: -0.02em;
-  margin: 0;
   flex: 1;
+  transition: color 0.2s;
+}
+
+.sidebar-brand .brand-logo {
+  width: 40px;
+  height: 40px;
+  color: var(--pigment-orange);
+  flex-shrink: 0;
 }
 
 .sidebar-menu {

@@ -6,7 +6,7 @@
   <title>Entrena Tu Ser - Plataforma Web</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="lib/fonts/fonts.css">
-  <link rel="stylesheet" href="css/styless.css?v=17">
+  <link rel="stylesheet" href="css/styless.css?v=18">
   <link rel="stylesheet" href="lib/leaflet.css">
 
   <!-- Lucide icons -->
@@ -239,8 +239,10 @@
     
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-        <i data-lucide="activity" class="brand-logo"></i>
-        <h2>Entrena tu ser</h2>
+        <button type="button" class="brand-home" onclick="goHome()" aria-label="Ir a la página principal">
+          <i data-lucide="activity" class="brand-logo"></i>
+          <span class="brand-title">Entrena tu ser</span>
+        </button>
         <button id="mobile-menu-toggle" type="button" class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Abrir navegación">
           <i data-lucide="menu"></i>
         </button>
@@ -976,7 +978,7 @@
   <!-- JavaScript modules -->
   <script src="js/api-config.js?v=3"></script>
   <script src="js/notifications.js?v=2"></script>
-  <script src="js/navigation.js?v=2"></script>
+  <script src="js/navigation.js?v=3"></script>
   <script src="js/auth.js?v=2"></script>
   <script src="js/chatbot.js?v=6"></script>
   <script src="js/accessibility.js?v=2"></script>
