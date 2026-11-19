@@ -30,7 +30,13 @@ let pendingYoutubeId = null;
 
 function handleYoutubeStateChange(event) {
   if (event.data === YT.PlayerState.PLAYING) beginTrainingTimer();
-  else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) pauseTrainingTimer();
+  else if (event.data === YT.PlayerState.PAUSED) pauseTrainingTimer();
+  else if (event.data === YT.PlayerState.ENDED) {
+    if (youtubePlayer?.seekTo && youtubePlayer?.playVideo) {
+      youtubePlayer.seekTo(0, true);
+      youtubePlayer.playVideo();
+    }
+  }
 }
 
 function ensureYoutubePlayer(youtubeId) {
