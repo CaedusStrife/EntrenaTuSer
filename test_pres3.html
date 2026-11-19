@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrena Tu Ser - Plataforma Web</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="lib/fonts/fonts.css">
+  <link rel="stylesheet" href="css/styless.css?v=14">
+  <link rel="stylesheet" href="lib/leaflet.css">
+
+  <!-- Lucide icons -->
+  <script src="lib/lucide.js"></script>
+
+  <!-- Leaflet for map -->
+  <script src="lib/leaflet.js"></script>
+
+  <!-- Chart.js for weekly activity chart -->
+  <script src="lib/chart.js"></script>
+  <!-- Three.js and GLTFLoader for 3D avatar -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/GLTFLoader.js"></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <!-- ==================== PANTALLA 1: LOGIN Y REGISTRO (Ebru/Marmoleado) ==================== -->
+  <section id="screen-login" class="screen-container active" data-theme="light">
+
+    <!-- The Bath: centered, golden ratio -->
+    <div class="bath" role="main">
+      <!-- Water surface with subtle pigment blooms -->
+      <div class="water-surface" aria-hidden="true"></div>
+
+      <!-- Floating pigment drops (ambient animation) -->
+      <div class="pigment-drop drop-1" aria-hidden="true"></div>
+      <div class="pigment-drop drop-2" aria-hidden="true"></div>
+      <div class="pigment-drop drop-3" aria-hidden="true"></div>
+      <div class="pigment-drop drop-4" aria-hidden="true"></div>
+
+      <!-- Combed trails (ambient animation) -->
+      <div class="comb-trail trail-1" aria-hidden="true"></div>
+      <div class="comb-trail trail-2" aria-hidden="true"></div>
+      <div class="comb-trail trail-3" aria-hidden="true"></div>
+
+      <!-- Zone 1: Top - Brand reveal -->
+      <div class="bath-zone-top">
+        <div class="brand-reveal" aria-hidden="true">
+          <div class="expanding-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+          <i data-lucide="activity" class="brand-logo" aria-hidden="true"></i>
+          <h1 class="brand-title">Entrena tu ser</h1>
+          <p class="brand-promise">Tu entrenamiento comienza aquí. Sin fricción, solo progreso.</p>
+        </div>
+      </div>
+
+      <!-- Zone 2: Middle - Form bowls (centered vertically) -->
+      <div class="bath-zone-middle">
+
+        <!-- Sub-pantalla 1A: Iniciar Sesión -->
+        <div id="login-card-auth" class="form-bowls" role="region" aria-label="Iniciar sesión">
+        <form id="login-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="login-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="login-email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="login-password">Contraseña</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="login-password"
+              name="password"
+              placeholder="••••••••"
+              required
+              minlength="8"
+              autocomplete="current-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="login-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Iniciar sesión</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-register">¿No tienes cuenta? Crear una</a>
+        </div>
+      </div>
+
+      <!-- Sub-pantalla 1B: Crear Cuenta -->
+      <div id="login-card-register" class="form-bowls hidden" role="region" aria-label="Crear cuenta">
+        <form id="register-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="text">
+            <label class="bowl-label" for="register-name">Nombre</label>
+            <input
+              class="bowl-input"
+              type="text"
+              id="register-name"
+              name="fullName"
+              placeholder="Tu nombre completo"
+              maxlength="120"
+              required
+              autocomplete="name"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="register-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="register-email"
+              name="email"
+              placeholder="tu@email.com"
+              maxlength="254"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="register-password">Contraseña</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="register-password"
+              name="password"
+              placeholder="Mínimo 8 caracteres"
+              minlength="8"
+              required
+              autocomplete="new-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="register-password-confirmation">Confirmar</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="register-password-confirmation"
+              name="passwordConfirmation"
+              placeholder="Repite tu contraseña"
+              minlength="8"
+              required
+              autocomplete="new-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="register-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Registrarse e Ingresar</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-login">¿Ya tienes cuenta? Iniciar sesión</a>
+        </div>
+      </div>
+
+      <!-- Sub-pantalla 1C: Recuperar Contraseña -->
+      <div id="login-card-recovery" class="form-bowls hidden" role="region" aria-label="Recuperar contraseña">
+        <form id="recovery-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="recovery-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="recovery-email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="recovery-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Solicitar recuperación</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-login-from-recovery">Volver al inicio de sesión</a>
+        </div>
+      </div>
+
+    </div> <!-- /bath-zone-middle -->
+
+      <!-- Zone 3: Bottom - Social proof -->
+      <div class="bath-zone-bottom">
+        <!-- Social proof: washi strips at bottom of bath -->
+        <div class="social-proof" aria-label="Comentarios de la comunidad" aria-live="polite">
+        <div class="washi-strip">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="comment-avatar">MC</div>
+            <div class="comment-content">
+              <div class="comment-name">María C.</div>
+              <div class="comment-text">"El avatar 3D me motiva a no saltarme sesiones"</div>
+            </div>
+          </div>
+        </div>
+        <div class="washi-strip">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="comment-avatar">JR</div>
+            <div class="comment-content">
+              <div class="comment-name">Jorge R.</div>
+              <div class="comment-text">"Por fin una app que entiende entrenar en casa"</div>
+            </div>
+          </div>
+    </section>
+
+  <!-- ==================== LAYOUT DE APLICACIÓN WEB (Ebru Design System) ==================== -->
+  <div id="app-layout" class="app-layout hidden">
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <i data-lucide="activity" class="brand-logo"></i>
+        <h2>Entrena tu ser</h2>
+        <button id="mobile-menu-toggle" type="button" class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Abrir navegación">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+
+      <nav id="mobile-navigation" class="sidebar-menu">
+        <button class="nav-btn active" onclick="switchTab('screen-progress', this)">
+          <i data-lucide="bar-chart-2"></i> Progreso
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-workout', this)">
+          <i data-lucide="play-circle"></i> Entrenamiento
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-routines', this)">
+          <i data-lucide="list-todo"></i> Mis Rutinas
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-map', this)">
+          <i data-lucide="map-pin"></i> Mapa y Ubicación
+        </button>
+        <button class="nav-btn logout-btn" onclick="switchScreen('screen-login')">
+          <i data-lucide="log-out"></i> Cerrar sesión
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-content" id="main-content">
+      <!-- Global Ebru Bath Wrapper -->
+      <div class="bath" role="main">
+        <!-- Water surface with subtle pigment blooms -->
+        <div class="water-surface" aria-hidden="true"></div>
+
+        <!-- Floating pigment drops (ambient animation) -->
+        <div class="pigment-drop drop-1" aria-hidden="true"></div>
+        <div class="pigment-drop drop-2" aria-hidden="true"></div>
+        <div class="pigment-drop drop-3" aria-hidden="true"></div>
+        <div class="pigment-drop drop-4" aria-hidden="true"></div>
+
+        <!-- Combed trails (ambient animation) -->
+        <div class="comb-trail trail-1" aria-hidden="true"></div>
+        <div class="comb-trail trail-2" aria-hidden="true"></div>
+        <div class="comb-trail trail-3" aria-hidden="true"></div>
+
+        <!-- Each screen-tab becomes a .paper-sheet -->
+      <section id="screen-workout" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <button id="sidebar-toggle-workout" type="button" class="sidebar-toggle" aria-label="Abrir navegación" aria-expanded="false">
+              <i data-lucide="menu"></i>
+            </button>
+            <i data-lucide="play-circle" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Entrena<span>miento</span></h1>
+            <p class="printed-promise">Elige tu ejercicio. El video te guía. El agua recuerda tu esfuerzo.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="exercise-printed-list" id="exercise-list">
+              <p class="exercise-loading">Cargando ejercicios...</p>
+            </div>
+            <div id="selected-exercise-panel" class="video-printed-frame hidden">
+              <div class="video-header">
+                <h2 id="selected-exercise-title">Video demostrativo</h2>
+                <div class="video-header-actions">
+                  <span class="live-tag">GUÍA</span>
+                  <button type="button" class="video-close-button" onclick="closeSelectedExercise()" aria-label="Cerrar video de ejercicio">Cerrar</button>
+                </div>
+              </div>
+              <div class="video-wrapper">
+                <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="images/video-entrenamiento.svg">
+                  <!-- Video demo no disponible en desarrollo local -->
+                </video>
+              </div>
+              <p id="selected-exercise-description" class="video-caption"></p>
+            </div>
+            <section id="training-controls" class="training-controls hidden" aria-live="polite">
+              <div class="training-status">
+                <span id="training-progress-label">Ejercicio 1 de 1</span>
+                <strong id="training-timer">00:00</strong>
+                <span id="training-phase">Listo para comenzar</span>
+              </div>
+              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso del ejercicio">
+                <span id="training-progress-bar"></span>
+              </div>
+              <div class="training-rest-config">
+                <label for="training-rest">Descanso entre ejercicios</label>
+                <select id="training-rest">
+                  <option value="0">Sin descanso</option>
+                  <option value="15">15 segundos</option>
+                  <option value="30" selected>30 segundos</option>
+                  <option value="60">60 segundos</option>
+                </select>
+                <button id="training-rest-skip" type="button" class="btn-droplet btn-secondary hidden" onclick="skipTrainingRest()">Saltar descanso</button>
+              </div>
+              <div class="training-controls-actions">
+                <button id="training-previous" type="button" class="btn-droplet btn-secondary" onclick="selectPreviousExercise()">Anterior</button>
+                <button id="training-pause" type="button" class="btn-droplet" onclick="toggleTrainingTimer()">Pausar</button>
+                <button id="training-next" type="button" class="btn-droplet" onclick="selectNextExercise()">Siguiente</button>
+                <button type="button" class="btn-droplet btn-finish" onclick="finishTraining()">Finalizar</button>
+              </div>
+            </section>
+            <div class="workout-action-printed">
+              <button class="btn-droplet" onclick="completeSelectedExercise()">Completar ejercicio</button>
+            </div>
+          </div>
+      </section>
+
+      <section id="screen-map" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <button id="sidebar-toggle-map" type="button" class="sidebar-toggle" aria-label="Abrir navegación" aria-expanded="false">
+              <i data-lucide="menu"></i>
+            </button>
+            <i data-lucide="map-pin" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mapa y <span>Ubicación</span></h1>
+            <p class="printed-promise">El agua te guía. Encuentra zonas verdes cerca de ti.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="map-header-printed">
+              <h2>Mapa interactivo</h2>
+            </div>
+            <div class="map-printed-frame">
+              <div class="map-printed-header">
+                <div class="map-legend">
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot routine"></span> Rutinas
+                  </span>
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot workout"></span> Entrenamientos
+                  </span>
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot custom"></span> Personalizados
+                  </span>
+                </div>
+                <div class="map-controls">
+                  <button id="locate-button" class="map-control-btn" type="button" aria-label="Usar mi ubicación" title="Mi ubicación">
+                    <i data-lucide="navigation"></i>
+                  </button>
+                  <button id="zoom-in-btn" class="map-control-btn" type="button" aria-label="Acercar" title="Acercar">
+                    <i data-lucide="zoom-in"></i>
+                  </button>
+                  <button id="zoom-out-btn" class="map-control-btn" type="button" aria-label="Alejar" title="Alejar">
+                    <i data-lucide="zoom-out"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="location-status" class="location-status" aria-live="polite"></div>
+              <div id="workout-map"></div>
+              <div id="map-empty-state" class="map-empty-printed hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <h3>Cargando mapa...</h3>
+                <p>El mapa se está inicializando. Por favor espera.</p>
+              </div>
+            </div>
+            <div class="nearby-places-printed">
+              <h3>Zonas verdes cercanas</h3>
+              <div id="nearby-places" class="places-printed-grid" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-progress" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <button id="sidebar-toggle-progress" type="button" class="sidebar-toggle" aria-label="Abrir navegación" aria-expanded="false">
+              <i data-lucide="menu"></i>
+            </button>
+            <i data-lucide="bar-chart-2" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mi <span>Progreso</span></h1>
+            <p class="printed-promise">Visualiza tu evolución. Cada gota cuenta en tu camino.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <!-- Summary metrics -->
+            <!-- Database/API Status Indicator -->
+            <div id="database-status" class="database-status database-checking" aria-live="polite" role="status">
+              <i data-lucide="database" aria-hidden="true"></i>
+              <span>Verificando conexión...</span>
+            </div>
+
+            <div class="progress-metrics-grid">
+              <article class="metric-printed-card metric-minutes">
+                <i data-lucide="clock" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Minutos Totales</span>
+                  <span id="progress-total-minutes" class="metric-value">0 min</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-level">
+                <i data-lucide="trending-up" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Nivel Actual</span>
+                  <span id="progress-progress-level" class="metric-value">Nivel 1</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-medals">
+                <i data-lucide="medal" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Medallas Obtenidas</span>
+                  <span id="progress-medal-count" class="metric-value">0 medallas</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-points">
+                <i data-lucide="star" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Puntos acumulados</span>
+                  <span id="progress-total-points" class="metric-value">0 pts</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-exercises">
+                <i data-lucide="check-circle" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Ejercicios completados</span>
+                  <span id="progress-completed-exercises" class="metric-value">0</span>
+                </div>
+              </article>
+            </div>
+            <section class="progress-goals-printed">
+              <div class="progress-goals-header">
+                <div>
+                  <span class="metric-label">Objetivo personal</span>
+                  <h2 id="progress-goal-title">Meta semanal</h2>
+                </div>
+                <form id="progress-goal-form" class="progress-goal-form">
+                  <select id="progress-goal-type" aria-label="Tipo de meta">
+                    <option value="minutes">Minutos entrenados</option>
+                    <option value="exercises">Ejercicios completados</option>
+                  </select>
+                  <input id="progress-goal-target" type="number" min="1" max="10000" value="150" aria-label="Valor de la meta">
+                  <button type="submit" class="btn-droplet">Guardar meta</button>
+                </form>
+              </div>
+              <div class="progress-goal-summary">
+                <span id="progress-goal-current">0 de 150</span>
+                <strong id="progress-goal-percent">0%</strong>
+              </div>
+              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso de la meta">
+                <span id="progress-goal-bar"></span>
+              </div>
+            </section>
+            <!-- Chart area -->
+            <div class="chart-printed-frame">
+              <div class="chart-header">
+                <h2>Progreso Semanal</h2>
+                <span class="chart-period">Últimos 7 días</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="progress-weeklyChart"></canvas>
+              </div>
+            </div>
+            <!-- Avatar + History/Medals in two-column layout -->
+            <div class="dashboard-lower-grid">
+              <div class="avatar-printed-frame">
+                <h3>Mi Avatar</h3>
+                <div id="progress-avatar-3d-dashboard"></div>
+              </div>
+              <div class="history-medals-printed">
+                <div class="printed-section">
+                  <h3>Historial</h3>
+                  <div id="progress-workout-history" class="printed-list"></div>
+                </div>
+                <div class="printed-section">
+                  <h3>Medallas</h3>
+                  <div id="progress-medals-list" class="printed-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-routines" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <button id="sidebar-toggle-routines" type="button" class="sidebar-toggle" aria-label="Abrir navegación" aria-expanded="false">
+              <i data-lucide="menu"></i>
+            </button>
+            <i data-lucide="list-todo" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mis <span>Rutinas</span></h1>
+            <p class="printed-promise">Crea, edita, duplica. Cada rutina es una hoja en tu baño.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="routines-header-printed">
+              <h2>Rutinas guardadas</h2>
+              <button class="btn-droplet" onclick="openRoutineModal()">
+                <i data-lucide="plus"></i> Nueva Rutina
+              </button>
+            </div>
+            <div id="routines-list" class="routines-printed-grid">
+              <!-- Empty state will be rendered by routines.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> <!-- /.bath -->
+    </main>
+  </div>
+
+  <!-- Chatbot (Ebru Paper-Sheet) -->
+  <aside id="chatbot" class="chatbot" aria-label="Chatbot de Entrena tu ser">
+    <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-label="Abrir asistente de entrenamiento" aria-expanded="false">
+      <i data-lucide="message-circle"></i>
+    </button>
+
+    <section id="chatbot-panel" class="chatbot-panel" aria-label="Asistente virtual">
+      <header class="chatbot-header">
+        <div>
+          <strong>Asistente Entrena</strong>
+          <span>Consejos de bienestar con IA</span>
+        </div>
+        <button id="chatbot-close" class="chatbot-icon-button" type="button" aria-label="Cerrar chatbot">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div id="chatbot-messages" class="chatbot-messages" aria-live="polite">
+        <div class="chat-message bot-message">Hola, soy tu asistente de entrenamiento. ¿Cómo puedo ayudarte hoy?</div>
+      </div>
+      <form id="chatbot-form" class="chatbot-form">
+        <label class="hidden" for="chatbot-input">Escribe tu mensaje</label>
+        <div class="chatbot-input-wrapper">
+          <input id="chatbot-input" type="text" maxlength="500" placeholder="Escribe tu consulta..." autocomplete="off">
+        </div>
+        <button class="chatbot-send" type="submit" aria-label="Enviar mensaje">
+          <i data-lucide="send"></i>
+        </button>
+      </form>
+    </section>
+  </aside>
+
+  <!-- Accessibility widget (Ebru Paper-Clips) -->
+  <aside id="accessibility-widget" class="accessibility-widget" aria-label="Opciones de accesibilidad">
+    <button id="accessibility-toggle" class="accessibility-toggle" type="button"
+      aria-label="Abrir opciones de accesibilidad" aria-expanded="false">
+      <i data-lucide="accessibility"></i>
+    </button>
+    <section id="accessibility-panel" class="accessibility-panel" aria-label="Configuración de accesibilidad">
+      <header class="accessibility-header">
+        <strong>Accesibilidad</strong>
+        <button id="accessibility-close" class="accessibility-close" type="button" aria-label="Cerrar opciones de accesibilidad">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="accessibility-options">
+        <div class="accessibility-text-size">
+          <span>Tamaño del texto</span>
+          <div>
+            <button type="button" data-font-action="decrease" aria-label="Reducir tamaño del texto">A-</button>
+            <button type="button" data-font-action="reset" aria-label="Restablecer tamaño del texto">A</button>
+            <button type="button" data-font-action="increase" aria-label="Aumentar tamaño del texto">A+</button>
+          </div>
+        </div>
+        <button type="button" class="accessibility-option" data-accessibility-action="darkmode" aria-pressed="false">
+          <i data-lucide="moon"></i><span>Modo Oscuro</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="contrast" aria-pressed="false">
+          <i data-lucide="contrast"></i><span>Alto contraste</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="motion" aria-pressed="false">
+          <i data-lucide="pause-circle"></i><span>Reducir animaciones</span>
+        </button>
+        <button type="button" class="accessibility-reset" data-accessibility-action="reset">
+          Restablecer opciones
+        </button>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Routine modal (Ebru overlay paper-sheet) -->
+  <div id="routine-modal" class="routine-modal-overlay" aria-labelledby="routine-modal-title" role="dialog" aria-modal="true">
+    <div class="routine-modal-sheet">
+      <header class="routine-modal-header">
+        <h3 id="routine-modal-title">Nueva Rutina</h3>
+        <button class="routine-modal-close" onclick="closeRoutineModal()" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="routine-modal-body">
+        <form id="routine-form">
+          <input type="hidden" id="routine-id" name="routineId" aria-hidden="true">
+          <fieldset id="routine-personalization" class="routine-personalization">
+            <legend>Generar rutina personalizada</legend>
+            <div class="routine-personalization-fields">
+              <label>
+                Objetivo
+                <select id="personalization-goal">
+                  <option value="full">Cuerpo completo</option>
+                  <option value="strength">Fuerza</option>
+                  <option value="core">Abdomen y core</option>
+                  <option value="mobility">Movilidad</option>
+                </select>
+              </label>
+              <label>
+                Nivel
+                <select id="personalization-level">
+                  <option value="beginner">Principiante</option>
+                  <option value="intermediate">Intermedio</option>
+                  <option value="advanced">Avanzado</option>
+                </select>
+              </label>
+              <label>
+                Tiempo
+                <select id="personalization-time">
+                  <option value="10">10 minutos</option>
+                  <option value="20" selected>20 minutos</option>
+                  <option value="30">30 minutos</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" class="btn-droplet routine-generate-button" onclick="generatePersonalizedRoutine()">Generar rutina</button>
+          </fieldset>
+          <div class="routine-modal-field">
+            <label for="routine-name">Nombre de la rutina *</label>
+            <input type="text" id="routine-name" name="name" maxlength="100" required placeholder="Ej: Rutina Full Body">
+          </div>
+          <div class="routine-modal-field">
+            <label for="routine-description">Descripción</label>
+            <textarea id="routine-description" name="description" maxlength="500" rows="3" placeholder="Detalles, objetivo, nivel..."></textarea>
+          </div>
+          <div class="routine-modal-field">
+            <label>Ejercicios de la rutina</label>
+            <div id="routine-exercises" class="routine-modal-exercises"></div>
+            <button type="button" class="routine-modal-add-exercise" onclick="addRoutineExerciseRow()">
+              <i data-lucide="plus"></i> Añadir ejercicio
+            </button>
+          </div>
+          <div class="routine-modal-actions">
+            <button type="button" class="btn-droplet" style="background: transparent; border-color: var(--fiber); color: var(--ink-muted); min-width: 140px;" onclick="closeRoutineModal()">Cancelar</button>
+            <button type="submit" class="btn-droplet" style="min-width: 140px;">Guardar rutina</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript modules -->
+  <script src="js/api-config.js?v=3"></script>
+  <script src="js/notifications.js?v=2"></script>
+  <script src="js/navigation.js?v=2"></script>
+  <script src="js/auth.js?v=2"></script>
+  <script src="js/chatbot.js?v=6"></script>
+  <script src="js/accessibility.js?v=2"></script>
+  <script src="js/routines.js?v=6"></script>
+  <script src="js/map.js?v=2"></script>
+  <script src="js/exercises.js?v=7"></script>
+  <script src="js/progress.js?v=4"></script>
+  <script src="js/social-comments.js?v=2"></script>
+  <script src="js/database-status.js?v=1"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
