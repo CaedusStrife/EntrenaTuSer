@@ -679,6 +679,11 @@ body.accessibility-small-text > #screen-login,
 body.accessibility-small-text > #app-layout { zoom: .9; }
 body.accessibility-xlarge-text > #screen-login,
 body.accessibility-xlarge-text > #app-layout { zoom: 1.3; }
+
+/* Apply font size to all content areas */
+body.accessibility-large-text { font-size: 1.15rem; }
+body.accessibility-small-text { font-size: 0.9rem; }
+body.accessibility-xlarge-text { font-size: 1.3rem; }
 body.accessibility-high-contrast { --accessibility-contrast: 1; }
 body.accessibility-high-contrast,
 body.accessibility-high-contrast #screen-login {
@@ -772,6 +777,54 @@ body.accessibility-high-contrast .nearby-place a {
 body.accessibility-high-contrast .nearby-place:hover a,
 body.accessibility-high-contrast .nearby-place:focus-within a {
   color: #000 !important;
+}
+
+/* High contrast mode - also affect animated elements */
+body.accessibility-high-contrast .pigment-drop,
+body.accessibility-high-contrast .comb-trail,
+body.accessibility-high-contrast .water-surface,
+body.accessibility-high-contrast .drop-1,
+body.accessibility-high-contrast .drop-2,
+body.accessibility-high-contrast .drop-3,
+body.accessibility-high-contrast .drop-4,
+body.accessibility-high-contrast .trail-1,
+body.accessibility-high-contrast .trail-2,
+body.accessibility-high-contrast .trail-3,
+body.accessibility-high-contrast .ring,
+body.accessibility-high-contrast #screen-login .pigment-drop,
+body.accessibility-high-contrast #screen-login .comb-trail,
+body.accessibility-high-contrast #screen-login .water-surface,
+body.accessibility-high-contrast #screen-login .drop-1,
+body.accessibility-high-contrast #screen-login .drop-2,
+body.accessibility-high-contrast #screen-login .drop-3,
+body.accessibility-high-contrast #screen-login .drop-4,
+body.accessibility-high-contrast #screen-login .trail-1,
+body.accessibility-high-contrast #screen-login .trail-2,
+body.accessibility-high-contrast #screen-login .trail-3,
+body.accessibility-high-contrast #screen-login .ring {
+  display: none !important;
+}
+
+/* Dark theme for animated elements (app layout) */
+body.dark-theme .water-surface {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255,159,107,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(74,222,205,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 50%, rgba(253,230,138,0.05) 0%, transparent 35%);
+}
+
+body.dark-theme .pigment-drop {
+  opacity: 0.3;
+}
+
+body.dark-theme .drop-1 { background: radial-gradient(circle at 30% 30%, var(--pigment-orange), transparent 70%); }
+body.dark-theme .drop-2 { background: radial-gradient(circle at 30% 30%, var(--pigment-teal), transparent 70%); }
+body.dark-theme .drop-3 { background: radial-gradient(circle at 30% 30%, var(--pigment-amber), transparent 70%); }
+body.dark-theme .drop-4 { background: radial-gradient(circle at 30% 30%, var(--pigment-orange), transparent 70%); }
+
+body.dark-theme .comb-trail {
+  background: linear-gradient(90deg, transparent, var(--pigment-teal), transparent);
+  opacity: 0.3;
 }
 
 /* Grayscale mode */
@@ -1116,6 +1169,11 @@ body.dark-theme {
   --ink-muted: #a8a39a;
   --fiber: #2a2723;
   --lift-shadow: rgba(0,0,0,0.4);
+  /* Override pigment colors for dark mode animations */
+  --pigment-orange: #ff9f6b;
+  --pigment-teal: #4adecd;
+  --pigment-amber: #fde68a;
+  --pigment-carmine: #fca5a5;
 }
 
 /* Override screen-login for Ebru world */
@@ -2173,6 +2231,28 @@ body.dark-theme #screen-login .washi-strip {
   background: var(--ebru-paper);
   border-color: var(--ebru-fiber);
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Dark theme for animated elements in login screen */
+body.dark-theme #screen-login .water-surface {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255,159,107,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(74,222,205,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 50%, rgba(253,230,138,0.05) 0%, transparent 35%);
+}
+
+body.dark-theme #screen-login .pigment-drop {
+  opacity: 0;
+}
+
+body.dark-theme #screen-login .drop-1 { background: radial-gradient(circle at 30% 30%, var(--ebru-orange), transparent 70%); }
+body.dark-theme #screen-login .drop-2 { background: radial-gradient(circle at 30% 30%, var(--ebru-teal), transparent 70%); }
+body.dark-theme #screen-login .drop-3 { background: radial-gradient(circle at 30% 30%, var(--ebru-amber), transparent 70%); }
+body.dark-theme #screen-login .drop-4 { background: radial-gradient(circle at 30% 30%, var(--ebru-orange), transparent 70%); }
+
+body.dark-theme #screen-login .comb-trail {
+  background: linear-gradient(90deg, transparent, var(--ebru-teal), transparent);
+  opacity: 0.4;
 }
 
 /* ============================================================================
