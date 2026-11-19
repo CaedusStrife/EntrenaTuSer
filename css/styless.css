@@ -851,7 +851,7 @@ body.dark-theme .places-empty { color: var(--ink-muted); }
 /* ==================== ADAPTACIÓN MÓVIL (RESPONSIVE) ==================== */
 @media (max-width: 768px) {
   .accessibility-widget { right: 16px; bottom: 86px; }
-  .sidebar { position: relative; z-index: 1000; }
+  .sidebar { position: relative; z-index: 1000; transform: none; }
 
   /* 1. Transformar el Layout de horizontal a vertical */
   .app-layout {
@@ -863,6 +863,7 @@ body.dark-theme .places-empty { color: var(--ink-muted); }
     width: 100% !important;
     height: auto;
     min-height: 0;
+    transform: none;
     border-right: none;
     border-bottom: 1px solid var(--fiber);
     padding: 15px 20px;
@@ -923,7 +924,7 @@ body.dark-theme .places-empty { color: var(--ink-muted); }
     padding-top: 12px;
   }
 
-  .sidebar-menu.mobile-menu-open { display: flex; }
+  .sidebar.open .sidebar-menu { display: flex; }
 
   .nav-btn {
     width: 100%;
