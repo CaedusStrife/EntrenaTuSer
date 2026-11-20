@@ -53,7 +53,7 @@ body::before {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
+  background: var(--ebru-paper);
 }
 
 .login-card {
@@ -868,10 +868,6 @@ body.dark-theme {
   color: #e2e8f0;
 }
 
-body.dark-theme #screen-login {
-  background: linear-gradient(135deg, #172033, #102c2a);
-}
-
 body.dark-theme .login-card,
 body.dark-theme .sidebar,
 body.dark-theme .web-panel,
@@ -1150,18 +1146,7 @@ body.dark-theme .btn-outline-teal:hover { background: #00c8b3; color: #000; }
   --ebru-lift-shadow: var(--lift-shadow);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #1a1816;
-    --water: #0d1b2a;
-    --ink: #f5f2ed;
-    --ink-muted: #a8a39a;
-    --fiber: #2a2723;
-    --lift-shadow: rgba(0,0,0,0.4);
-  }
-}
-
-/* Manual dark theme toggle override */
+/* Manual dark theme toggle override - ONLY controlled by accessibility button */
 body.dark-theme {
   --paper: #1a1816;
   --water: #0d1b2a;
@@ -2197,10 +2182,6 @@ body.dark-theme .app-confirm-sheet {
 }
 
 /* Dark theme adjustments for login screen */
-body.dark-theme #screen-login {
-  background: var(--ebru-paper);
-}
-
 body.dark-theme #screen-login .bath {
   background: var(--ebru-water);
   box-shadow:
