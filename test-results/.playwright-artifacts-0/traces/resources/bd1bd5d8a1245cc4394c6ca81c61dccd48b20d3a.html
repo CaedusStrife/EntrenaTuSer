@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrena Tu Ser - Plataforma Web</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="lib/fonts/fonts.css">
+  <link rel="stylesheet" href="css/styless.css?v=20">
+  <link rel="stylesheet" href="lib/leaflet.css">
+
+  <!-- Lucide icons -->
+  <script src="lib/lucide.js"></script>
+
+  <!-- Leaflet for map -->
+  <script src="lib/leaflet.js"></script>
+
+  <!-- Chart.js for weekly activity chart -->
+  <script src="lib/chart.js"></script>
+  <!-- Three.js and GLTFLoader for 3D avatar -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/GLTFLoader.js"></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <!-- ==================== PANTALLA 1: LOGIN Y REGISTRO (Ebru/Marmoleado) ==================== -->
+  <section id="screen-login" class="screen-container active" data-theme="light">
+
+    <!-- The Bath: centered, golden ratio -->
+    <div class="bath" role="main">
+      <!-- Water surface with subtle pigment blooms -->
+      <div class="water-surface" aria-hidden="true"></div>
+
+      <!-- Floating pigment drops (ambient animation) -->
+      <div class="pigment-drop drop-1" aria-hidden="true"></div>
+      <div class="pigment-drop drop-2" aria-hidden="true"></div>
+      <div class="pigment-drop drop-3" aria-hidden="true"></div>
+      <div class="pigment-drop drop-4" aria-hidden="true"></div>
+
+      <!-- Combed trails (ambient animation) -->
+      <div class="comb-trail trail-1" aria-hidden="true"></div>
+      <div class="comb-trail trail-2" aria-hidden="true"></div>
+      <div class="comb-trail trail-3" aria-hidden="true"></div>
+
+      <!-- Zone 1: Top - Brand reveal -->
+      <div class="bath-zone-top">
+        <div class="brand-reveal" aria-hidden="true">
+          <div class="expanding-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+          <i data-lucide="activity" class="brand-logo" aria-hidden="true"></i>
+          <h1 class="brand-title">Entrena tu ser</h1>
+          <p class="brand-promise">Tu entrenamiento comienza aquí. Sin fricción, solo progreso.</p>
+        </div>
+      </div>
+
+      <!-- Zone 2: Middle - Form bowls (centered vertically) -->
+      <div class="bath-zone-middle">
+
+        <!-- Sub-pantalla 1A: Iniciar Sesión -->
+        <div id="login-card-auth" class="form-bowls" role="region" aria-label="Iniciar sesión">
+        <form id="login-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="login-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="login-email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="login-password">Contraseña</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="login-password"
+              name="password"
+              placeholder="••••••••"
+              required
+              minlength="8"
+              autocomplete="current-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="login-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Iniciar sesión</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-register">¿No tienes cuenta? Crear una</a>
+        </div>
+      </div>
+
+      <!-- Sub-pantalla 1B: Crear Cuenta -->
+      <div id="login-card-register" class="form-bowls hidden" role="region" aria-label="Crear cuenta">
+        <form id="register-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="text">
+            <label class="bowl-label" for="register-name">Nombre</label>
+            <input
+              class="bowl-input"
+              type="text"
+              id="register-name"
+              name="fullName"
+              placeholder="Tu nombre completo"
+              maxlength="120"
+              required
+              autocomplete="name"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="register-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="register-email"
+              name="email"
+              placeholder="tu@email.com"
+              maxlength="254"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="register-password">Contraseña</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="register-password"
+              name="password"
+              placeholder="Mínimo 8 caracteres"
+              minlength="8"
+              required
+              autocomplete="new-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <div class="bowl" data-type="password">
+            <label class="bowl-label" for="register-password-confirmation">Confirmar</label>
+            <input
+              class="bowl-input"
+              type="password"
+              id="register-password-confirmation"
+              name="passwordConfirmation"
+              placeholder="Repite tu contraseña"
+              minlength="8"
+              required
+              autocomplete="new-password"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="register-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Registrarse e Ingresar</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-login">¿Ya tienes cuenta? Iniciar sesión</a>
+        </div>
+      </div>
+
+      <!-- Sub-pantalla 1C: Recuperar Contraseña -->
+      <div id="login-card-recovery" class="form-bowls hidden" role="region" aria-label="Recuperar contraseña">
+        <form id="recovery-form" class="bowls-form" novalidate>
+          <div class="bowl" data-type="email">
+            <label class="bowl-label" for="recovery-email">Correo</label>
+            <input
+              class="bowl-input"
+              type="email"
+              id="recovery-email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+              autocomplete="email"
+            >
+            <div class="pigment-trail" aria-hidden="true"></div>
+          </div>
+
+          <p id="recovery-status" class="form-status" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn-droplet">
+            <span class="btn-text">Solicitar recuperación</span>
+          </button>
+        </form>
+
+        <div class="register-link">
+          <a href="#" class="washi-tape" id="show-login-from-recovery">Volver al inicio de sesión</a>
+        </div>
+      </div>
+
+    </div> <!-- /bath-zone-middle -->
+
+      <!-- Zone 3: Bottom - Social proof -->
+      <div class="bath-zone-bottom">
+        <!-- Social proof: washi strips at bottom of bath -->
+        <div class="social-proof" aria-label="Comentarios de la comunidad" aria-live="polite">
+        <div class="washi-strip">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="comment-avatar">MC</div>
+            <div class="comment-content">
+              <div class="comment-name">María C.</div>
+              <div class="comment-text">"El avatar 3D me motiva a no saltarme sesiones"</div>
+            </div>
+          </div>
+        </div>
+        <div class="washi-strip">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="comment-avatar">JR</div>
+            <div class="comment-content">
+              <div class="comment-name">Jorge R.</div>
+              <div class="comment-text">"Por fin una app que entiende entrenar en casa"</div>
+            </div>
+          </div>
+    </section>
+
+  <!-- ==================== LAYOUT DE APLICACIÓN WEB (Ebru Design System) ==================== -->
+  <div id="app-layout" class="app-layout hidden">
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <button type="button" class="brand-home" onclick="goHome()" aria-label="Ir a la página principal">
+          <i data-lucide="activity" class="brand-logo"></i>
+          <span class="brand-title">Entrena tu ser</span>
+        </button>
+        <button id="mobile-menu-toggle" type="button" class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Abrir navegación">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+
+      <nav id="mobile-navigation" class="sidebar-menu">
+        <button class="nav-btn active" onclick="switchTab('screen-progress', this)">
+          <i data-lucide="bar-chart-2"></i> Progreso
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-workout', this)">
+          <i data-lucide="play-circle"></i> Entrenamiento
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-routines', this)">
+          <i data-lucide="list-todo"></i> Mis Rutinas
+        </button>
+        <button class="nav-btn" onclick="switchTab('screen-map', this)">
+          <i data-lucide="map-pin"></i> Mapa y Ubicación
+        </button>
+              <button class="nav-btn" onclick="switchTab('screen-profile', this)">
+                <i data-lucide="user"></i> Mi Perfil
+              </button>
+        <button class="nav-btn logout-btn" onclick="switchScreen('screen-login')">
+          <i data-lucide="log-out"></i> Cerrar sesión
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-content" id="main-content">
+      <!-- Global Ebru Bath Wrapper -->
+      <div class="bath" role="main">
+        <!-- Water surface with subtle pigment blooms -->
+        <div class="water-surface" aria-hidden="true"></div>
+
+        <!-- Floating pigment drops (ambient animation) -->
+        <div class="pigment-drop drop-1" aria-hidden="true"></div>
+        <div class="pigment-drop drop-2" aria-hidden="true"></div>
+        <div class="pigment-drop drop-3" aria-hidden="true"></div>
+        <div class="pigment-drop drop-4" aria-hidden="true"></div>
+
+        <!-- Combed trails (ambient animation) -->
+        <div class="comb-trail trail-1" aria-hidden="true"></div>
+        <div class="comb-trail trail-2" aria-hidden="true"></div>
+        <div class="comb-trail trail-3" aria-hidden="true"></div>
+
+        <!-- Each screen-tab becomes a .paper-sheet -->
+      <section id="screen-workout" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <i data-lucide="play-circle" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Entrena<span>miento</span></h1>
+            <p class="printed-promise">Elige tu ejercicio. El video te guía. El agua recuerda tu esfuerzo.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="exercise-printed-list" id="exercise-list">
+              <p class="exercise-loading">Cargando ejercicios...</p>
+            </div>
+            <div id="selected-exercise-panel" class="video-printed-frame hidden">
+              <div class="video-header">
+                <h2 id="selected-exercise-title">Video demostrativo</h2>
+                <div class="video-header-actions">
+                  <span class="live-tag">GUÍA</span>
+                  <button type="button" class="video-close-button" onclick="closeSelectedExercise()" aria-label="Cerrar video de ejercicio">Cerrar</button>
+                </div>
+              </div>
+              <div class="video-wrapper">
+                <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="images/video-entrenamiento.svg">
+                  <!-- Video demo no disponible en desarrollo local -->
+                </video>
+                <div id="exercise-youtube" class="printed-video hidden" title="Video demostrativo del ejercicio"></div>
+              </div>
+              <p id="selected-exercise-description" class="video-caption"></p>
+            </div>
+            <section id="training-controls" class="training-controls hidden" aria-live="polite">
+              <div class="training-status">
+                <span id="training-progress-label">Ejercicio 1 de 1</span>
+                <strong id="training-timer">00:00</strong>
+                <span id="training-phase">Listo para comenzar</span>
+              </div>
+              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso del ejercicio">
+                <span id="training-progress-bar"></span>
+              </div>
+              <div class="training-rest-config">
+                <label for="training-rest">Descanso entre ejercicios</label>
+                <select id="training-rest">
+                  <option value="0">Sin descanso</option>
+                  <option value="15">15 segundos</option>
+                  <option value="30" selected>30 segundos</option>
+                  <option value="60">60 segundos</option>
+                </select>
+                <button id="training-rest-skip" type="button" class="btn-droplet btn-secondary hidden" onclick="skipTrainingRest()">Saltar descanso</button>
+              </div>
+              <div class="training-controls-actions">
+                <button id="training-previous" type="button" class="btn-droplet btn-secondary" onclick="selectPreviousExercise()">Anterior</button>
+                <button id="training-pause" type="button" class="btn-droplet" onclick="toggleTrainingTimer()">Pausar</button>
+                <button id="training-next" type="button" class="btn-droplet" onclick="selectNextExercise()">Siguiente</button>
+                <button type="button" class="btn-droplet btn-finish" onclick="finishTraining()">Finalizar</button>
+              </div>
+            </section>
+            <div class="workout-action-printed">
+              <button class="btn-droplet" onclick="completeSelectedExercise()">Completar ejercicio</button>
+            </div>
+          </div>
+      </section>
+
+      <section id="screen-map" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <i data-lucide="map-pin" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mapa y <span>Ubicación</span></h1>
+            <p class="printed-promise">El agua te guía. Encuentra zonas verdes cerca de ti.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="map-header-printed">
+              <h2>Mapa interactivo</h2>
+            </div>
+            <div class="map-printed-frame">
+              <div class="map-printed-header">
+                <div class="map-legend">
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot routine"></span> Rutinas
+                  </span>
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot workout"></span> Entrenamientos
+                  </span>
+                  <span class="map-legend-item">
+                    <span class="map-legend-dot custom"></span> Personalizados
+                  </span>
+                </div>
+                <div class="map-controls">
+                  <button id="locate-button" class="map-control-btn" type="button" aria-label="Usar mi ubicación" title="Mi ubicación">
+                    <i data-lucide="navigation"></i>
+                  </button>
+                  <button id="zoom-in-btn" class="map-control-btn" type="button" aria-label="Acercar" title="Acercar">
+                    <i data-lucide="zoom-in"></i>
+                  </button>
+                  <button id="zoom-out-btn" class="map-control-btn" type="button" aria-label="Alejar" title="Alejar">
+                    <i data-lucide="zoom-out"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="location-status" class="location-status" aria-live="polite"></div>
+              <div id="workout-map"></div>
+              <div id="map-empty-state" class="map-empty-printed hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <h3>Cargando mapa...</h3>
+                <p>El mapa se está inicializando. Por favor espera.</p>
+              </div>
+            </div>
+            <div class="nearby-places-printed">
+              <h3>Zonas verdes cercanas</h3>
+              <div id="nearby-places" class="places-printed-grid" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-progress" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <i data-lucide="bar-chart-2" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mi <span>Progreso</span></h1>
+            <p class="printed-promise">Visualiza tu evolución. Cada gota cuenta en tu camino.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <!-- Summary metrics -->
+            <div class="progress-metrics-grid">
+              <article class="metric-printed-card metric-minutes">
+                <i data-lucide="clock" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Minutos Totales</span>
+                  <span id="progress-total-minutes" class="metric-value">0 min</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-level">
+                <i data-lucide="trending-up" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Nivel Actual</span>
+                  <span id="progress-progress-level" class="metric-value">Nivel 1</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-medals">
+                <i data-lucide="medal" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Medallas Obtenidas</span>
+                  <span id="progress-medal-count" class="metric-value">0 medallas</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-points">
+                <i data-lucide="star" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Puntos acumulados</span>
+                  <span id="progress-total-points" class="metric-value">0 pts</span>
+                </div>
+              </article>
+              <article class="metric-printed-card metric-exercises">
+                <i data-lucide="check-circle" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Ejercicios completados</span>
+                  <span id="progress-completed-exercises" class="metric-value">0</span>
+                </div>
+              </article>
+            </div>
+            <section class="progress-goals-printed">
+              <div class="progress-goals-header">
+                <div>
+                  <span class="metric-label">Objetivo personal</span>
+                  <h2 id="progress-goal-title">Meta semanal</h2>
+                </div>
+                <form id="progress-goal-form" class="progress-goal-form">
+                  <select id="progress-goal-type" aria-label="Tipo de meta">
+                    <option value="minutes">Minutos entrenados</option>
+                    <option value="exercises">Ejercicios completados</option>
+                  </select>
+                  <input id="progress-goal-target" type="number" min="1" max="10000" value="150" aria-label="Valor de la meta">
+                  <button type="submit" class="btn-droplet">Guardar meta</button>
+                </form>
+              </div>
+              <div class="progress-goal-summary">
+                <span id="progress-goal-current">0 de 150</span>
+                <strong id="progress-goal-percent">0%</strong>
+              </div>
+              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso de la meta">
+                <span id="progress-goal-bar"></span>
+              </div>
+            </section>
+            <!-- Chart area -->
+            <div class="chart-printed-frame">
+              <div class="chart-header">
+                <h2>Progreso Semanal</h2>
+                <span class="chart-period">Últimos 7 días</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="progress-weeklyChart"></canvas>
+              </div>
+            </div>
+            <!-- Avatar + History/Medals in two-column layout -->
+            <div class="dashboard-lower-grid">
+              <div class="avatar-printed-frame">
+                <h3>Mi Avatar</h3>
+                <div id="progress-avatar-3d-dashboard"></div>
+              </div>
+              <div class="history-medals-printed">
+                <div class="printed-section">
+                  <h3>Historial</h3>
+                  <div id="progress-workout-history" class="printed-list"></div>
+                </div>
+                <div class="printed-section">
+                  <h3>Medallas</h3>
+                  <div id="progress-medals-list" class="printed-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-routines" class="screen-tab paper-sheet hidden">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <header class="printed-brand">
+            <i data-lucide="list-todo" class="brand-mark" aria-hidden="true"></i>
+            <h1 class="printed-title">Mis <span>Rutinas</span></h1>
+            <p class="printed-promise">Crea, edita, duplica. Cada rutina es una hoja en tu baño.</p>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+          <div class="printed-form">
+            <div class="routines-header-printed">
+              <h2>Rutinas guardadas</h2>
+              <button class="btn-droplet" onclick="openRoutineModal()">
+                <i data-lucide="plus"></i> Nueva Rutina
+              </button>
+            </div>
+            <div id="routines-list" class="routines-printed-grid">
+              <!-- Empty state will be rendered by routines.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+            <!-- Perfil de Usuario -->
+            <section id="screen-profile" class="screen-tab paper-sheet hidden">
+              <div class="marbled-print" aria-hidden="true"></div>
+              <div class="sheet-content">
+                <header class="printed-brand">
+                  <i data-lucide="user" class="brand-mark" aria-hidden="true"></i>
+                  <h1 class="printed-title">Mi <span>Perfil</span></h1>
+                  <p class="printed-promise">Personaliza tu experiencia y preferencias.</p>
+                </header>
+                <div class="deckle-divider" aria-hidden="true"></div>
+                <div class="printed-form">
+                  <form id="profile-form" class="profile-form" novalidate>
+                    <div class="profile-section">
+                      <h3><i data-lucide="user" aria-hidden="true"></i> Información Personal</h3>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-fullname" class="bowl-label">Nombre completo</label>
+                          <input id="profile-fullname" type="text" maxlength="120" required autocomplete="name">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-email" class="bowl-label">Correo electrónico</label>
+                          <input id="profile-email" type="email" maxlength="254" required autocomplete="email">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-avatar-color" class="bowl-label">Color de avatar</label>
+                          <input id="profile-avatar-color" type="color" value="#4adecd">
+                        </div>
+                        <div class="bowl">
+                          <label for="profile-avatar-initials" class="bowl-label">Iniciales</label>
+                          <input id="profile-avatar-initials" type="text" maxlength="3" placeholder="JD">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-section">
+                      <h3><i data-lucide="lock" aria-hidden="true"></i> Cambiar Contraseña</h3>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-current-password" class="bowl-label">Contraseña actual</label>
+                          <input id="profile-current-password" type="password" autocomplete="current-password">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-new-password" class="bowl-label">Nueva contraseña</label>
+                          <input id="profile-new-password" type="password" minlength="8" autocomplete="new-password">
+                        </div>
+                        <div class="bowl">
+                          <label for="profile-confirm-password" class="bowl-label">Confirmar nueva contraseña</label>
+                          <input id="profile-confirm-password" type="password" autocomplete="new-password">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-section">
+                      <h3><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Preferencias de Accesibilidad</h3>
+                      <p class="profile-hint">Estas preferencias se sincronizan con tu cuenta y se aplican en todos tus dispositivos.</p>
+                      <div class="preferences-grid">
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-high-contrast" data-pref="highContrast">
+                          <span>Alto contraste</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-reduced-motion" data-pref="reducedMotion">
+                          <span>Reducir animaciones</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-grayscale" data-pref="grayscale">
+                          <span>Escala de grises</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-dark-mode" data-pref="darkMode">
+                          <span>Modo oscuro</span>
+                        </label>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="pref-font-size" class="bowl-label">Tamaño de texto</label>
+                          <select id="pref-font-size" data-pref="fontSize">
+                            <option value="small">Pequeño</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="large">Grande</option>
+                            <option value="xlarge">Muy grande</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-actions">
+                      <button type="submit" class="btn-droplet" id="profile-save-btn">
+                        <i data-lucide="save" aria-hidden="true"></i> Guardar Cambios
+                      </button>
+                      <button type="button" class="btn-ghost" onclick="confirmDeleteAccount()">
+                        <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar Cuenta
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
+    </div> <!-- /.bath -->
+    </main>
+  </div>
+
+  <!-- Chatbot (Ebru Paper-Sheet) -->
+  <aside id="chatbot" class="chatbot" aria-label="Chatbot de Entrena tu ser">
+    <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-label="Abrir asistente de entrenamiento" aria-expanded="false">
+      <i data-lucide="message-circle"></i>
+    </button>
+
+    <section id="chatbot-panel" class="chatbot-panel" aria-label="Asistente virtual">
+      <header class="chatbot-header">
+        <div>
+          <strong>Asistente Entrena</strong>
+          <span>Consejos de bienestar con IA</span>
+        </div>
+        <button id="chatbot-close" class="chatbot-icon-button" type="button" aria-label="Cerrar chatbot">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div id="chatbot-messages" class="chatbot-messages" aria-live="polite">
+        <div class="chat-message bot-message">Hola, soy tu asistente de entrenamiento. ¿Cómo puedo ayudarte hoy?</div>
+      </div>
+      <form id="chatbot-form" class="chatbot-form">
+        <label class="hidden" for="chatbot-input">Escribe tu mensaje</label>
+        <div class="chatbot-input-wrapper">
+          <input id="chatbot-input" type="text" maxlength="500" placeholder="Escribe tu consulta..." autocomplete="off">
+        </div>
+        <button class="chatbot-send" type="submit" aria-label="Enviar mensaje">
+          <i data-lucide="send"></i>
+        </button>
+      </form>
+    </section>
+  </aside>
+
+  <!-- Accessibility widget (Ebru Paper-Clips) -->
+  <aside id="accessibility-widget" class="accessibility-widget" aria-label="Opciones de accesibilidad">
+    <button id="accessibility-toggle" class="accessibility-toggle" type="button"
+      aria-label="Abrir opciones de accesibilidad" aria-expanded="false">
+      <i data-lucide="accessibility"></i>
+    </button>
+    <section id="accessibility-panel" class="accessibility-panel" aria-label="Configuración de accesibilidad">
+      <header class="accessibility-header">
+        <strong>Accesibilidad</strong>
+        <button id="accessibility-close" class="accessibility-close" type="button" aria-label="Cerrar opciones de accesibilidad">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="accessibility-options">
+        <div class="accessibility-text-size">
+          <span>Tamaño del texto</span>
+          <div>
+            <button type="button" data-font-action="decrease" aria-label="Reducir tamaño del texto">A-</button>
+            <button type="button" data-font-action="reset" aria-label="Restablecer tamaño del texto">A</button>
+            <button type="button" data-font-action="increase" aria-label="Aumentar tamaño del texto">A+</button>
+          </div>
+        </div>
+        <button type="button" class="accessibility-option" data-accessibility-action="darkmode" aria-pressed="false">
+          <i data-lucide="moon"></i><span>Modo Oscuro</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="contrast" aria-pressed="false">
+          <i data-lucide="contrast"></i><span>Alto contraste</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="motion" aria-pressed="false">
+          <i data-lucide="pause-circle"></i><span>Reducir animaciones</span>
+        </button>
+                <button type="button" class="accessibility-option" data-accessibility-action="grayscale" aria-pressed="false">
+                  <i data-lucide="circle-slash"></i><span>Escala de grises</span>
+                </button>
+        <button type="button" class="accessibility-reset" data-accessibility-action="reset">
+          Restablecer opciones
+        </button>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Routine modal (Ebru overlay paper-sheet) -->
+  <div id="routine-modal" class="routine-modal-overlay" aria-labelledby="routine-modal-title" role="dialog" aria-modal="true">
+    <div class="routine-modal-sheet">
+      <header class="routine-modal-header">
+        <h3 id="routine-modal-title">Nueva Rutina</h3>
+        <button class="routine-modal-close" onclick="closeRoutineModal()" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="routine-modal-body">
+        <form id="routine-form">
+          <input type="hidden" id="routine-id" name="routineId" aria-hidden="true">
+          <fieldset id="routine-personalization" class="routine-personalization">
+            <legend>Generar rutina personalizada</legend>
+            <div class="routine-personalization-fields">
+              <label>
+                Objetivo
+                <select id="personalization-goal">
+                  <option value="full">Cuerpo completo</option>
+                  <option value="strength">Fuerza</option>
+                  <option value="core">Abdomen y core</option>
+                  <option value="mobility">Movilidad</option>
+                </select>
+              </label>
+              <label>
+                Nivel
+                <select id="personalization-level">
+                  <option value="beginner">Principiante</option>
+                  <option value="intermediate">Intermedio</option>
+                  <option value="advanced">Avanzado</option>
+                </select>
+              </label>
+              <label>
+                Tiempo
+                <select id="personalization-time">
+                  <option value="10">10 minutos</option>
+                  <option value="20" selected>20 minutos</option>
+                  <option value="30">30 minutos</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" class="btn-droplet routine-generate-button" onclick="generatePersonalizedRoutine()">Generar rutina</button>
+          </fieldset>
+          <div class="routine-modal-field">
+            <label for="routine-name">Nombre de la rutina *</label>
+            <input type="text" id="routine-name" name="name" maxlength="100" required placeholder="Ej: Rutina Full Body">
+          </div>
+          <div class="routine-modal-field">
+            <label for="routine-description">Descripción</label>
+            <textarea id="routine-description" name="description" maxlength="500" rows="3" placeholder="Detalles, objetivo, nivel..."></textarea>
+          </div>
+          <div class="routine-modal-field">
+            <label>Ejercicios de la rutina</label>
+            <div id="routine-exercises" class="routine-modal-exercises"></div>
+            <button type="button" class="routine-modal-add-exercise" onclick="addRoutineExerciseRow()">
+              <i data-lucide="plus"></i> Añadir ejercicio
+            </button>
+          </div>
+          <div class="routine-modal-actions">
+            <button type="button" class="btn-droplet" style="background: transparent; border-color: var(--fiber); color: var(--ink-muted); min-width: 140px;" onclick="closeRoutineModal()">Cancelar</button>
+            <button type="submit" class="btn-droplet" style="min-width: 140px;">Guardar rutina</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer with Legal Links -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <i data-lucide="activity" class="footer-logo" aria-hidden="true"></i>
+        <span>Entrena tu ser</span>
+      </div>
+      <nav class="footer-links" aria-label="Enlaces legales">
+        <a href="#" id="footer-terms" class="footer-link">Términos y Condiciones</a>
+        <a href="#" id="footer-privacy" class="footer-link">Política de Privacidad</a>
+        <a href="#" id="footer-cookies" class="footer-link">Política de Cookies</a>
+        <a href="#" id="footer-contact" class="footer-link">Contacto</a>
+      </nav>
+      <p class="footer-copyright">&copy; 2026 Entrena tu ser. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Legal Modals (Ebru overlay paper-sheet) -->
+  <div id="terms-modal" class="legal-modal-overlay hidden" aria-labelledby="terms-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="terms-modal-title">Términos y Condiciones</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('terms-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>1. Aceptación de los Términos</h4>
+          <p>Al acceder y utilizar la plataforma "Entrena tu ser", aceptas cumplir y estar sujeto a estos Términos y Condiciones. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio.</p>
+        </section>
+        <section class="legal-section">
+          <h4>2. Descripción del Servicio</h4>
+          <p>"Entrena tu ser" es una plataforma web de fitness que proporciona rutinas de ejercicio, seguimiento de progreso, videos demostrativos, chatbot de entrenamiento y herramientas de gamificación para motivar a los usuarios en su camino hacia una vida más saludable.</p>
+        </section>
+        <section class="legal-section">
+          <h4>3. Registro y Cuenta de Usuario</h4>
+          <ul>
+            <li>Debes tener al menos 13 años para crear una cuenta.</li>
+            <li>Eres responsable de mantener la confidencialidad de tu contraseña.</li>
+            <li>Debes proporcionar información veraz y actualizada durante el registro.</li>
+            <li>Eres responsable de todas las actividades que ocurran bajo tu cuenta.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>4. Uso Aceptable</h4>
+          <p>Te comprometes a no utilizar el servicio para:</p>
+          <ul>
+            <li>Actividades ilegales o no autorizadas.</li>
+            <li>Transmitir virus, malware o código dañino.</li>
+            <li>Suplantar a otra persona o entidad.</li>
+            <li>Interferir con la seguridad o integridad del servicio.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>5. Propiedad Intelectual</h4>
+          <p>Todo el contenido de la plataforma (textos, gráficos, logos, videos, código) es propiedad de "Entrena tu ser" o sus licenciantes y está protegido por leyes de propiedad intelectual. No puedes reproducir, distribuir o crear obras derivadas sin permiso expreso.</p>
+        </section>
+        <section class="legal-section">
+          <h4>6. Limitación de Responsabilidad</h4>
+          <p>La información proporcionada en esta plataforma es solo para fines educativos e informativos. No constituye asesoramiento médico profesional. Consulta a un profesional de la salud antes de iniciar cualquier programa de ejercicio. "Entrena tu ser" no se hace responsable de lesiones o daños derivados del uso de la plataforma.</p>
+        </section>
+        <section class="legal-section">
+          <h4>7. Modificaciones del Servicio</h4>
+          <p>Nos reservamos el derecho de modificar, suspender o discontinuar el servicio (o cualquier parte de él) en cualquier momento, con o sin previo aviso.</p>
+        </section>
+        <section class="legal-section">
+          <h4>8. Terminación</h4>
+          <p>Podemos terminar o suspender tu acceso al servicio inmediatamente, sin previo aviso, por conducta que consideremos que viola estos Términos.</p>
+        </section>
+        <section class="legal-section">
+          <h4>9. Ley Aplicable</h4>
+                  <p>Estos Términos se regirán e interpretarán de acuerdo con las leyes de los Estados Unidos Mexicanos y del Estado de Nuevo León, sin tener en cuenta sus disposiciones sobre conflicto de leyes.</p>
+        </section>
+        <section class="legal-section">
+                  <h4>10. Responsable</h4>
+                  <p>El responsable de la plataforma es la <strong>Universidad Tecnológica de Santa Catarina</strong> (UTSC), con domicilio en Carretera Saltillo-Monterrey Km. 61.5, C.P. 66359, Santa Catarina, N.L., México.</p>
+                </section>
+                <section class="legal-section">
+                  <h4>11. Contacto</h4>
+          <p>Si tienes preguntas sobre estos Términos, contáctanos en: <a href="mailto:legal@utsc.edu.mx">legal@utsc.edu.mx</a></p>
+        </section>
+                <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="privacy-modal" class="legal-modal-overlay hidden" aria-labelledby="privacy-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="privacy-modal-title">Política de Privacidad</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('privacy-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>1. Responsable del Tratamiento</h4>
+          <p>El responsable del tratamiento de tus datos personales es "Universidad Tecnológica de Santa Catarina" (en adelante, "la Institución"), con correo de contacto: <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></p>
+        </section>
+        <section class="legal-section">
+          <h4>2. Datos que Recopilamos</h4>
+          <p>Recopilamos los siguientes datos cuando te registras y usas la plataforma:</p>
+          <ul>
+            <li><strong>Datos de identidad:</strong> Nombre, correo electrónico.</li>
+            <li><strong>Datos de autenticación:</strong> Contraseña hasheada (nunca almacenamos la contraseña en texto plano).</li>
+            <li><strong>Datos de actividad:</strong> Rutinas creadas, entrenamientos completados, progreso, medallas obtenidas.</li>
+            <li><strong>Datos técnicos:</strong> Dirección IP, tipo de navegador, sistema operativo, páginas visitadas (para analítica y seguridad).</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>3. Finalidad del Tratamiento</h4>
+          <p>Utilizamos tus datos para:</p>
+          <ul>
+            <li>Crear y gestionar tu cuenta de usuario.</li>
+            <li>Proporcionar las funcionalidades de la plataforma (rutinas, progreso, chatbot, mapa).</li>
+            <li>Personalizar tu experiencia y recomendaciones.</li>
+            <li>Enviar notificaciones relacionadas con tu cuenta (nunca spam).</li>
+            <li>Mejorar la plataforma mediante analítica anonimizada.</li>
+            <li>Cumplir obligaciones legales.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>4. Base Legal</h4>
+          <p>El tratamiento se basa en:</p>
+          <ul>
+            <li>Ejecución de un contrato (términos de servicio) para la prestación del servicio.</li>
+            <li>Consentimiento del usuario para comunicaciones opcionales y analítica.</li>
+            <li>Interés legítimo para seguridad y prevención de fraude.</li>
+            <li>Obligación legal para cumplimiento normativo.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>5. Compartición de Datos</h4>
+          <p><strong>No vendemos tus datos a terceros.</strong> Solo compartimos datos con:</p>
+          <ul>
+            <li>Proveedores de servicios esenciales (hosting, base de datos, email) bajo contratos de procesamiento de datos.</li>
+            <li>Autoridades competentes cuando lo exija la ley.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>6. Transferencias Internacionales</h4>
+                  <p>Los datos se almacenan en servidores ubicados en México. No realizamos transferencias internacionales sin las garantías adecuadas conforme a la LFPDPPP.</p>
+        </section>
+        <section class="legal-section">
+          <h4>7. Conservación de Datos</h4>
+          <p>Conservamos tus datos mientras tu cuenta esté activa. Tras la eliminación de la cuenta, los datos se anonimizan o eliminan en un plazo máximo de 30 días, salvo obligación legal de conservación.</p>
+        </section>
+        <section class="legal-section">
+                  <h4>8. Tus Derechos (LFPDPPP)</h4>
+                  <p>Tienes derecho a ejercer tus derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares:</p>
+          <ul>
+            <li><strong>Acceso:</strong> Obtener confirmación de si tratamos tus datos y acceder a ellos.</li>
+            <li><strong>Rectificación:</strong> Corregir datos inexactos o incompletos.</li>
+                    <li><strong>Cancelación:</strong> Solicitar la eliminación de tus datos cuando no sean necesarios.</li>
+                    <li><strong>Oposición:</strong> Oponerte al tratamiento de tus datos para fines específicos.</li>
+                    <li><strong>Revocar consentimiento:</strong> En cualquier momento, sin afectar la licitud del tratamiento previo.</li>
+          </ul>
+          <p>Para ejercer tus derechos, envía un email a <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a> con el asunto "Derechos ARCO".</p>
+        </section>
+        <section class="legal-section">
+          <h4>9. Seguridad</h4>
+          <p>Implementamos medidas técnicas y organizativas apropiadas: cifrado TLS en tránsito, hashing de contraseñas con bcrypt, JWT para autenticación, validación de entrada, y principio de menor privilegio en base de datos.</p>
+        </section>
+        <section class="legal-section">
+          <h4>10. Cookies y Tecnologías Similares</h4>
+          <p>Utilizamos cookies esenciales para el funcionamiento (sesión, preferencias de accesibilidad) y cookies analíticas opcionales (con tu consentimiento). Consulta nuestra <a href="#" onclick="event.preventDefault(); openLegalModal('cookies-modal'); closeLegalModal('privacy-modal')">Política de Cookies</a> para más detalles.</p>
+        </section>
+        <section class="legal-section">
+          <h4>11. Menores de Edad</h4>
+          <p>La plataforma no está dirigida a menores de 13 años. No recopilamos intencionadamente datos de menores. Si detectamos datos de un menor, los eliminaremos inmediatamente.</p>
+        </section>
+        <section class="legal-section">
+          <h4>12. Cambios en esta Política</h4>
+          <p>Podemos actualizar esta política. Te notificaremos de cambios materiales mediante email o aviso en la plataforma. La versión actualizada entrará en vigor tras su publicación.</p>
+        </section>
+        <section class="legal-section">
+          <h4>13. Contacto</h4>
+          <p>Delegado de Protección de Datos: <a href="mailto:dpo@utsc.edu.mx">dpo@utsc.edu.mx</a></p>
+        </section>
+                <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="cookies-modal" class="legal-modal-overlay hidden" aria-labelledby="cookies-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="cookies-modal-title">Política de Cookies</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('cookies-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>¿Qué son las cookies?</h4>
+          <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Permiten recordar tus preferencias y mejorar tu experiencia.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Tipos de cookies que utilizamos</h4>
+          <table class="cookies-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Finalidad</th>
+                <th>Duración</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>entrena-user</td>
+                <td>Token JWT de autenticación para mantener la sesión</td>
+                <td>8 horas / Sesión</td>
+              </tr>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>theme</td>
+                <td>Preferencia de tema (claro/oscuro)</td>
+                <td>1 año</td>
+              </tr>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>accessibility-*</td>
+                <td>Preferencias de accesibilidad (tamaño texto, contraste, movimiento)</td>
+                <td>1 año</td>
+              </tr>
+              <tr>
+                <td><strong>Funcionales</strong></td>
+                <td>routine-draft</td>
+                <td>Borrador de rutina en creación</td>
+                <td>Sesión</td>
+              </tr>
+              <tr>
+                <td><strong>Analíticas (opcional)</strong></td>
+                <td>_ga, _gid</td>
+                <td>Google Analytics: medir uso anonimizado de la plataforma</td>
+                <td>2 años / 24h</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="legal-section">
+          <h4>Gestión de cookies</h4>
+          <p>Puedes aceptar, rechazar o configurar las cookies no esenciales mediante el banner de consentimiento que aparece en tu primera visita. Las cookies esenciales no pueden desactivarse, ya que son necesarias para el funcionamiento de la plataforma.</p>
+          <p>También puedes eliminar o bloquear cookies desde la configuración de tu navegador:</p>
+          <ul>
+            <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Chrome</a></li>
+            <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies" target="_blank" rel="noopener">Firefox</a></li>
+            <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Safari</a></li>
+            <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener">Edge</a></li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Terceros</h4>
+          <p>Las cookies analíticas son gestionadas por Google Analytics. Su política de privacidad está disponible en <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Contacto</h4>
+          <p>Para dudas sobre esta política: <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></p>
+        </section>
+                <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="contact-modal" class="legal-modal-overlay hidden" aria-labelledby="contact-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="contact-modal-title">Contacto</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('contact-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>¿Necesitas ayuda?</h4>
+          <p>Estamos aquí para ayudarte. Escríbenos y te responderemos lo antes posible.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Canales de contacto</h4>
+          <ul class="contact-list">
+            <li><i data-lucide="mail" aria-hidden="true"></i> <strong>Soporte general:</strong> <a href="mailto:soporte@utsc.edu.mx">soporte@utsc.edu.mx</a></li>
+                        <li><i data-lucide="shield" aria-hidden="true"></i> <strong>Privacidad y datos:</strong> <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></li>
+                        <li><i data-lucide="file-text" aria-hidden="true"></i> <strong>Asuntos legales:</strong> <a href="mailto:legal@utsc.edu.mx">legal@utsc.edu.mx</a></li>
+                        <li><i data-lucide="bug" aria-hidden="true"></i> <strong>Reportar errores:</strong> <a href="mailto:bugs@utsc.edu.mx">bugs@utsc.edu.mx</a></li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Horario de atención</h4>
+          <p>Lunes a viernes: 9:00 - 18:00 (CET/CEST)<br>Tiempo de respuesta estimado: 24-48 horas laborables.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Antes de contactar</h4>
+          <p>Para agilizar tu consulta, por favor incluye:</p>
+          <ul>
+            <li>Tu correo electrónico registrado en la plataforma.</li>
+            <li>Descripción detallada del problema o duda.</li>
+            <li>Pasos para reproducir el error (si es un bug).</li>
+            <li>Capturas de pantalla si es posible.</li>
+            <li>Navegador y sistema operativo que utilizas.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Oficina (correspondencia postal)</h4>
+                  <p>Universidad Tecnológica de Santa Catarina<br>Carretera Saltillo-Monterrey Km. 61.5<br>C.P. 66359, Santa Catarina, N.L., México</p>
+        </section>
+                <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript modules -->
+  <script src="js/api-config.js?v=3"></script>
+  <script src="js/notifications.js?v=2"></script>
+  <script src="js/navigation.js?v=3"></script>
+  <script src="js/auth.js?v=2"></script>
+  <script src="js/chatbot.js?v=6"></script>
+  <script src="js/accessibility.js?v=3"></script>
+  <script src="js/routines.js?v=6"></script>
+  <script src="js/map.js?v=4"></script>
+  <script src="js/exercise-videos.js?v=1"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="js/exercises.js?v=12"></script>
+  <script src="js/progress.js?v=4"></script>
+  <script src="js/social-comments.js?v=2"></script>
+    <script src="js/profile.js?v=1"></script>
+  <script>
+    // Legal modals functions
+    function openLegalModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        // Focus trap
+        const closeBtn = modal.querySelector('.legal-modal-close');
+        if (closeBtn) closeBtn.focus();
+      }
+    }
+
+    function closeLegalModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.legal-modal-overlay:not(.hidden)').forEach(modal => {
+          closeLegalModal(modal.id);
+        });
+      }
+    });
+
+    // Close on overlay click
+    document.querySelectorAll('.legal-modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          closeLegalModal(overlay.id);
+        }
+      });
+    });
+
+    // Footer link handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      const termsLink = document.getElementById('footer-terms');
+      const privacyLink = document.getElementById('footer-privacy');
+      const cookiesLink = document.getElementById('footer-cookies');
+      const contactLink = document.getElementById('footer-contact');
+
+      if (termsLink) termsLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('terms-modal'); });
+      if (privacyLink) privacyLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('privacy-modal'); });
+      if (cookiesLink) cookiesLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('cookies-modal'); });
+      if (contactLink) contactLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('contact-modal'); });
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

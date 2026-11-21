@@ -24,9 +24,11 @@ builder.Services.AddCors(options =>
             "http://localhost:5500",
             "http://127.0.0.1:5500",
             "http://localhost:49366",
-            "http://127.0.0.1:49366")
+            "http://127.0.0.1:49366",
+            "https://ambitious-ground-0e3dfc61e.3.azurestaticapps.net")
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 builder.Services

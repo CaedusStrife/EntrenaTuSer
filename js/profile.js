@@ -1,7 +1,8 @@
 // Profile page functionality
 // Handles: profile info, password change, accessibility preferences sync, account deletion
 
-const API_BASE = window.API_BASE_URL || 'https://api-entrenatuse-bge9a6g4cyatcpf4.westus3-01.azurewebsites.net';
+// Use window.API_BASE_URL set by api-config.js, fallback to localhost
+const API_BASE = window.API_BASE_URL || 'http://localhost:5143';
 
 async function apiRequest(endpoint, options = {}) {
     const token = localStorage.getItem('auth_token');

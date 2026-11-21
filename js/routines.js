@@ -1,3 +1,4 @@
+// Use window.API_BASE_URL set by api-config.js, fallback to localhost
 const API_BASE = window.API_BASE_URL || 'http://localhost:5143';
 
 let allExercises = [];
