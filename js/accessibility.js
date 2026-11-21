@@ -120,7 +120,7 @@ function setAccessibilityOpen(isOpen) {
   if (isOpen) accessibilityClose.focus();
 }
 
-function updateFontSize(action) {
+async function updateFontSize(action) {
   const preferences = getLocalPreferences();
   const current = preferences.fontSize || 'normal';
   
