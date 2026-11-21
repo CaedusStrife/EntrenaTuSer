@@ -3528,6 +3528,222 @@ body.dark-theme .streak-badge.longest {
   gap: 16px;
 }
 
+/* ===== PROFILE FORM ===== */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-section {
+  background: var(--paper);
+  border: 1px solid var(--fiber);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--lift-shadow);
+}
+
+.profile-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fiber);
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.profile-section h3 i {
+  color: var(--pigment-teal);
+}
+
+.profile-hint {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  margin: 0 0 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-row .bowl {
+  flex: 1;
+}
+
+.bowl {
+  position: relative;
+}
+
+.bowl-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bowl input,
+.bowl select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--fiber);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.bowl input:focus,
+.bowl select:focus {
+  outline: none;
+  border-color: var(--pigment-teal);
+  box-shadow: 0 0 0 3px rgba(74, 222, 205, 0.2);
+}
+
+.bowl.filled .bowl-label,
+.bowl:focus-within .bowl-label {
+  color: var(--pigment-teal);
+}
+
+.preferences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.preference-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--fiber);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.preference-item:hover {
+  border-color: var(--pigment-teal);
+  background: rgba(74, 222, 205, 0.05);
+}
+
+.preference-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--pigment-teal);
+  cursor: pointer;
+}
+
+.preference-item span {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--fiber);
+  margin-top: 8px;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--fiber);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.btn-ghost i {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dark theme overrides for profile */
+body.dark-theme .profile-section {
+  background: var(--paper);
+  border-color: var(--fiber);
+  box-shadow: 0 2px 12px var(--lift-shadow), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+body.dark-theme .preference-item {
+  background: var(--paper);
+  border-color: var(--fiber);
+}
+
+body.dark-theme .preference-item:hover {
+  background: rgba(74, 222, 205, 0.08);
+  border-color: var(--pigment-teal);
+}
+
+body.dark-theme .bowl input,
+body.dark-theme .bowl select {
+  background: var(--paper);
+  border-color: var(--fiber);
+  color: var(--ink);
+}
+
+body.dark-theme .btn-ghost {
+  border-color: var(--fiber);
+  color: var(--ink-muted);
+}
+
+body.dark-theme .btn-ghost:hover {
+  border-color: #f87171;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* High contrast overrides */
+body.accessibility-high-contrast .profile-section,
+body.accessibility-high-contrast .preference-item,
+body.accessibility-high-contrast .bowl input,
+body.accessibility-high-contrast .bowl select {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+body.accessibility-high-contrast .btn-ghost {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+body.accessibility-high-contrast .btn-ghost:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
 /* ===== DARK THEME OVERRIDES FOR DASHBOARD ===== */
 body.dark-theme .metric-printed-card {
   background: var(--paper);

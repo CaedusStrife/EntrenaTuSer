@@ -841,6 +841,232 @@ app.MapDelete("/api/routines/{routineId:int}", async (int routineId, ClaimsPrinc
     return affected > 0 ? Results.Ok(new { message = "Rutina eliminada." }) : Results.NotFound();
 }).RequireAuthorization();
 
+// ==================== PERFIL DE USUARIO ====================
+
+// GET /api/user/profile - Obtener perfil completo con preferencias
+app.MapGet("/api/user/profile", async (ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var command = new SqlCommand(
+        """
+        SELECT id, nombre_completo, email, nivel, minutos_totales, puntos_totales,
+               tema, tamano_texto, alto_contraste, reducir_movimiento, escala_grises,
+               avatar_color, avatar_iniciales, foto_url, creado_en, actualizado_en
+        FROM dbo.usuarios WHERE id = @userId;
+        """, connection);
+    command.Parameters.AddWithValue("@userId", userId);
+
+    await using var reader = await command.ExecuteReaderAsync();
+    if (!await reader.ReadAsync()) return Results.NotFound(new { message = "Usuario no encontrado." });
+
+    var profile = new
+    {
+        id = reader.GetInt32(0),
+        fullName = reader.GetString(1),
+        email = reader.GetString(2),
+        level = reader.GetInt32(3),
+        totalMinutes = reader.GetInt32(4),
+        totalPoints = reader.GetInt32(5),
+        preferences = new
+        {
+            theme = reader.GetString(6),
+            fontSize = reader.GetString(7),
+            highContrast = reader.GetBoolean(8),
+            reducedMotion = reader.GetBoolean(9),
+            grayscale = reader.GetBoolean(10)
+        },
+        avatar = new
+        {
+            color = reader.IsDBNull(11) ? null : reader.GetString(11),
+            initials = reader.IsDBNull(12) ? null : reader.GetString(12),
+            photoUrl = reader.IsDBNull(13) ? null : reader.GetString(13)
+        },
+        createdAt = reader.GetDateTime(14).ToString("yyyy-MM-dd HH:mm"),
+        updatedAt = reader.GetDateTime(15).ToString("yyyy-MM-dd HH:mm")
+    };
+
+    return Results.Ok(profile);
+}).RequireAuthorization();
+
+// PUT /api/user/profile - Actualizar perfil (nombre, email, avatar)
+app.MapPut("/api/user/profile", async (UpdateProfileRequest request, ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    if (string.IsNullOrWhiteSpace(request.FullName) || request.FullName.Length > 120)
+        return Results.BadRequest(new { message = "Nombre inválido (máx. 120 caracteres)." });
+
+    if (!string.IsNullOrWhiteSpace(request.Email) && !IsValidEmail(request.Email))
+        return Results.BadRequest(new { message = "Email inválido." });
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    // Verificar email único si se cambia
+    if (!string.IsNullOrWhiteSpace(request.Email))
+    {
+        await using var checkEmail = new SqlCommand(
+            "SELECT 1 FROM dbo.usuarios WHERE email = @email AND id != @userId;", connection);
+        checkEmail.Parameters.AddWithValue("@email", request.Email.Trim().ToLowerInvariant());
+        checkEmail.Parameters.AddWithValue("@userId", userId);
+        if (await checkEmail.ExecuteScalarAsync() != null)
+            return Results.BadRequest(new { message = "El email ya está en uso." });
+    }
+
+    await using var command = new SqlCommand(
+        """
+        UPDATE dbo.usuarios
+        SET nombre_completo = @fullName,
+            email = COALESCE(NULLIF(@email, ''), email),
+            avatar_color = @avatarColor,
+            avatar_iniciales = @avatarInitials,
+            foto_url = @photoUrl,
+            actualizado_en = SYSUTCDATETIME()
+        WHERE id = @userId;
+        """, connection);
+    command.Parameters.AddWithValue("@userId", userId);
+    command.Parameters.AddWithValue("@fullName", request.FullName.Trim());
+    command.Parameters.AddWithValue("@email", (object?)request.Email?.Trim().ToLowerInvariant() ?? DBNull.Value);
+    command.Parameters.AddWithValue("@avatarColor", (object?)request.AvatarColor ?? DBNull.Value);
+    command.Parameters.AddWithValue("@avatarInitials", (object?)request.AvatarInitials ?? DBNull.Value);
+    command.Parameters.AddWithValue("@photoUrl", (object?)request.PhotoUrl ?? DBNull.Value);
+
+    var affected = await command.ExecuteNonQueryAsync();
+    if (affected == 0) return Results.NotFound(new { message = "Usuario no encontrado." });
+
+    return Results.Ok(new { message = "Perfil actualizado correctamente." });
+}).RequireAuthorization();
+
+// PUT /api/user/password - Cambiar contraseña
+app.MapPut("/api/user/password", async (ChangePasswordRequest request, ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    if (string.IsNullOrWhiteSpace(request.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+        return Results.BadRequest(new { message = "Contraseña actual y nueva son obligatorias." });
+
+    if (request.NewPassword.Length < 8)
+        return Results.BadRequest(new { message = "La nueva contraseña debe tener al menos 8 caracteres." });
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var command = new SqlCommand(
+        "SELECT password_hash FROM dbo.usuarios WHERE id = @userId;", connection);
+    command.Parameters.AddWithValue("@userId", userId);
+
+    var storedHash = (string?)await command.ExecuteScalarAsync();
+    if (storedHash == null || !VerifyPassword(request.CurrentPassword, storedHash))
+        return Results.BadRequest(new { message = "Contraseña actual incorrecta." });
+
+    var newHash = HashPassword(request.NewPassword);
+    await using var updateCmd = new SqlCommand(
+        "UPDATE dbo.usuarios SET password_hash = @hash, actualizado_en = SYSUTCDATETIME() WHERE id = @userId;", connection);
+    updateCmd.Parameters.AddWithValue("@hash", newHash);
+    updateCmd.Parameters.AddWithValue("@userId", userId);
+    await updateCmd.ExecuteNonQueryAsync();
+
+    return Results.Ok(new { message = "Contraseña cambiada correctamente." });
+}).RequireAuthorization();
+
+// GET /api/user/preferences - Obtener preferencias de accesibilidad
+app.MapGet("/api/user/preferences", async (ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var command = new SqlCommand(
+        "SELECT tema, tamano_texto, alto_contraste, reducir_movimiento, escala_grises FROM dbo.usuarios WHERE id = @userId;", connection);
+    command.Parameters.AddWithValue("@userId", userId);
+
+    await using var reader = await command.ExecuteReaderAsync();
+    if (!await reader.ReadAsync()) return Results.NotFound();
+
+    var prefs = new
+    {
+        theme = reader.GetString(0),
+        fontSize = reader.GetString(1),
+        highContrast = reader.GetBoolean(2),
+        reducedMotion = reader.GetBoolean(3),
+        grayscale = reader.GetBoolean(4)
+    };
+
+    return Results.Ok(prefs);
+}).RequireAuthorization();
+
+// PUT /api/user/preferences - Actualizar preferencias de accesibilidad
+app.MapPut("/api/user/preferences", async (UpdatePreferencesRequest request, ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var command = new SqlCommand(
+        """
+        UPDATE dbo.usuarios
+        SET tema = @theme,
+            tamano_texto = @fontSize,
+            alto_contraste = @highContrast,
+            reducir_movimiento = @reducedMotion,
+            escala_grises = @grayscale,
+            actualizado_en = SYSUTCDATETIME()
+        WHERE id = @userId;
+        """, connection);
+    command.Parameters.AddWithValue("@userId", userId);
+    command.Parameters.AddWithValue("@theme", request.Theme ?? "light");
+    command.Parameters.AddWithValue("@fontSize", request.FontSize ?? "normal");
+    command.Parameters.AddWithValue("@highContrast", request.HighContrast ?? false);
+    command.Parameters.AddWithValue("@reducedMotion", request.ReducedMotion ?? false);
+    command.Parameters.AddWithValue("@grayscale", request.Grayscale ?? false);
+
+    var affected = await command.ExecuteNonQueryAsync();
+    if (affected == 0) return Results.NotFound();
+
+    return Results.Ok(new { message = "Preferencias actualizadas." });
+}).RequireAuthorization();
+
+// POST /api/user/delete - Eliminar cuenta
+app.MapPost("/api/user/delete", async (DeleteAccountRequest request, ClaimsPrincipal user, IConfiguration configuration) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? true) return Results.Unauthorized();
+    if (!TryGetTokenUserId(user, out var userId)) return Results.Forbid();
+
+    if (string.IsNullOrWhiteSpace(request.Password))
+        return Results.BadRequest(new { message = "Contraseña requerida para confirmar." });
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var command = new SqlCommand(
+        "SELECT password_hash FROM dbo.usuarios WHERE id = @userId;", connection);
+    command.Parameters.AddWithValue("@userId", userId);
+
+    var storedHash = (string?)await command.ExecuteScalarAsync();
+    if (storedHash == null || !VerifyPassword(request.Password, storedHash))
+        return Results.BadRequest(new { message = "Contraseña incorrecta." });
+
+    // Eliminar usuario (CASCADE borra datos relacionados)
+    await using var deleteCmd = new SqlCommand("DELETE FROM dbo.usuarios WHERE id = @userId;", connection);
+    deleteCmd.Parameters.AddWithValue("@userId", userId);
+    await deleteCmd.ExecuteNonQueryAsync();
+
+    return Results.Ok(new { message = "Cuenta eliminada permanentemente." });
+}).RequireAuthorization();
+
+// ==================== RUTINAS ====================
+
 app.Run();
 
 static bool IsValidEmail(string? email)
@@ -909,3 +1135,9 @@ record CompleteExerciseRequest(int UserId, int ExerciseId, int DurationSeconds, 
 record RegisterRequest(string? FullName, string? Email, string? Password);
 record CreateRoutineRequest(int UserId, string Name, string? Description, int[] ExerciseIds, int[] Series, int[] Reps, int[] RestSeconds);
 record UpdateRoutineRequest(string Name, string? Description, int[] ExerciseIds, int[] Series, int[] Reps, int[] RestSeconds);
+
+// Profile records
+record UpdateProfileRequest(string FullName, string? Email, string? AvatarColor, string? AvatarInitials, string? PhotoUrl);
+record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+record UpdatePreferencesRequest(string? Theme, string? FontSize, bool? HighContrast, bool? ReducedMotion, bool? Grayscale);
+record DeleteAccountRequest(string Password);

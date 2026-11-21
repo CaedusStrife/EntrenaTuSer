@@ -166,7 +166,16 @@
 
       // On login/register success, store user and redirect
       if (endpoint === 'login' || endpoint === 'register') {
-        localStorage.setItem('entrena-user', JSON.stringify(data));
+              // Store JWT token and user data
+              if (data.token) localStorage.setItem('auth_token', data.token);
+              localStorage.setItem('user_data', JSON.stringify({
+                  id: data.id,
+                  fullName: data.fullName || data.nombre_completo,
+                  email: data.email,
+                  avatar: data.avatar || { color: '#4adecd', initials: (data.fullName || data.nombre_completo || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 3) }
+              }));
+              localStorage.setItem('entrena-user', JSON.stringify(data)); // Legacy compatibility
+        
         setFormStatus(formId, successMessage || '¡Bienvenido!', false);
         submitBtn.classList.remove('submitting');
         submitBtn.disabled = false;

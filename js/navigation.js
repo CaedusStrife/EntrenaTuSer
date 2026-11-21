@@ -83,6 +83,8 @@ function switchTab(tabId, btnElement) {
   if (tabId === 'screen-map' && typeof refreshWorkoutMap === 'function') refreshWorkoutMap();
   
   if (tabId === 'screen-progress' && typeof loadProgress === 'function') loadProgress();
+  
+    if (tabId === 'screen-profile' && typeof initProfilePage === 'function') initProfilePage();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

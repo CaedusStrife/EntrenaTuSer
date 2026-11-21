@@ -6,7 +6,7 @@
   <title>Entrena Tu Ser - Plataforma Web</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="lib/fonts/fonts.css">
-  <link rel="stylesheet" href="css/styless.css?v=19">
+  <link rel="stylesheet" href="css/styless.css?v=20">
   <link rel="stylesheet" href="lib/leaflet.css">
 
   <!-- Lucide icons -->
@@ -261,6 +261,9 @@
         <button class="nav-btn" onclick="switchTab('screen-map', this)">
           <i data-lucide="map-pin"></i> Mapa y Ubicación
         </button>
+              <button class="nav-btn" onclick="switchTab('screen-profile', this)">
+                <i data-lucide="user"></i> Mi Perfil
+              </button>
         <button class="nav-btn logout-btn" onclick="switchScreen('screen-login')">
           <i data-lucide="log-out"></i> Cerrar sesión
         </button>
@@ -524,6 +527,111 @@
           </div>
         </div>
       </section>
+
+            <!-- Perfil de Usuario -->
+            <section id="screen-profile" class="screen-tab paper-sheet hidden">
+              <div class="marbled-print" aria-hidden="true"></div>
+              <div class="sheet-content">
+                <header class="printed-brand">
+                  <i data-lucide="user" class="brand-mark" aria-hidden="true"></i>
+                  <h1 class="printed-title">Mi <span>Perfil</span></h1>
+                  <p class="printed-promise">Personaliza tu experiencia y preferencias.</p>
+                </header>
+                <div class="deckle-divider" aria-hidden="true"></div>
+                <div class="printed-form">
+                  <form id="profile-form" class="profile-form" novalidate>
+                    <div class="profile-section">
+                      <h3><i data-lucide="user" aria-hidden="true"></i> Información Personal</h3>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-fullname" class="bowl-label">Nombre completo</label>
+                          <input id="profile-fullname" type="text" maxlength="120" required autocomplete="name">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-email" class="bowl-label">Correo electrónico</label>
+                          <input id="profile-email" type="email" maxlength="254" required autocomplete="email">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-avatar-color" class="bowl-label">Color de avatar</label>
+                          <input id="profile-avatar-color" type="color" value="#4adecd">
+                        </div>
+                        <div class="bowl">
+                          <label for="profile-avatar-initials" class="bowl-label">Iniciales</label>
+                          <input id="profile-avatar-initials" type="text" maxlength="3" placeholder="JD">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-section">
+                      <h3><i data-lucide="lock" aria-hidden="true"></i> Cambiar Contraseña</h3>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-current-password" class="bowl-label">Contraseña actual</label>
+                          <input id="profile-current-password" type="password" autocomplete="current-password">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="profile-new-password" class="bowl-label">Nueva contraseña</label>
+                          <input id="profile-new-password" type="password" minlength="8" autocomplete="new-password">
+                        </div>
+                        <div class="bowl">
+                          <label for="profile-confirm-password" class="bowl-label">Confirmar nueva contraseña</label>
+                          <input id="profile-confirm-password" type="password" autocomplete="new-password">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-section">
+                      <h3><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Preferencias de Accesibilidad</h3>
+                      <p class="profile-hint">Estas preferencias se sincronizan con tu cuenta y se aplican en todos tus dispositivos.</p>
+                      <div class="preferences-grid">
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-high-contrast" data-pref="highContrast">
+                          <span>Alto contraste</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-reduced-motion" data-pref="reducedMotion">
+                          <span>Reducir animaciones</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-grayscale" data-pref="grayscale">
+                          <span>Escala de grises</span>
+                        </label>
+                        <label class="preference-item">
+                          <input type="checkbox" id="pref-dark-mode" data-pref="darkMode">
+                          <span>Modo oscuro</span>
+                        </label>
+                      </div>
+                      <div class="form-row">
+                        <div class="bowl">
+                          <label for="pref-font-size" class="bowl-label">Tamaño de texto</label>
+                          <select id="pref-font-size" data-pref="fontSize">
+                            <option value="small">Pequeño</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="large">Grande</option>
+                            <option value="xlarge">Muy grande</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="profile-actions">
+                      <button type="submit" class="btn-droplet" id="profile-save-btn">
+                        <i data-lucide="save" aria-hidden="true"></i> Guardar Cambios
+                      </button>
+                      <button type="button" class="btn-ghost" onclick="confirmDeleteAccount()">
+                        <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar Cuenta
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
     </div> <!-- /.bath -->
     </main>
   </div>
@@ -994,6 +1102,7 @@
   <script src="js/exercises.js?v=12"></script>
   <script src="js/progress.js?v=4"></script>
   <script src="js/social-comments.js?v=2"></script>
+    <script src="js/profile.js?v=1"></script>
   <script>
     // Legal modals functions
     function openLegalModal(modalId) {

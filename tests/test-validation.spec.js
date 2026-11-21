@@ -15,21 +15,25 @@ test.describe('Entrena Tu Ser - Validation Tests', () => {
     await page.click('#footer-terms');
     await expect(page.locator('#terms-modal .legal-last-updated')).toContainText('2026');
       await page.click('#terms-modal .legal-modal-close');
+      await expect(page.locator('#terms-modal')).toHaveClass(/hidden/);
     
     // Check privacy modal date
     await page.click('#footer-privacy');
     await expect(page.locator('#privacy-modal .legal-last-updated')).toContainText('2026');
       await page.click('#privacy-modal .legal-modal-close');
+      await expect(page.locator('#privacy-modal')).toHaveClass(/hidden/);
     
     // Check cookies modal date
     await page.click('#footer-cookies');
     await expect(page.locator('#cookies-modal .legal-last-updated')).toContainText('2026');
       await page.click('#cookies-modal .legal-modal-close');
+      await expect(page.locator('#cookies-modal')).toHaveClass(/hidden/);
     
     // Check contact modal date
     await page.click('#footer-contact');
     await expect(page.locator('#contact-modal .legal-last-updated')).toContainText('2026');
       await page.click('#contact-modal .legal-modal-close');
+      await expect(page.locator('#contact-modal')).toHaveClass(/hidden/);
   });
 
   test('Verify UTSC references in legal modals', async ({ page }) => {
@@ -41,7 +45,8 @@ test.describe('Entrena Tu Ser - Validation Tests', () => {
     expect(termsContent).toContain('Universidad Tecnológica de Santa Catarina');
     expect(termsContent).toContain('Nuevo León');
     expect(termsContent).toContain('@utsc.edu.mx');
-    await page.click('.legal-modal-close');
+      await page.click('#terms-modal .legal-modal-close');
+      await expect(page.locator('#terms-modal')).toHaveClass(/hidden/);
     
     // Check privacy modal for UTSC references
     await page.click('#footer-privacy');
@@ -49,7 +54,8 @@ test.describe('Entrena Tu Ser - Validation Tests', () => {
     expect(privacyContent).toContain('Universidad Tecnológica de Santa Catarina');
     expect(privacyContent).toContain('@utsc.edu.mx');
     expect(privacyContent).toContain('ARCO');
-    await page.click('.legal-modal-close');
+      await page.click('#privacy-modal .legal-modal-close');
+      await expect(page.locator('#privacy-modal')).toHaveClass(/hidden/);
     
     // Check contact modal for UTSC address
     await page.click('#footer-contact');
@@ -57,7 +63,8 @@ test.describe('Entrena Tu Ser - Validation Tests', () => {
     expect(contactContent).toContain('Universidad Tecnológica de Santa Catarina');
     expect(contactContent).toContain('Carretera Saltillo-Monterrey');
     expect(contactContent).toContain('66359');
-    await page.click('.legal-modal-close');
+      await page.click('#contact-modal .legal-modal-close');
+      await expect(page.locator('#contact-modal')).toHaveClass(/hidden/);
   });
 
   test('Verify dark mode applies globally (not just accessibility panel)', async ({ page }) => {

@@ -2,8 +2,45 @@ const accessibilityToggle = document.getElementById('accessibility-toggle');
 const accessibilityPanel = document.getElementById('accessibility-panel');
 const accessibilityClose = document.getElementById('accessibility-close');
 const accessibilityStorageKey = 'entrena-accessibility';
+const API_BASE = window.API_BASE_URL || 'https://api-entrenatuse-bge9a6g4cyatcpf4.westus3-01.azurewebsites.net';
 
-function getAccessibilityPreferences() {
+// Check if user is logged in
+function isLoggedIn() {
+  return !!localStorage.getItem('auth_token');
+}
+
+// Get auth token
+function getAuthToken() {
+  return localStorage.getItem('auth_token');
+}
+
+// Load preferences from backend (if logged in) or localStorage
+async function loadAccessibilityPreferences() {
+  if (isLoggedIn()) {
+    try {
+      const response = await fetch(`${API_BASE}/api/user/preferences`, {
+        headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+      });
+      if (response.ok) {
+        const prefs = await response.json();
+        // Convert backend format to frontend format
+        return {
+            contrast: prefs.highContrast,
+            motion: prefs.reducedMotion,
+            grayscale: prefs.grayscale,
+            darkmode: prefs.theme === 'dark',
+            fontSize: prefs.fontSize
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to load preferences from backend:', e);
+    }
+  }
+  // Fallback to localStorage
+  return getLocalPreferences();
+}
+
+function getLocalPreferences() {
   try {
     return JSON.parse(localStorage.getItem(accessibilityStorageKey)) || {};
   } catch {
@@ -11,8 +48,30 @@ function getAccessibilityPreferences() {
   }
 }
 
-function saveAccessibilityPreferences(preferences) {
+// Save preferences to both localStorage and backend (if logged in)
+async function saveAccessibilityPreferences(preferences) {
   localStorage.setItem(accessibilityStorageKey, JSON.stringify(preferences));
+  
+  if (isLoggedIn()) {
+    try {
+      await fetch(`${API_BASE}/api/user/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify({
+            Theme: preferences.darkmode ? 'dark' : 'light',
+            FontSize: preferences.fontSize,
+            HighContrast: preferences.contrast,
+            ReducedMotion: preferences.motion,
+            Grayscale: preferences.grayscale
+        })
+      });
+    } catch (e) {
+      console.warn('Failed to sync preferences to backend:', e);
+    }
+  }
 }
 
 function applyAccessibilityPreferences(preferences) {
@@ -62,7 +121,7 @@ function setAccessibilityOpen(isOpen) {
 }
 
 function updateFontSize(action) {
-  const preferences = getAccessibilityPreferences();
+  const preferences = getLocalPreferences();
   const current = preferences.fontSize || 'normal';
   
   // Define font size levels for more granular control
@@ -81,7 +140,7 @@ function updateFontSize(action) {
   }
   
   preferences.fontSize = fontSizes[nextIndex];
-  saveAccessibilityPreferences(preferences);
+  await saveAccessibilityPreferences(preferences);
   applyAccessibilityPreferences(preferences);
 }
 
@@ -96,19 +155,49 @@ document.querySelectorAll('[data-font-action]').forEach((button) => {
 });
 
 document.querySelectorAll('[data-accessibility-action]').forEach((button) => {
-  button.addEventListener('click', () => {
+  button.addEventListener('click', async () => {
     const action = button.dataset.accessibilityAction;
     if (action === 'reset') {
       localStorage.removeItem(accessibilityStorageKey);
+      if (isLoggedIn()) {
+        // Reset backend preferences to defaults
+        await fetch(`${API_BASE}/api/user/preferences`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
+          body: JSON.stringify({
+            Theme: 'light',
+            FontSize: 'normal',
+            HighContrast: false,
+            ReducedMotion: false,
+            Grayscale: false
+          })
+        });
+      }
       applyAccessibilityPreferences({});
       return;
     }
 
-    const preferences = getAccessibilityPreferences();
+    const preferences = getLocalPreferences();
     preferences[action] = !preferences[action];
-    saveAccessibilityPreferences(preferences);
+    await saveAccessibilityPreferences(preferences);
     applyAccessibilityPreferences(preferences);
   });
 });
 
-applyAccessibilityPreferences(getAccessibilityPreferences());
+// Initialize: load preferences (from backend if logged in, else localStorage)
+loadAccessibilityPreferences().then(applyAccessibilityPreferences);
+
+// Listen for login/logout events to reload preferences
+window.addEventListener('user-authenticated', () => {
+  loadAccessibilityPreferences().then(applyAccessibilityPreferences);
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'auth_token' && !e.newValue) {
+    // User logged out - reload from localStorage
+    applyAccessibilityPreferences(getLocalPreferences());
+  }
+});
