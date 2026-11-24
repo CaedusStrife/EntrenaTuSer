@@ -7,3 +7,11 @@ Respaldo_Proyecto_EntrenaTuSer.zip
 .idea/
 *.user
 *.suo
+
+# Resultados de pruebas y reports (no subirlos a GitHub)
+test-results/
+playwright-report/
+
+# Configuración local y variables de entorno
+*.local.env
+.env*.secrets

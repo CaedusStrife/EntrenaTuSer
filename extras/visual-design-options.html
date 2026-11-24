@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Opciones de Diseño - Entrena Tu Ser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== Variables y tokens de diseño ========== */
+        :root {
+            --primary-vital: #ff6b35;
+            --primary-balance: #2dd4bf;
+            --peach: #ff8c42;
+            --coral: #ff6b6b;
+            --soft-orange: #ffa726;
+            --water: #eef2f0;
+            --fiber: #e8e3db;
+            --paper: #fcfaf7;
+            --ink: #4a4a4a;
+            --muted: #7d746d;
+            --success: #2dd4bf;
+            --bg-dark: #0a0a0f;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252530;
+
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 25px rgba(0,0,0,0.5);
+
+            --transition: 300ms ease;
+        }
+
+        /* ========== Reset Básico ========== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        h1, h2, h3 { font-family: 'Syne', sans-serif; margin-top: 0; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+
+        /* ========== Contenedor Principal ========== */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* ========== Header / Nav ========== */
+        header {
+            background: var(--bg-dark);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--primary-vital); letter-spacing: -0.02em; }
+        .nav-links a { margin-left: 24px; color: var(--muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; transition: color var(--transition); }
+        .nav-links a:hover { color: var(--primary-vital); }
+
+        /* ========== Hero Secciones por Opción ========== */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin: 100px 0; }
+        .option-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); transition: transform var(--transition); }
+        .option-card:hover { transform: translateY(-4px); }
+        .option-header { padding: 20px; border-bottom: 1px solid var(--fiber); }
+        .option-title { font-size: 1.25rem; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+        .option-mode { display: inline-block; padding: 4px 8px; background: var(--paper); border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+        .mode-bolder { color: var(--primary-vital); border: 1px solid var(--primary-vital); }
+        .mode-quieter { color: var(--primary-balance); border: 1px solid var(--primary-balance); }
+        .mode-distill { color: var(--muted); border: 1px solid var(--muted); }
+        .option-content { padding: 30px; }
+        .option-features { margin: 20px 0; }
+        .feature-list { margin: 12px 0; }
+        .feature-list li { margin: 8px 0; padding-left: 20px; position: relative; }
+        .feature-list li::before { content: '✓'; position: absolute; left: 0; color: var(--primary-vital); font-weight: 600; }
+        .keeps { background: var(--water); padding: 12px; border-radius: var(--radius-md); margin: 16px 0; font-size: 0.85rem; color: var(--muted); }
+        .risks { background: #fff0f0; padding: 12px; border-radius: var(--radius-md); border-left: 3px solid var(--primary-vital); margin: 16px 0; font-size: 0.85rem; color: var(--error); }
+        .recommendation { background: #f0fff4; padding: 12px; border-radius: var(--radius-md); border-left: 3px solid var(--primary-balance); margin: 16px 0; font-size: 0.85rem; color: var(--success); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1200px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .options-grid { grid-template-columns: 1fr; } .option-card { margin: 0 0 30px 0; } }
+
+        /* ========== Estilos de enfoque ========== */
+        a:focus-visible, .nav-links a:focus-visible { outline: 2px solid var(--primary-vital); outline-offset: 4px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-wrapper">
+            <div class="logo">ETS</div>
+            <nav class="nav-links">
+                <a href="#">Inicio</a>
+                <a href="#">Rutinas</a>
+                <a href="#">Progreso</a>
+                <a href="#">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 style="font-size: 3rem; font-weight: 800; margin: 60px 0 40px 0;">
+                Opciones de Diseño Vital Balance
+            </h1>
+
+            <p style="font-size: 1.1rem; color: var(--muted); max-width: 800px; margin: 0 auto 60px auto;">
+                Tres direcciones de diseño distintas generadas por el skill <strong>impeccable</strong> para el proyecto "Entrena tu ser". Cada una ofrece una filosofía visual diferente manteniendo la funcionalidad y la arquitectura del proyecto.
+            </p>
+
+            <div class="options-grid">
+
+                <!-- Opción 1: BOLDER -->
+                <div class="option-card">
+                    <div class="option-header">
+                        <span class="option-mode mode-bolder">BOLDER</span>
+                        <span class="option-title">Energético & Alta Energía</span>
+                    </div>
+                    <div class="option-content">
+                        <p><strong>Modo:</strong> Persuade (landing pages, campañas)</p>
+                        <p><strong>Mejor para:</strong> Screens de marketing, onboarding, highlighting key features</p>
+
+                        <h3>Dirección Visual</h3>
+                        <ul class="feature-list">
+                            <li>Paleta de colores ampliada: naranja #ff6b35 dominante con gradientes complementarios</li>
+                            <li>Tipografía dinámica: peso y tamaño Syne aumentados para headings</li>
+                            <li>Gráficos dinámicos: motion trails, gradient blooms, pigment drops que sugieren movimiento</li>
+                            <li>Llamadas a acción prominentes: botones principales más grandes con shadows y hover animations</li>
+                            <li>Distribución de peso visual: elementos clave (botón start training, avatar, navegación principal)</li>
+                        </ul>
+
+                        <h3>Cambios Específicos</h3>
+                        <ul class="feature-list">
+                            <li>Reemplazar textura de papel sutil con gradient de superficie de agua más pronunciado</li>
+                            <li>Add animated pigment drops that follow mouse movement o create subtle parallax effect</li>
+                            <li>Botones primary más bold: padding mayor, shadows más prominentes, transiciones de color inmediatas</li>
+                            <li>Mejorar presentación avatar 3D con lighting más vibrante</li>
+                            <li>Contraste más fuerte entre foreground y background para impacto visual inmediato</li>
+                        </ul>
+
+                        <div class="keeps">
+                            <strong>Se mantiene del diseño actual:</strong> Brand commitments (cero fricción visible, progreso IA de acompañante), features de accesibilidad, información architecture, Lucide iconography, system font stack
+                        </div>
+
+                        <div class="risks">
+                            <strong>Riesgos:</strong> Overstimulating para usuarios que prefieren interfaces más tranquilas. Distracting from the core training experience.
+                            <strong>Mitigaciones:</strong> Keep "reduced motion" toggle functional, make animations optional. Apply bolder styles primarily to marketing/onboarding screens, no el training workspace.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opción 2: QUIETER -->
+                <div class="option-card">
+                    <div class="option-header">
+                        <span class="option-mode mode-quieter">QUIETER</span>
+                        <span class="option-title">Cálmado & Minimal-Focused</span>
+                    </div>
+                    <div class="option-content">
+                        <p><strong>Modo:</strong> Operate (app UI, dashboards)</p>
+                        <p><strong>Mejor para:</strong> Training workspace, dashboard, meditation/cool-down screens</p>
+
+                        <h3>Dirección Visual</h3>
+                        <ul class="feature-list">
+                            <li>Saturación reducida: naranja y teal muted hacia tonos más suaves y desaturados</li>
+                            <li>Whitespace expandido: más spacing entre elements, gutters más grandes, layouts menos densos</li>
+                            <li>Textura sutil: papel faint o backgrounds clean sin gradients bold</li>
+                            <li>Chrome minimal: quitar borders innecesarios, reducir shadow depth, simplificar button styles</li>
+                            <li>Enfasis en tipografía: jerarquía clara usando DM Sans a tamaños menores con line-height generoso</li>
+                        </ul>
+
+                        <h3>Cambios Específicos</h3>
+                        <ul class="feature-list">
+                            <li>Reemplazar naranja vibrante #ff6b35 con tono peach o coral más suave #ff8c42 o #ff6b6b a baja opacity</li>
+                            <li>Usar "water" background #e8f4f8 al 100% con mínimo o ningún overlay de texture</li>
+                            <li>Simplify cards to just background color + border + text, removing extraneous decorations</li>
+                            <li>Reducir shadow depth de 0 10px 30px a 0 4px 12px o eliminarlo donde sea posible</li>
+                            <li>Make the accessibility widget more prominent since the design is calmer</li>
+                            <li>Añadir "focus mode" que simplifica el UI a métricas esenciales solamente</li>
+                        </ul>
+
+                        <div class="keeps">
+                            <strong>Se mantiene del diseño actual:</strong> Teal #00c8b3 como color de éxito (mantiene asociación calmante), estructura de layout (sidebar + main content, grid patterns), Avatar 3D integration (aún visible pero menos dominante), dark mode con ajustes de contraste apropiados, fundamentals de accesibility (ARIA labels, focus visible, text resizing)
+                        </div>
+
+                        <div class="risks">
+                            <strong>Riesgos:</strong> Losing brand energy y recognition. Feeling "empty" o "sterile".
+                            <strong>Mitigaciones:</strong> Keep small but consistent orange accent (ej. 10% opacity en backgrounds) so brand remains recognizable. Use subtle texture (paper grain) y varied typography weights para add interest sin color.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opción 3: DISTILL -->
+                <div class="option-card">
+                    <div class="option-header">
+                        <span class="option-mode mode-distill">DISTILL</span>
+                        <span class="option-title">Esencial & Purpose-Driven</span>
+                    </div>
+                    <div class="option-content">
+                        <p><strong>Modo:</strong> Read (docs, guides)</p>
+                        <p><strong>Mejor para:</strong> Help docs, tutorial flows, minimal dashboard view</p>
+
+                        <h3>Dirección Visual</h3>
+                        <ul class="feature-list">
+                            <li>Elementos esenciales solamente: remover toda decoración no esencial, mantener solo lo que sirve el objetivo del user</li>
+                            <li>Fundación monocromática: base grayscale con color solo donde transmite significado (orange = action, teal = success)</li>
+                            <li>Typography-first: todo jerarquía visual expresado a través de tipografía, spacing y grid alignment</li>
+                            <li>Zero decorative data: remover gradients, textures, shadows y ornamental elements</li>
+                            <li>Scannable structure: clear section breaks, minimal components per page</li>
+                        </ul>
+
+                        <h3>Cambios Específicos</h3>
+                        <ul class="feature-list">
+                            <li>Remover todos los gradient backgrounds, keeping only solid colors o pure whites/light grays</li>
+                            <li>Usar solo el ink color #2d2a26 y ink-muted #6b6760 plus orange/teal para status cues</li>
+                            <li>Eliminar paper texture y water surface completamente</li>
+                            <li>Simplify login screen to: form fields + single primary button, no animations, no decorative elements</li>
+                            <li>Reduce dashboard a: essential metrics cards only, no social feed, no nearby places, no decorative avatars</li>
+                            <li>Usar una sola typeface (DM Sans) a tamaños consistentes; Syne solo para main headings</li>
+                            <li>Remover icons no esenciales; usar text labels everywhere</li>
+                        </ul>
+
+                        <div class="keeps">
+                            <strong>Se mantiene del diseño actual:</strong> Semantic color mapping (orange = action/danger, teal = success/progress), grid-based layout system (mantener estructura de columnas), accessibility breakpoints y text size toggles, form component patterns (inputs, selects, buttons), skip-link y patterns de navegación por teclado, adaptaciones mobile-responsive
+                        </div>
+
+                        <div class="risks">
+                            <strong>Riesgos:</strong> Feeling too corporate o clinical. Losing the friendly, approachable brand voice.
+                            <strong>Mitigaciones:</strong> Retain one subtle design touch (ej. very faint paper texture al 1% opacity, o slightly rounded corners). Keep system-friendly language ("Entrena tu ser", motivator copy) prominent; use typography personality para convey warmth.
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- /.options-grid -->
+
+            <!-- Resumen y Recomendación -->
+            <div style="background: var(--bg-dark); color: white; padding: 40px; border-radius: var(--radius-lg); margin-top: 80px;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Resumen Comparativo</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--primary-vital);">
+                                <th style="padding: 12px;">Opción</th>
+                                <th style="padding: 12px;">Mejor Para</th>
+                                <th style="padding: 12px;">Mantiene Energía de Marca</th>
+                                <th style="padding: 12px;">Reduce Carga Cognitiva</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--fiber);">
+                                <td style="padding: 12px;">**Bolder**</td>
+                                <td style="padding: 12px;">Marketing, onboarding, launch screens</td>
+                                <td style="padding: 12px;">✅✅✅</td>
+                                <td style="padding: 12px;">❌</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px;">**Quieter**</td>
+                                <td style="padding: 12px;">Training workspace, dashboards, calm modes</td>
+                                <td style="padding: 12px;">✅✅</td>
+                                <td style="padding: 12px;">✅✅✅</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--fiber);">
+                                <td style="padding: 12px;">**Distill**</td>
+                                <td style="padding: 12px;">Help docs, tutorials, minimal views</td>
+                                <td style="padding: 12px;">✅</td>
+                                <td style="padding: 12px;">✅✅✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="recommendation" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--primary-balance);">
+                    <strong>Recomendación:</strong> Dado que esta es una app fitness donde los usuarios gastan 15-45 minutos por sesión, <strong>Opción 2 (Quieter)</strong> strike the best balance—mantiene suficiente energía de marca para sentir "Entrena tu ser" mientras reduce noise visual so users can focus on their training. El accent de naranja permanece lo suficientemente fuerte para motivación, pero el diseño respira más.
+                    <br><br>
+                    <em>También puedes iterar: empezar con Quieter como diseño por defecto de la app, luego aplicar Bolder selectivamente a onboarding y screens de marketing, y usar Distill para surfaces de ayuda/documentation.</em>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="margin-top: 80px; padding: 40px 0; background: var(--bg-dark); color: var(--muted); text-align: center; font-size: 0.875rem;">
+        <p>Generado siguiendo el framework <em>impeccable</em>. Basado en PRODUCT.md v1, contexto del proyecto web (HTML/CSS/JS vanilla, sin build step).</p>
+    </footer>
+
+</body>
+</html>

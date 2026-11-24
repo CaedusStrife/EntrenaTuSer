@@ -1,3 +1,6 @@
+// routines.js - Updated for Hoja de Identidad topology (Wizard Modal)
+
+// Use window.API_BASE_URL set by api-config.js, fallback to localhost
 const API_BASE = window.API_BASE_URL || 'http://localhost:5143';
 
 let allExercises = [];
@@ -51,6 +54,14 @@ async function deleteRoutine(routineId) {
   return res.json();
 }
 
+async function duplicateRoutine(routineId) {
+  const res = await window.apiFetch(`${API_BASE}/api/routines/${routineId}/duplicate`, {
+    method: 'POST'
+  });
+  if (!res.ok) throw new Error('No se pudo duplicar la rutina');
+  return res.json();
+}
+
 /* ==================== UI: LISTAR RUTINAS ==================== */
 
 function getCurrentUser() {
@@ -62,80 +73,128 @@ async function loadRoutines() {
   if (!user) return;
 
   const container = document.getElementById('routines-list');
+  const emptyEl = document.getElementById('routines-empty-state');
   if (!container) return;
 
-  container.innerHTML = '<p class="exercise-loading">Cargando rutinas...</p>';
+  // Show loading skeletons
+  container.innerHTML = `
+    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+  `;
+  if (emptyEl) emptyEl.classList.add('hidden');
 
   try {
     const routines = await fetchUserRoutines(user.id);
     renderRoutinesList(routines, user.id);
   } catch (error) {
-    container.innerHTML = `<p class="exercise-error">${error.message}</p>`;
+    container.innerHTML = '';
+    if (emptyEl) {
+      emptyEl.classList.remove('hidden');
+      emptyEl.querySelector('p').textContent = error.message;
+    }
   }
 }
 
 function renderRoutinesList(routines, userId) {
   const container = document.getElementById('routines-list');
+  const emptyEl = document.getElementById('routines-empty-state');
   if (!container) return;
 
   if (!routines.length) {
-    container.innerHTML = `
-      <div class="routines-empty-printed">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-        <h3>No hay rutinas aún</h3>
-        <p>Crea tu primera rutina o pide una al asistente.</p>
-        <button class="btn-droplet" onclick="openRoutineModal()"><i data-lucide="plus"></i> Crear rutina</button>
-      </div>
-    `;
-    if (window.lucide) lucide.createIcons();
+    container.innerHTML = '';
+    if (emptyEl) emptyEl.classList.remove('hidden');
     return;
   }
 
+  if (emptyEl) emptyEl.classList.add('hidden');
+
   container.innerHTML = routines.map(r => `
-    <article class="routine-printed-card" data-routine-id="${r.id}">
-      <div class="routine-printed-header">
-        <div class="routine-printed-icon">
-          <i data-lucide="list-todo"></i>
+    <article class="routine-card" data-routine-id="${r.id}" role="listitem">
+      <header class="routine-card-header">
+        <h3 class="routine-card-title">${escapeHtml(r.name)}</h3>
+        <div class="routine-card-menu">
+          <button type="button" class="routine-menu-btn" aria-label="Opciones de rutina" aria-expanded="false" aria-haspopup="true">
+            <i data-lucide="more-vertical" aria-hidden="true"></i>
+          </button>
+          <div class="routine-menu-dropdown" role="menu">
+            <button type="button" class="routine-menu-edit" role="menuitem" onclick="editRoutine(${r.id})" aria-label="Editar rutina">
+              <i data-lucide="edit-2" aria-hidden="true"></i> Editar
+            </button>
+            <button type="button" class="routine-menu-duplicate" role="menuitem" onclick="duplicateRoutineAction(${r.id})" aria-label="Duplicar rutina">
+              <i data-lucide="copy" aria-hidden="true"></i> Duplicar
+            </button>
+            <button type="button" class="routine-menu-start" role="menuitem" onclick="startRoutine(${r.id})" aria-label="Iniciar rutina">
+              <i data-lucide="play" aria-hidden="true"></i> Iniciar
+            </button>
+            <button type="button" class="routine-menu-delete danger" role="menuitem" onclick="confirmDeleteRoutine(${r.id})" aria-label="Eliminar rutina">
+              <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar
+            </button>
+          </div>
         </div>
-        <div class="routine-printed-meta">
-          <span class="routine-printed-difficulty">${getDifficultyLabel(r)}</span>
-          <span class="routine-printed-type">${getTypeLabel(r)}</span>
+      </header>
+      <div class="routine-card-body">
+        ${r.description ? `<p class="routine-card-description">${escapeHtml(r.description)}</p>` : ''}
+        <div class="routine-card-meta">
+          <span><i data-lucide="clock" aria-hidden="true"></i> ${calculateTotalMinutes(r)} min</span>
+          <span><i data-lucide="check-circle" aria-hidden="true"></i> ${countExercises(r)} ejercicios</span>
+          <span><i data-lucide="calendar" aria-hidden="true"></i> ${formatDate(r.createdAt)}</span>
+          <span><i data-lucide="target" aria-hidden="true"></i> ${getTypeLabel(r)}</span>
         </div>
-      </div>
-      <h3 class="routine-printed-title">${escapeHtml(r.name)}</h3>
-      ${r.description ? `<p class="routine-printed-description">${escapeHtml(r.description)}</p>` : ''}
-      <div class="routine-printed-stats">
-        <span class="routine-printed-stat">
-          <i data-lucide="clock"></i>
-          <span>${calculateTotalMinutes(r)} min</span>
-        </span>
-        <span class="routine-printed-stat">
-          <i data-lucide="check-circle"></i>
-          <span>${countExercises(r)} ejercicios</span>
-        </span>
-        <span class="routine-printed-stat">
-          <i data-lucide="calendar"></i>
-          <span>${formatDate(r.createdAt)}</span>
-        </span>
-      </div>
-      <div class="routine-printed-actions" style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px dashed var(--fiber);">
-        <button class="btn-droplet" style="flex:1;min-width:0;" onclick="viewRoutine(${r.id})">
-          <i data-lucide="eye"></i> Ver
-        </button>
-        <button class="btn-droplet" style="flex:1;min-width:0;background:transparent;border-color:var(--fiber);color:var(--ink-muted);" onclick="editRoutine(${r.id})">
-          <i data-lucide="edit"></i> Editar
-        </button>
-        <button class="btn-droplet" style="flex:1;min-width:0;" onclick="startRoutine(${r.id})">
-          <i data-lucide="play"></i> Iniciar
-        </button>
-        <button class="btn-droplet" style="flex:1;min-width:0;background:rgba(255,107,53,0.1);border-color:rgba(255,107,53,0.3);color:var(--pigment-orange);" onclick="confirmDeleteRoutine(${r.id})">
-          <i data-lucide="trash-2"></i>
-        </button>
+        <div class="routine-card-progress">
+          <div class="routine-card-progress-label">
+            <span>Progreso</span>
+            <span>0%</span>
+          </div>
+          <div class="routine-card-progress-track">
+            <span class="routine-card-progress-bar" style="width: 0%"></span>
+          </div>
+        </div>
+        <div class="routine-card-actions">
+          <button type="button" class="btn-droplet" onclick="startRoutine(${r.id})" aria-label="Iniciar ${escapeHtml(r.name)}">
+            <i data-lucide="play" aria-hidden="true"></i> Iniciar
+          </button>
+          <button type="button" class="btn-droplet btn-secondary" onclick="editRoutine(${r.id})" aria-label="Editar ${escapeHtml(r.name)}">
+            <i data-lucide="edit-2" aria-hidden="true"></i> Editar
+          </button>
+        </div>
       </div>
     </article>
   `).join('');
 
+  // Initialize dropdown menus
+  initializeRoutineDropdowns();
+  
   if (window.lucide) lucide.createIcons();
+}
+
+function initializeRoutineDropdowns() {
+  document.querySelectorAll('.routine-menu-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdown = btn.nextElementSibling;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.routine-menu-btn[aria-expanded="true"]').forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.setAttribute('aria-expanded', 'false');
+          otherBtn.nextElementSibling?.classList.remove('visible');
+        }
+      });
+      
+      btn.setAttribute('aria-expanded', String(!isExpanded));
+      dropdown?.classList.toggle('visible', !isExpanded);
+    });
+  });
+  
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.routine-menu-btn[aria-expanded="true"]').forEach(btn => {
+      btn.setAttribute('aria-expanded', 'false');
+      btn.nextElementSibling?.classList.remove('visible');
+    });
+  });
 }
 
 function getDifficultyLabel(routine) {
@@ -146,7 +205,6 @@ function getDifficultyLabel(routine) {
 }
 
 function getTypeLabel(routine) {
-  // Could be enhanced based on routine properties
   return 'Personalizada';
 }
 
@@ -176,320 +234,228 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/* ==================== MODAL CREAR/EDITAR ==================== */
+/* ==================== WIZARD MODAL INTEGRATION ==================== */
 
-async function openRoutineModal(routineId = null, readOnly = false) {
-  currentRoutineId = routineId;
-  const modal = document.getElementById('routine-modal');
-  const title = document.getElementById('routine-modal-title');
-  const form = document.getElementById('routine-form');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const cancelBtn = form.querySelector('.routine-modal-actions button[type="button"]');
-  const personalization = document.getElementById('routine-personalization');
+// The wizard is managed by routineWizard.js
+// This file provides data loading and action handlers
 
-  form.reset();
-  document.getElementById('routine-id').value = routineId || '';
-
-  if (readOnly) {
-    title.textContent = 'Ver Rutina';
-    submitBtn.style.display = 'none';
-    cancelBtn.textContent = 'Cerrar';
-    personalization.style.display = 'none';
-  } else {
-    title.textContent = routineId ? 'Editar Rutina' : 'Nueva Rutina';
-    submitBtn.style.display = 'inline-flex';
-    cancelBtn.textContent = 'Cancelar';
-    personalization.style.display = routineId ? 'none' : 'block';
-  }
-
-  // Cargar ejercicios disponibles
-  await loadExercisesForModal();
-
-  if (routineId) {
-    await loadRoutineForEdit(routineId);
-
-    if (readOnly) {
-      // Poner todos los campos en solo lectura
-      document.getElementById('routine-name').readOnly = true;
-      document.getElementById('routine-description').readOnly = true;
-
-      document.querySelectorAll('#routine-exercises select, #routine-exercises input').forEach(el => {
-        el.disabled = true;
-      });
-
-      // Ocultar botón "Añadir ejercicio"
-      const addBtn = document.querySelector('.routine-modal-add-exercise');
-      if (addBtn) addBtn.style.display = 'none';
-    } else {
-      document.getElementById('routine-name').readOnly = false;
-      document.getElementById('routine-description').readOnly = false;
-      document.querySelectorAll('#routine-exercises select, #routine-exercises input').forEach(el => {
-        el.disabled = false;
-      });
-      const addBtn = document.querySelector('.routine-modal-add-exercise');
-      if (addBtn) addBtn.style.display = 'inline-flex';
-    }
-  } else {
-    // Nueva rutina - una fila vacía
-    addRoutineExerciseRow();
-    document.getElementById('routine-name').readOnly = false;
-    document.getElementById('routine-description').readOnly = false;
-    document.querySelectorAll('#routine-exercises select, #routine-exercises input').forEach(el => {
-      el.disabled = false;
-    });
-    const addBtn = document.querySelector('.routine-modal-add-exercise');
-    if (addBtn) addBtn.style.display = 'inline-flex';
-  }
-
-  // Show modal with animation
-  modal.classList.add('active');
-  // Trigger reflow for animation
-  void modal.offsetWidth;
-  if (!readOnly) document.getElementById('routine-name').focus();
-  if (window.lucide) lucide.createIcons();
-}
-
-function getPersonalizationCategory(exercise) {
-  const name = exercise.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (['plancha', 'abdominal', 'crunch', 'escalador', 'torsion'].some(term => name.includes(term))) return 'core';
-  if (['estiramiento', 'movilidad', 'cuello', 'hombro', 'torsion', 'alcance', 'inclinacion'].some(term => name.includes(term))) return 'mobility';
-  if (['sentadilla', 'zancada', 'fuerza', 'flexion', 'lagartija', 'puente'].some(term => name.includes(term))) return 'strength';
-  return 'full';
-}
-
-function generatePersonalizedRoutine() {
-  if (!allExercises.length) {
-    showNotification('No hay ejercicios disponibles para generar la rutina.', 'error');
-    return;
-  }
-
-  const goal = document.getElementById('personalization-goal').value;
-  const level = document.getElementById('personalization-level').value;
-  const timeMinutes = Number(document.getElementById('personalization-time').value);
-  const levelLimit = { beginner: 60, intermediate: 120, advanced: Number.POSITIVE_INFINITY }[level];
-  const maxExercises = { beginner: 4, intermediate: 6, advanced: 8 }[level];
-  const budgetSeconds = timeMinutes * 60;
-
-  const candidates = [...allExercises]
-    .map((exercise) => {
-      const category = getPersonalizationCategory(exercise);
-      const duration = Number(exercise.durationSeconds) || 60;
-      const goalScore = goal === 'full' || category === goal ? 2 : 0;
-      const levelScore = duration <= levelLimit ? 1 : 0;
-      return { exercise, duration, score: goalScore + levelScore };
-    })
-    .sort((a, b) => b.score - a.score || a.duration - b.duration);
-
-  const selected = [];
-  let totalSeconds = 0;
-  for (const candidate of candidates) {
-    if (selected.length >= maxExercises) break;
-    if (selected.some(item => item.exercise.id === candidate.exercise.id)) continue;
-    if (totalSeconds + candidate.duration > budgetSeconds && selected.length > 0) continue;
-    selected.push(candidate);
-    totalSeconds += candidate.duration;
-  }
-
-  if (!selected.length) {
-    showNotification('No hay suficientes ejercicios para ese tiempo disponible.', 'error');
-    return;
-  }
-
-  document.getElementById('routine-name').value = `Rutina ${goal === 'full' ? 'cuerpo completo' : goal === 'strength' ? 'de fuerza' : goal === 'core' ? 'de core' : 'de movilidad'}`;
-  document.getElementById('routine-description').value = `${level === 'beginner' ? 'Principiante' : level === 'intermediate' ? 'Intermedio' : 'Avanzado'} · ${timeMinutes} minutos`;
-  const container = document.getElementById('routine-exercises');
-  container.innerHTML = '';
-  selected.forEach(({ exercise }) => addRoutineExerciseRow({ exerciseId: exercise.id }));
-  showNotification(`Rutina generada con ${selected.length} ejercicios.`, 'success');
-}
-
-function closeRoutineModal() {
-  const modal = document.getElementById('routine-modal');
-  modal.classList.remove('active');
-
-  // Resetear estados de solo lectura
-  document.getElementById('routine-name').readOnly = false;
-  document.getElementById('routine-description').readOnly = false;
-  document.querySelectorAll('#routine-exercises select, #routine-exercises input').forEach(el => {
-    el.disabled = false;
-  });
-  const addBtn = document.querySelector('.routine-modal-add-exercise');
-  if (addBtn) addBtn.style.display = 'inline-flex';
-  const personalization = document.getElementById('routine-personalization');
-  if (personalization) personalization.style.display = 'block';
-
-  const form = document.getElementById('routine-form');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const cancelBtn = form.querySelector('.routine-modal-actions button[type="button"]');
-  submitBtn.style.display = 'inline-flex';
-  cancelBtn.textContent = 'Cancelar';
-
-  currentRoutineId = null;
-}
-
-async function loadExercisesForModal() {
+async function loadExercisesForWizard() {
   try {
     const res = await fetch(`${API_BASE}/api/exercises`);
     allExercises = await res.json();
+    return allExercises;
   } catch {
     allExercises = [];
+    return [];
   }
 }
 
-function addRoutineExerciseRow(exercise = null) {
-  const container = document.getElementById('routine-exercises');
-  const index = container.children.length + 1;
+function renderExerciseSelector(filter = 'all', search = '') {
+  const container = document.getElementById('exercise-selector-list');
+  if (!container) return;
 
-  const options = allExercises.map(e => `<option value="${e.id}">${escapeHtml(e.name)} (${Math.ceil(e.durationSeconds/60)} min)</option>`).join('');
+  let filtered = allExercises;
+  if (filter !== 'all') {
+    filtered = filtered.filter(ex => {
+      const name = ex.name.toLowerCase();
+      if (filter === 'strength') return ['sentadilla', 'zancada', 'fuerza', 'flexion', 'lagartija', 'puente', 'plancha', 'abdominal', 'crunch', 'escalador'].some(t => name.includes(t));
+      if (filter === 'cardio') return ['cardio', 'correr', 'saltar', 'burpee', 'mountain climber'].some(t => name.includes(t));
+      if (filter === 'mobility') return ['estiramiento', 'movilidad', 'cuello', 'hombro', 'torsion', 'alcance', 'inclinacion'].some(t => name.includes(t));
+      if (filter === 'core') return ['plancha', 'abdominal', 'crunch', 'escalador', 'torsion'].some(t => name.includes(t));
+      return true;
+    });
+  }
+  
+  if (search) {
+    filtered = filtered.filter(ex => ex.name.toLowerCase().includes(search.toLowerCase()));
+  }
 
-  const row = document.createElement('div');
-  row.className = 'routine-modal-exercise-item';
-  row.innerHTML = `
-    <div class="routine-modal-exercise-info">
-      <span class="routine-modal-exercise-number">${String(index).padStart(2, '0')}</span>
-      <div class="routine-modal-exercise-fields">
-        <select name="exerciseId" required>
-          <option value="">-- Selecciona ejercicio --</option>
-          ${options}
-        </select>
-        <div class="exercise-field-group">
-          <label class="field-label">Series</label>
-          <input type="number" name="series" value="${exercise?.series || 3}" min="1" max="10" placeholder="3">
+  // Get currently selected exercise IDs
+  const selectedIds = new Set();
+  document.querySelectorAll('.selected-exercise-item').forEach(item => {
+    const id = item.dataset.exerciseId;
+    if (id) selectedIds.add(id);
+  });
+
+  container.innerHTML = filtered.map((exercise) => {
+    const isSelected = selectedIds.has(exercise.id);
+    const category = getExerciseCategory(exercise);
+    return `
+      <article class="exercise-selector-item ${isSelected ? 'selected' : ''}" data-exercise-id="${exercise.id}">
+        <div class="exercise-selector-item-info">
+          <span class="exercise-selector-item-name">${escapeHtml(exercise.name)}</span>
+          <span class="exercise-selector-item-category">${category}</span>
         </div>
-        <div class="exercise-field-group">
-          <label class="field-label">Reps</label>
-          <input type="number" name="reps" value="${exercise?.reps || 10}" min="1" max="50" placeholder="10">
-        </div>
-        <div class="exercise-field-group">
-          <label class="field-label">Descanso (s)</label>
-          <input type="number" name="rest" value="${exercise?.restSeconds || 60}" min="0" max="300" placeholder="60">
-        </div>
+        <button type="button" class="exercise-selector-item-add" onclick="toggleExerciseSelection('${exercise.id}')" aria-label="${isSelected ? 'Quitar' : 'Añadir'} ${escapeHtml(exercise.name)}" aria-pressed="${isSelected}">
+          <i data-lucide="${isSelected ? 'check' : 'plus'}" aria-hidden="true"></i>
+        </button>
+      </article>
+    `;
+  }).join('');
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function getExerciseCategory(exercise) {
+  const name = exercise.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (['plancha', 'abdominal', 'crunch', 'escalador', 'torsion'].some(term => name.includes(term))) return 'Core';
+  if (['estiramiento', 'movilidad', 'cuello', 'hombro', 'torsion', 'alcance', 'inclinacion'].some(term => name.includes(term))) return 'Movilidad';
+  if (['sentadilla', 'zancada', 'fuerza', 'flexion', 'lagartija', 'puente'].some(term => name.includes(term))) return 'Fuerza';
+  return 'Cardio';
+}
+
+function toggleExerciseSelection(exerciseId) {
+  const exercise = allExercises.find(ex => ex.id === exerciseId);
+  if (!exercise) return;
+
+  const list = document.getElementById('selected-exercises-list');
+  const countEl = document.getElementById('selected-count');
+  const emptyEl = list.querySelector('.empty-selected');
+
+  if (emptyEl) emptyEl.remove();
+
+  const existingItem = list.querySelector(`[data-exercise-id="${exerciseId}"]`);
+  
+  if (existingItem) {
+    // Remove
+    existingItem.remove();
+  } else {
+    // Add
+    const item = document.createElement('li');
+    item.className = 'selected-exercise-item';
+    item.dataset.exerciseId = exerciseId;
+    item.draggable = true;
+    item.innerHTML = `
+      <span class="drag-handle" aria-label="Reordenar"><i data-lucide="grip-vertical" aria-hidden="true"></i></span>
+      <div class="selected-exercise-info">
+        <span class="selected-exercise-name">${escapeHtml(exercise.name)}</span>
+        <span class="selected-exercise-category">${getExerciseCategory(exercise)}</span>
       </div>
-    </div>
-    <button type="button" class="routine-modal-exercise-remove" onclick="this.closest('.routine-modal-exercise-item').remove(); updateExerciseNumbers();" aria-label="Eliminar ejercicio">
-      <i data-lucide="trash-2"></i>
-    </button>
-    <button type="button" class="routine-modal-add-exercise-inline" onclick="addRoutineExerciseRow()" aria-label="Agregar otro ejercicio">
-      <i data-lucide="plus"></i> Agregar otro ejercicio
-    </button>
-  `;
-
-  if (exercise) {
-    row.querySelector('select').value = exercise.exerciseId;
+      <button type="button" class="selected-exercise-remove" onclick="toggleExerciseSelection('${exerciseId}')" aria-label="Quitar ${escapeHtml(exercise.name)}">
+        <i data-lucide="x" aria-hidden="true"></i>
+      </button>
+    `;
+    list.appendChild(item);
+    
+    // Add drag and drop handlers
+    addDragHandlers(item);
   }
 
-  container.appendChild(row);
-  updateExerciseNumbers();
-  if (window.lucide) lucide.createIcons();
+  // Update count
+  const count = list.querySelectorAll('.selected-exercise-item').length;
+  if (countEl) countEl.textContent = count;
+
+  // Re-render selector to update button states
+  const currentFilter = document.querySelector('.filter-chip.active')?.dataset.category || 'all';
+  const currentSearch = document.getElementById('exercise-search')?.value || '';
+  renderExerciseSelector(currentFilter, currentSearch);
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function updateExerciseNumbers() {
-  const items = document.querySelectorAll('#routine-exercises .routine-modal-exercise-item');
-  items.forEach((item, index) => {
-    const numberEl = item.querySelector('.routine-modal-exercise-number');
-    if (numberEl) {
-      numberEl.textContent = String(index + 1).padStart(2, '0');
+function addDragHandlers(item) {
+  item.addEventListener('dragstart', (e) => {
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging');
+    document.querySelectorAll('.selected-exercise-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+  });
+  
+  item.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const afterElement = getDragAfterElement(item.parentElement, e.clientY);
+    const draggable = document.querySelector('.dragging');
+    if (afterElement == null) {
+      item.parentElement.appendChild(draggable);
+    } else {
+      item.parentElement.insertBefore(draggable, afterElement);
     }
+    item.classList.add('drag-over');
+  });
+  
+  item.addEventListener('dragleave', () => {
+    item.classList.remove('drag-over');
+  });
+  
+  item.addEventListener('drop', (e) => {
+    e.preventDefault();
+    item.classList.remove('drag-over');
   });
 }
 
-async function loadRoutineForEdit(routineId) {
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.selected-exercise-item:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// Called from wizard when loading routine for edit
+async function loadRoutineForWizard(routineId) {
   try {
     const data = await fetchRoutineDetail(routineId);
-    document.getElementById('routine-name').value = data.routine.name;
-    document.getElementById('routine-description').value = data.routine.description || '';
-
-    const container = document.getElementById('routine-exercises');
-    container.innerHTML = '';
-
-    data.exercises.forEach((ex, idx) => {
-      addRoutineExerciseRow({
-        exerciseId: ex.exerciseId,
-        series: ex.series,
-        reps: ex.reps,
-        restSeconds: ex.restSeconds
-      });
-    });
+    return {
+      id: data.routine.id,
+      name: data.routine.name,
+      description: data.routine.description || '',
+      goal: data.routine.goal || 'strength',
+      level: data.routine.level || 'intermediate',
+      estimatedTime: data.routine.estimatedTime || calculateTotalMinutes(data.routine),
+      exercises: (data.exercises || []).map(ex => ({ exerciseId: ex.exerciseId, order: ex.order }))
+    };
   } catch (error) {
-    showNotification('Error cargando rutina: ' + error.message, 'error');
+    showToast('Error cargando rutina: ' + error.message, 'error');
+    return null;
   }
 }
 
-/* ==================== GUARDAR RUTINA ==================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('routine-form');
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const user = getCurrentUser();
-      if (!user) {
-        showNotification('Inicia sesión primero.', 'error');
-        return;
-      }
-
-      const formData = new FormData(form);
-      const exerciseItems = document.querySelectorAll('#routine-exercises .routine-modal-exercise-item');
-
-      const exerciseIds = [];
-      const series = [];
-      const reps = [];
-      const restSeconds = [];
-
-      exerciseItems.forEach(item => {
-        const select = item.querySelector('select[name="exerciseId"]');
-        if (select.value) {
-          exerciseIds.push(parseInt(select.value));
-          series.push(parseInt(item.querySelector('input[name="series"]').value) || 3);
-          reps.push(parseInt(item.querySelector('input[name="reps"]').value) || 10);
-          restSeconds.push(parseInt(item.querySelector('input[name="rest"]').value) || 60);
-        }
-      });
-
-      if (exerciseIds.length === 0) {
-        showNotification('Añade al menos un ejercicio.', 'error');
-        return;
-      }
-
-      const data = {
-        userId: user.id,
-        name: formData.get('name').trim(),
-        description: formData.get('description')?.trim() || null,
-        exerciseIds,
-        series,
-        reps,
-        restSeconds
-      };
-
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Guardando...';
-
-      try {
-        if (currentRoutineId) {
-          await updateRoutine(currentRoutineId, data);
-        } else {
-          await createRoutine(data);
-        }
-        closeRoutineModal();
-        await loadRoutines();
-      } catch (error) {
-        showNotification(error.message, 'error');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Guardar rutina';
-      }
-    });
+// Called from wizard when saving
+async function saveRoutineFromWizard(routineData) {
+  const user = getCurrentUser();
+  if (!user) {
+    showToast('Inicia sesión primero.', 'error');
+    return false;
   }
-});
 
-/* ==================== ACCIONES: VER, INICIAR, ELIMINAR ==================== */
+  const exerciseIds = routineData.exercises.map(e => e.exerciseId);
+  const series = routineData.exercises.map(e => e.series || 3);
+  const reps = routineData.exercises.map(e => e.reps || 10);
+  const restSeconds = routineData.exercises.map(e => e.restSeconds || 60);
 
-async function viewRoutine(routineId) {
-  // Abre el modal en modo solo lectura
-  await openRoutineModal(routineId, true);
+  const data = {
+    userId: user.id,
+    name: routineData.name,
+    description: routineData.description,
+    exerciseIds,
+    series,
+    reps,
+    restSeconds
+  };
+
+  try {
+    if (routineData.id) {
+      await updateRoutine(routineData.id, data);
+    } else {
+      await createRoutine(data);
+    }
+    return true;
+  } catch (error) {
+    showToast(error.message, 'error');
+    return false;
+  }
 }
+
+/* ==================== ACCIONES: VER, INICIAR, DUPLICAR, ELIMINAR ==================== */
 
 async function startRoutine(routineId) {
   try {
@@ -498,204 +464,107 @@ async function startRoutine(routineId) {
     window.activeRoutineId = routineId;
     window.activeRoutineName = data.routine.name;
     
-    // Obtener los IDs de ejercicios de la rutina Y su orden
-    const routineExercises = data.exercises.map(ex => ({
-      exerciseId: ex.exerciseId,
-      order: ex.order
-    }));
-    const routineExerciseIds = routineExercises.map(ex => ex.exerciseId);
-    console.log('startRoutine: routineExercises =', routineExercises);
+    const routineExerciseIds = data.exercises.map(ex => ex.exerciseId);
+    const routineExercises = data.exercises.map(ex => ({ exerciseId: ex.exerciseId, order: ex.order }));
     
-    // Esperar a que los ejercicios estén cargados
-    console.log('startRoutine: Waiting for exercises to load...');
-    await window.exercisesLoadedPromise;
-    console.log('startRoutine: Exercises loaded, window.allExercises =', window.allExercises ? window.allExercises.length : 'undefined');
-    
-    // Cambiar a pestaña de entrenamiento
-    console.log('startRoutine: Calling switchTab');
-    switchTab('screen-workout', document.querySelector('[onclick*="screen-workout"]'));
-    
-    // Filtrar y renderizar solo los ejercicios de la rutina directamente
-    // (después de switchTab para que el DOM esté listo)
-    if (window.renderExercises && window.allExercises) {
-      console.log('startRoutine: Calling renderExercises with filter:', routineExerciseIds);
-      window.renderExercises(window.allExercises, routineExerciseIds, routineExercises);
-      console.log('startRoutine: renderExercises called successfully');
+    // Switch to workout screen and initialize with routine exercises
+    const workoutBtn = document.querySelector('.sidebar-menu .nav-btn[onclick*="screen-workout"]');
+    if (workoutBtn) {
+      window.switchTab('screen-workout', workoutBtn);
     } else {
-      console.error('startRoutine: Missing renderExercises or allExercises');
-    }
-    
-    // Preseleccionar el primer ejercicio de la rutina y hacer scroll al video
-    if (data.exercises.length > 0) {
-      const firstEx = data.exercises[0];
-      console.log('startRoutine: Selecting first exercise:', firstEx.exerciseId);
-      
-      // Esperar un poco para que el DOM se actualice
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const card = document.querySelector(`[data-exercise-id="${firstEx.exerciseId}"]`);
-      if (card) {
-        card.click();
-        console.log('startRoutine: First exercise card clicked');
-        
-        // Hacer scroll al panel de video seleccionado
-        const selectedPanel = document.getElementById('selected-exercise-panel');
-        if (selectedPanel) {
-          selectedPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          console.log('startRoutine: Scrolled to video panel');
-        }
-      } else {
-        console.warn('startRoutine: First exercise card not found in DOM');
+      // Direct state machine initialization
+      if (window.workoutStateMachine && window.allExercises) {
+        window.workoutStateMachine.initialize(window.allExercises, routineExerciseIds, routineExercises);
       }
     }
-    
   } catch (error) {
-    console.error('Error starting routine:', error);
-    showNotification('Error al iniciar la rutina: ' + error.message, 'error');
+    showToast(error.message, 'error');
   }
 }
 
-function editRoutine(routineId) {
-  openRoutineModal(routineId);
+async function editRoutine(routineId) {
+  // Load routine data and open wizard in edit mode
+  const routineData = await loadRoutineForWizard(routineId);
+  if (routineData) {
+    window.routineWizard.loadRoutine(routineData);
+    document.getElementById('routine-modal').classList.remove('hidden');
+  }
+}
+
+async function duplicateRoutineAction(routineId) {
+  try {
+    const newRoutine = await duplicateRoutine(routineId);
+    showToast('Rutina duplicada correctamente', 'success');
+    await loadRoutines();
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
 }
 
 async function confirmDeleteRoutine(routineId) {
-  if (await showConfirmDialog('¿Eliminar esta rutina? No se puede deshacer.')) {
-    deleteRoutine(routineId)
-      .then(() => loadRoutines())
-      .catch(e => showNotification(e.message, 'error'));
-  }
-}
-
-/* ==================== CHATBOT: GUARDAR RUTINA DESDE IA ==================== */
-
-// Detecta si un mensaje del bot contiene una rutina estructurada
-function extractRoutineFromMessage(text) {
-  // Busca patrones como: "1. Sentadillas - 3 series x 12 reps"
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const exercises = [];
-  let routineName = 'Rutina del Asistente';
-  let description = 'Generada por el asistente IA';
-
-  // Intenta extraer nombre si dice "Rutina: X" o similar
-  const nameMatch = text.match(/rutina\s*:?\s*([^\n]+)/i);
-  if (nameMatch) routineName = nameMatch[1].trim();
-
-  const exerciseRegex = /(\d+)[\.)\s]+([^-\n]+?)\s*-\s*(\d+)\s*series?\s*[xX×]\s*(\d+)\s*reps?/i;
-  const simpleRegex = /(\d+)[\.)\s]+([^\n]+)/;
-
-  lines.forEach(line => {
-    const match = line.match(exerciseRegex);
-    if (match) {
-      exercises.push({
-        name: match[2].trim(),
-        series: parseInt(match[3]),
-        reps: parseInt(match[4]),
-        rest: 60
-      });
-    }
-  });
-
-  if (exercises.length === 0) {
-    // Intenta formato simple: "1. Sentadillas 3x12"
-    lines.forEach(line => {
-      const match = line.match(/(\d+)[\.)\s]+([^\d]+)(\d+)\s*[xX×]\s*(\d+)/);
-      if (match) {
-        exercises.push({
-          name: match[2].trim(),
-          series: parseInt(match[3]),
-          reps: parseInt(match[4]),
-          rest: 60
-        });
-      }
-    });
-  }
-
-  return exercises.length > 0 ? { name: routineName, description, exercises } : null;
-}
-
-// Intenta hacer match con ejercicios de la BD
-async function matchExercisesToDB(exercises) {
-  if (!allExercises.length) {
-    await loadExercisesForModal();
-  }
-  return exercises.map(ex => {
-    const match = allExercises.find(e =>
-      e.name.toLowerCase().includes(ex.name.toLowerCase()) ||
-      ex.name.toLowerCase().includes(e.name.toLowerCase())
-    );
-    return {
-      ...ex,
-      exerciseId: match?.id,
-      matched: !!match
-    };
-  });
-}
-
-// Muestra botón "Guardar rutina" en el chat
-async function showSaveRoutineButton(messageText, messageElement = null) {
-  const routineData = extractRoutineFromMessage(messageText);
-  if (!routineData) return;
-
-  const matched = await matchExercisesToDB(routineData.exercises);
-  const validExercises = matched.filter(e => e.matched);
-
-  if (validExercises.length === 0) return;
-
-  const messagesContainer = document.getElementById('chatbot-messages');
-  const lastBotMsg = messageElement || messagesContainer.querySelector('.bot-message:last-of-type:not(.loading-message)');
-  if (!lastBotMsg || lastBotMsg.querySelector('.save-routine-btn')) return;
-
-  const btn = document.createElement('button');
-  btn.className = 'save-routine-btn btn btn-sm btn-primary';
-  btn.style.marginTop = '8px';
-  btn.innerHTML = `<i data-lucide="save"></i> Guardar esta rutina`;
-  btn.onclick = () => saveRoutineFromChat(routineData.name, routineData.description, validExercises);
-  lastBotMsg.appendChild(btn);
-  if (window.lucide) lucide.createIcons();
-}
-
-async function saveRoutineFromChat(name, description, exercises) {
-  const user = getCurrentUser();
-  if (!user) {
-    showNotification('Inicia sesión para guardar rutinas.', 'error');
-    return;
-  }
-
-  const exerciseIds = exercises.map(e => e.exerciseId);
-  const series = exercises.map(e => e.series);
-  const reps = exercises.map(e => e.reps);
-  const rest = exercises.map(e => e.rest);
-
+  if (!confirm('¿Estás seguro de que quieres eliminar esta rutina? Esta acción no se puede deshacer.')) return;
+  
   try {
-    await createRoutine({
-      userId: user.id,
-      name,
-      description,
-      exerciseIds,
-      series,
-      reps,
-      restSeconds: rest
-    });
-    showNotification('¡Rutina guardada! La encontrarás en "Mis Rutinas".', 'success');
+    await deleteRoutine(routineId);
+    showToast('Rutina eliminada', 'success');
     await loadRoutines();
   } catch (error) {
-    showNotification('Error guardando: ' + error.message, 'error');
+    showToast(error.message, 'error');
   }
 }
 
-/* ==================== EXPORTAR PARA CHATBOT ==================== */
-
-window.routinesModule = {
-  loadRoutines,
-  openRoutineModal,
-  closeRoutineModal,
-  showSaveRoutineButton
+// Export for global access
+window.loadRoutines = loadRoutines;
+window.openRoutineModal = () => {
+  // Reset wizard for new routine
+  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', estimatedTime: 30, exercises: [] };
+  window.routineWizard.goToStep(1);
+  document.getElementById('routine-modal').classList.remove('hidden');
+  
+  // Load exercises for selector
+  loadExercisesForWizard().then(() => {
+    renderExerciseSelector();
+  });
 };
+window.closeRoutineModal = () => {
+  document.getElementById('routine-modal').classList.add('hidden');
+  // Cleanup
+  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', estimatedTime: 30, exercises: [] };
+  window.routineWizard.currentStep = 1;
+  window.routineWizard.updateUI();
+};
+window.startRoutine = startRoutine;
+window.editRoutine = editRoutine;
+window.duplicateRoutineAction = duplicateRoutineAction;
+window.confirmDeleteRoutine = confirmDeleteRoutine;
 
-// Cargar rutinas al autenticar
-window.addEventListener('user-authenticated', loadRoutines);
+// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-  const user = getCurrentUser();
-  if (user) loadRoutines();
+  // Setup filter chips
+  document.querySelectorAll('#routine-modal .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#routine-modal .filter-chip').forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      chip.classList.add('active');
+      chip.setAttribute('aria-pressed', 'true');
+      const filter = chip.dataset.category;
+      const search = document.getElementById('exercise-search')?.value || '';
+      renderExerciseSelector(filter, search);
+    });
+  });
+  
+  // Setup search
+  const searchInput = document.getElementById('exercise-search');
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const filter = document.querySelector('#routine-modal .filter-chip.active')?.dataset.category || 'all';
+        renderExerciseSelector(filter, searchInput.value);
+      }, 300);
+    });
+  }
 });

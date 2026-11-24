@@ -287,98 +287,182 @@
         <div class="comb-trail trail-2" aria-hidden="true"></div>
         <div class="comb-trail trail-3" aria-hidden="true"></div>
 
-        <!-- Each screen-tab becomes a .paper-sheet -->
-      <section id="screen-workout" class="screen-tab paper-sheet hidden">
+        <!-- Each screen-tab becomes a .paper-sheet with Hoja de Identidad topology -->
+      <section id="screen-workout" class="screen-tab paper-sheet hidden" aria-labelledby="workout-title">
         <div class="marbled-print" aria-hidden="true"></div>
         <div class="sheet-content">
-          <header class="printed-brand">
-            <i data-lucide="play-circle" class="brand-mark" aria-hidden="true"></i>
-            <h1 class="printed-title">Entrena<span>miento</span></h1>
+          <!-- HERO IDENTITY -->
+          <header class="hero-identity sheet-hero">
+            <div class="expanding-rings" aria-hidden="true">
+              <span class="ring" style="--i:0; --delay:0s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:1; --delay:0.2s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:2; --delay:0.4s; --color:var(--pigment-teal);"></span>
+            </div>
+            <h1 id="workout-title" class="printed-title">Entrena<span>miento</span></h1>
             <p class="printed-promise">Elige tu ejercicio. El video te guía. El agua recuerda tu esfuerzo.</p>
+            <div class="workout-hero-meta">
+              <span id="workout-routine-badge" class="routine-badge hidden">Sin rutina activa</span>
+              <button type="button" class="btn-ghost btn-sm" id="workout-change-routine" aria-label="Cambiar rutina">Cambiar rutina</button>
+            </div>
           </header>
           <div class="deckle-divider" aria-hidden="true"></div>
-          <div class="printed-form">
-            <div class="exercise-printed-list" id="exercise-list">
-              <p class="exercise-loading">Cargando ejercicios...</p>
-            </div>
-            <div id="selected-exercise-panel" class="video-printed-frame hidden">
-              <div class="video-header">
-                <h2 id="selected-exercise-title">Video demostrativo</h2>
-                <div class="video-header-actions">
-                  <span class="live-tag">GUÍA</span>
-                  <button type="button" class="video-close-button" onclick="closeSelectedExercise()" aria-label="Cerrar video de ejercicio">Cerrar</button>
+
+          <!-- PRIMARY (siempre visible): Selección / Ejecución -->
+          <main class="sheet-primary" id="workout-primary">
+            <!-- Estado A: Lista de ejercicios (inicio) -->
+            <section id="exercise-selection-state" class="workout-state" aria-label="Selección de ejercicios">
+              <div class="exercise-printed-list" id="exercise-list" role="list">
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+              </div>
+              <p id="exercise-empty-state" class="empty-state hidden">
+                <i data-lucide="dumbbell" aria-hidden="true"></i>
+                <span>No hay ejercicios disponibles</span>
+              </p>
+            </section>
+
+            <!-- Estado B: Video hero + controles (activo) -->
+            <section id="exercise-active-state" class="workout-state hidden" aria-label="Ejercicio en curso">
+              <div id="selected-exercise-panel" class="video-printed-frame">
+                <div class="video-header">
+                  <h2 id="selected-exercise-title">Video demostrativo</h2>
+                  <div class="video-header-actions">
+                    <span class="live-tag">EN VIVO</span>
+                    <button type="button" class="video-close-button" onclick="closeSelectedExercise()" aria-label="Cerrar video de ejercicio">
+                      <i data-lucide="x" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="video-wrapper">
+                  <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="images/video-entrenamiento.svg" aria-label="Video del ejercicio">
+                  </video>
+                  <div id="exercise-youtube" class="printed-video hidden" title="Video demostrativo del ejercicio" aria-label="Video alternativo en YouTube"></div>
+                </div>
+                <p id="selected-exercise-description" class="video-caption"></p>
+              </div>
+
+              <section id="training-controls" class="training-controls" aria-live="polite" aria-label="Controles de entrenamiento">
+                <div class="training-status">
+                  <span id="training-progress-label">Ejercicio 1 de 1</span>
+                  <strong id="training-timer">00:00</strong>
+                  <span id="training-phase">Listo para comenzar</span>
+                </div>
+                <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso del ejercicio">
+                  <span id="training-progress-bar"></span>
+                </div>
+                <div class="training-rest-config">
+                  <label for="training-rest">Descanso entre ejercicios</label>
+                  <select id="training-rest">
+                    <option value="0">Sin descanso</option>
+                    <option value="15">15 segundos</option>
+                    <option value="30" selected>30 segundos</option>
+                    <option value="60">60 segundos</option>
+                  </select>
+                  <button id="training-rest-skip" type="button" class="btn-droplet btn-secondary hidden" onclick="skipTrainingRest()">Saltar descanso</button>
+                </div>
+                <div class="training-controls-actions">
+                  <button id="training-previous" type="button" class="btn-droplet btn-secondary" onclick="selectPreviousExercise()" aria-label="Ejercicio anterior">
+                    <i data-lucide="chevron-left" aria-hidden="true"></i> Anterior
+                  </button>
+                  <button id="training-pause" type="button" class="btn-droplet" onclick="toggleTrainingTimer()" aria-label="Pausar/Reanudar">
+                    <i data-lucide="pause" aria-hidden="true"></i> Pausar
+                  </button>
+                  <button id="training-next" type="button" class="btn-droplet" onclick="selectNextExercise()" aria-label="Siguiente ejercicio">
+                    Siguiente <i data-lucide="chevron-right" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" class="btn-droplet btn-finish" onclick="finishTraining()" aria-label="Finalizar entrenamiento">
+                    <i data-lucide="flag" aria-hidden="true"></i> Finalizar
+                  </button>
+                </div>
+              </section>
+
+              <!-- Estado C: Descanso (overlay) -->
+              <div id="training-rest-overlay" class="rest-overlay hidden" role="dialog" aria-modal="true" aria-label="Período de descanso">
+                <div class="rest-content">
+                  <div class="rest-timer" aria-live="polite" aria-atomic="true">
+                    <strong id="rest-countdown">00:00</strong>
+                    <span>Descanso</span>
+                  </div>
+                  <p id="rest-next-exercise">Siguiente: <span id="rest-next-name"></span></p>
+                  <button id="training-rest-skip-overlay" type="button" class="btn-droplet" onclick="skipTrainingRest()">Saltar descanso</button>
                 </div>
               </div>
-              <div class="video-wrapper">
-                <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="images/video-entrenamiento.svg">
-                  <!-- Video demo no disponible en desarrollo local -->
-                </video>
-                <div id="exercise-youtube" class="printed-video hidden" title="Video demostrativo del ejercicio"></div>
-              </div>
-              <p id="selected-exercise-description" class="video-caption"></p>
-            </div>
-            <section id="training-controls" class="training-controls hidden" aria-live="polite">
-              <div class="training-status">
-                <span id="training-progress-label">Ejercicio 1 de 1</span>
-                <strong id="training-timer">00:00</strong>
-                <span id="training-phase">Listo para comenzar</span>
-              </div>
-              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso del ejercicio">
-                <span id="training-progress-bar"></span>
-              </div>
-              <div class="training-rest-config">
-                <label for="training-rest">Descanso entre ejercicios</label>
-                <select id="training-rest">
-                  <option value="0">Sin descanso</option>
-                  <option value="15">15 segundos</option>
-                  <option value="30" selected>30 segundos</option>
-                  <option value="60">60 segundos</option>
-                </select>
-                <button id="training-rest-skip" type="button" class="btn-droplet btn-secondary hidden" onclick="skipTrainingRest()">Saltar descanso</button>
-              </div>
-              <div class="training-controls-actions">
-                <button id="training-previous" type="button" class="btn-droplet btn-secondary" onclick="selectPreviousExercise()">Anterior</button>
-                <button id="training-pause" type="button" class="btn-droplet" onclick="toggleTrainingTimer()">Pausar</button>
-                <button id="training-next" type="button" class="btn-droplet" onclick="selectNextExercise()">Siguiente</button>
-                <button type="button" class="btn-droplet btn-finish" onclick="finishTraining()">Finalizar</button>
-              </div>
             </section>
-            <div class="workout-action-printed">
-              <button class="btn-droplet" onclick="completeSelectedExercise()">Completar ejercicio</button>
+          </main>
+
+          <!-- SECONDARY (drawer lateral): Detalles del ejercicio -->
+          <aside id="exercise-details-drawer" class="drawer-panel" aria-label="Detalles del ejercicio" role="complementary">
+            <div class="drawer-header">
+              <h3>Detalles del ejercicio</h3>
+              <button type="button" class="drawer-close" onclick="closeExerciseDetailsDrawer()" aria-label="Cerrar detalles">
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
             </div>
+            <div class="drawer-content">
+              <div id="exercise-detail-muscles" class="detail-section">
+                <h4><i data-lucide="git-branch" aria-hidden="true"></i> Músculos trabajados</h4>
+                <p id="exercise-muscles-list"></p>
+              </div>
+              <div id="exercise-detail-description" class="detail-section">
+                <h4><i data-lucide="file-text" aria-hidden="true"></i> Descripción</h4>
+                <p id="exercise-desc-text"></p>
+              </div>
+              <div id="exercise-detail-tips" class="detail-section">
+                <h4><i data-lucide="lightbulb" aria-hidden="true"></i> Consejos</h4>
+                <ul id="exercise-tips-list"></ul>
+              </div>
+              <div id="exercise-detail-video-alt" class="detail-section">
+                <h4><i data-lucide="youtube" aria-hidden="true"></i> Video alternativo</h4>
+                <div id="exercise-youtube-alt" class="printed-video hidden"></div>
+                <p class="video-alt-hint">Se abre en YouTube si está disponible</p>
+              </div>
+            </div>
+          </aside>
+
+          <div class="workout-action-printed">
+            <button class="btn-droplet" onclick="completeSelectedExercise()" aria-label="Marcar ejercicio como completado">
+              <i data-lucide="check" aria-hidden="true"></i> Completar ejercicio
+            </button>
           </div>
       </section>
 
-      <section id="screen-map" class="screen-tab paper-sheet hidden">
+      <section id="screen-map" class="screen-tab paper-sheet hidden" aria-labelledby="map-title">
         <div class="marbled-print" aria-hidden="true"></div>
         <div class="sheet-content">
-          <header class="printed-brand">
-            <i data-lucide="map-pin" class="brand-mark" aria-hidden="true"></i>
-            <h1 class="printed-title">Mapa y <span>Ubicación</span></h1>
+          <!-- HERO IDENTITY -->
+          <header class="hero-identity sheet-hero">
+            <div class="expanding-rings" aria-hidden="true">
+              <span class="ring" style="--i:0; --delay:0s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:1; --delay:0.2s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:2; --delay:0.4s; --color:var(--pigment-teal);"></span>
+            </div>
+            <h1 id="map-title" class="printed-title">Mapa y <span>Ubicación</span></h1>
             <p class="printed-promise">El agua te guía. Encuentra zonas verdes cerca de ti.</p>
+            <div class="map-hero-actions">
+              <button type="button" id="locate-button-hero" class="btn-droplet" aria-label="Usar mi ubicación actual">
+                <i data-lucide="navigation" aria-hidden="true"></i> Mi ubicación
+              </button>
+            </div>
           </header>
           <div class="deckle-divider" aria-hidden="true"></div>
-          <div class="printed-form">
-            <div class="map-header-printed">
-              <h2>Mapa interactivo</h2>
-            </div>
+
+          <!-- PRIMARY (full viewport): Mapa -->
+          <main class="sheet-primary" id="map-primary">
             <div class="map-printed-frame">
               <div class="map-printed-header">
-                <div class="map-legend">
+                <div class="map-legend" role="group" aria-label="Leyenda del mapa">
                   <span class="map-legend-item">
-                    <span class="map-legend-dot routine"></span> Rutinas
+                    <span class="map-legend-dot routine" aria-hidden="true"></span> Rutinas
                   </span>
                   <span class="map-legend-item">
-                    <span class="map-legend-dot workout"></span> Entrenamientos
+                    <span class="map-legend-dot workout" aria-hidden="true"></span> Entrenamientos
                   </span>
                   <span class="map-legend-item">
-                    <span class="map-legend-dot custom"></span> Personalizados
+                    <span class="map-legend-dot custom" aria-hidden="true"></span> Personalizados
                   </span>
                 </div>
-                <div class="map-controls">
-                  <button id="locate-button" class="map-control-btn" type="button" aria-label="Usar mi ubicación" title="Mi ubicación">
-                    <i data-lucide="navigation"></i>
-                  </button>
+                <div class="map-controls" role="group" aria-label="Controles de zoom">
                   <button id="zoom-in-btn" class="map-control-btn" type="button" aria-label="Acercar" title="Acercar">
                     <i data-lucide="zoom-in"></i>
                   </button>
@@ -387,251 +471,627 @@
                   </button>
                 </div>
               </div>
-              <div id="location-status" class="location-status" aria-live="polite"></div>
-              <div id="workout-map"></div>
+              <div id="location-status" class="location-status" aria-live="polite" aria-atomic="true"></div>
+              <div id="workout-map" role="application" aria-label="Mapa interactivo de zonas de entrenamiento"></div>
               <div id="map-empty-state" class="map-empty-printed hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 <h3>Cargando mapa...</h3>
                 <p>El mapa se está inicializando. Por favor espera.</p>
               </div>
+              <div id="map-error-state" class="map-empty-printed hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <h3>No se pudo cargar el mapa</h3>
+                <p>Verifica tu conexión o permisos de ubicación.</p>
+                <button type="button" class="btn-droplet" onclick="retryMapLoad()">Reintentar</button>
+              </div>
             </div>
-            <div class="nearby-places-printed">
-              <h3>Zonas verdes cercanas</h3>
-              <div id="nearby-places" class="places-printed-grid" aria-live="polite"></div>
+          </main>
+
+          <!-- SECONDARY (panel inferior slide-up): Zonas verdes cercanas -->
+          <aside id="nearby-places-panel" class="places-slideup-panel" aria-label="Zonas verdes cercanas" role="complementary">
+            <div class="slideup-handle" tabindex="0" aria-label="Expandir panel de zonas verdes">
+              <i data-lucide="chevron-up" aria-hidden="true"></i>
             </div>
-          </div>
-        </div>
+            <div class="slideup-content">
+              <div class="slideup-header">
+                <h3>Zonas verdes cercanas</h3>
+                <div class="places-filter" role="group" aria-label="Filtrar por tipo">
+                  <button type="button" class="filter-chip active" data-filter="all" aria-pressed="true">Todos</button>
+                  <button type="button" class="filter-chip" data-filter="park" aria-pressed="false">Parques</button>
+                  <button type="button" class="filter-chip" data-filter="track" aria-pressed="false">Pistas</button>
+                  <button type="button" class="filter-chip" data-filter="gym" aria-pressed="false">Gimnasios</button>
+                </div>
+              </div>
+              <div id="nearby-places" class="places-printed-grid" aria-live="polite" aria-label="Lista de lugares cercanos">
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                <div class="skeleton skeleton-card" aria-hidden="true"></div>
+              </div>
+              <p id="places-empty-state" class="empty-state hidden">
+                <i data-lucide="map-pin-off" aria-hidden="true"></i>
+                <span>Sin zonas verdes en un radio de 5km</span>
+              </p>
+            </div>
+          </aside>
       </section>
 
-      <section id="screen-progress" class="screen-tab paper-sheet hidden">
+      <section id="screen-progress" class="screen-tab paper-sheet hidden" aria-labelledby="progress-title">
         <div class="marbled-print" aria-hidden="true"></div>
         <div class="sheet-content">
-          <header class="printed-brand">
-            <i data-lucide="bar-chart-2" class="brand-mark" aria-hidden="true"></i>
-            <h1 class="printed-title">Mi <span>Progreso</span></h1>
-            <p class="printed-promise">Visualiza tu evolución. Cada gota cuenta en tu camino.</p>
+          <!-- HERO IDENTITY (compacto) -->
+          <header class="hero-identity sheet-hero compact" aria-label="Identidad del usuario">
+            <div class="hero-avatar-wrapper">
+              <div id="progress-avatar-3d-dashboard" class="hero-avatar" aria-hidden="true"></div>
+            </div>
+            <div class="hero-identity-info">
+              <h1 id="progress-title" class="printed-title">Mi <span>Progreso</span></h1>
+              <p class="printed-promise">Visualiza tu evolución. Cada gota cuenta en tu camino.</p>
+              <div class="hero-stats-inline">
+                <span id="hero-level" class="stat-chip">Nivel 1</span>
+                <span id="hero-streak" class="stat-chip"><i data-lucide="flame" aria-hidden="true"></i> <span id="streak-count">0</span> días</span>
+              </div>
+            </div>
           </header>
           <div class="deckle-divider" aria-hidden="true"></div>
-          <div class="printed-form">
-            <!-- Summary metrics -->
-            <div class="progress-metrics-grid">
-              <article class="metric-printed-card metric-minutes">
+
+          <!-- PRIMARY (siempre visible): Resumen Semanal -->
+          <main class="sheet-primary" id="progress-primary">
+            <!-- 4 Métricas clave en cards compactas -->
+            <div class="metric-cards-grid" role="list" aria-label="Métricas principales">
+              <article class="metric-card-compact" role="listitem">
                 <i data-lucide="clock" class="metric-icon" aria-hidden="true"></i>
                 <div class="metric-content">
-                  <span class="metric-label">Minutos Totales</span>
-                  <span id="progress-total-minutes" class="metric-value">0 min</span>
+                  <span class="metric-label">Minutos esta semana</span>
+                  <span id="progress-weekly-minutes" class="metric-value">0 min</span>
                 </div>
               </article>
-              <article class="metric-printed-card metric-level">
-                <i data-lucide="trending-up" class="metric-icon" aria-hidden="true"></i>
-                <div class="metric-content">
-                  <span class="metric-label">Nivel Actual</span>
-                  <span id="progress-progress-level" class="metric-value">Nivel 1</span>
-                </div>
-              </article>
-              <article class="metric-printed-card metric-medals">
-                <i data-lucide="medal" class="metric-icon" aria-hidden="true"></i>
-                <div class="metric-content">
-                  <span class="metric-label">Medallas Obtenidas</span>
-                  <span id="progress-medal-count" class="metric-value">0 medallas</span>
-                </div>
-              </article>
-              <article class="metric-printed-card metric-points">
-                <i data-lucide="star" class="metric-icon" aria-hidden="true"></i>
-                <div class="metric-content">
-                  <span class="metric-label">Puntos acumulados</span>
-                  <span id="progress-total-points" class="metric-value">0 pts</span>
-                </div>
-              </article>
-              <article class="metric-printed-card metric-exercises">
+              <article class="metric-card-compact" role="listitem">
                 <i data-lucide="check-circle" class="metric-icon" aria-hidden="true"></i>
                 <div class="metric-content">
                   <span class="metric-label">Ejercicios completados</span>
-                  <span id="progress-completed-exercises" class="metric-value">0</span>
+                  <span id="progress-weekly-exercises" class="metric-value">0</span>
+                </div>
+              </article>
+              <article class="metric-card-compact" role="listitem">
+                <i data-lucide="star" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Puntos ganados</span>
+                  <span id="progress-weekly-points" class="metric-value">0 pts</span>
+                </div>
+              </article>
+              <article class="metric-card-compact" role="listitem">
+                <i data-lucide="target" class="metric-icon" aria-hidden="true"></i>
+                <div class="metric-content">
+                  <span class="metric-label">Meta semanal</span>
+                  <span id="progress-goal-percent-main" class="metric-value">0%</span>
                 </div>
               </article>
             </div>
-            <section class="progress-goals-printed">
-              <div class="progress-goals-header">
-                <div>
-                  <span class="metric-label">Objetivo personal</span>
-                  <h2 id="progress-goal-title">Meta semanal</h2>
-                </div>
-                <form id="progress-goal-form" class="progress-goal-form">
-                  <select id="progress-goal-type" aria-label="Tipo de meta">
-                    <option value="minutes">Minutos entrenados</option>
-                    <option value="exercises">Ejercicios completados</option>
-                  </select>
-                  <input id="progress-goal-target" type="number" min="1" max="10000" value="150" aria-label="Valor de la meta">
-                  <button type="submit" class="btn-droplet">Guardar meta</button>
-                </form>
-              </div>
-              <div class="progress-goal-summary">
-                <span id="progress-goal-current">0 de 150</span>
-                <strong id="progress-goal-percent">0%</strong>
-              </div>
-              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso de la meta">
-                <span id="progress-goal-bar"></span>
-              </div>
-            </section>
-            <!-- Chart area -->
+
+            <!-- Gráfico semanal -->
             <div class="chart-printed-frame">
               <div class="chart-header">
                 <h2>Progreso Semanal</h2>
                 <span class="chart-period">Últimos 7 días</span>
               </div>
               <div class="chart-wrapper">
-                <canvas id="progress-weeklyChart"></canvas>
+                <canvas id="progress-weeklyChart" aria-label="Gráfico de barras de minutos por día de la semana"></canvas>
               </div>
             </div>
-            <!-- Avatar + History/Medals in two-column layout -->
-            <div class="dashboard-lower-grid">
-              <div class="avatar-printed-frame">
-                <h3>Mi Avatar</h3>
-                <div id="progress-avatar-3d-dashboard"></div>
-              </div>
-              <div class="history-medals-printed">
-                <div class="printed-section">
-                  <h3>Historial</h3>
-                  <div id="progress-workout-history" class="printed-list"></div>
+
+            <!-- Meta activa: barra de progreso + % + [Editar meta] -->
+            <section class="progress-goals-printed" aria-labelledby="goal-heading">
+              <div class="progress-goals-header">
+                <div>
+                  <span class="metric-label">Objetivo personal</span>
+                  <h2 id="goal-heading">Meta semanal</h2>
                 </div>
-                <div class="printed-section">
-                  <h3>Medallas</h3>
-                  <div id="progress-medals-list" class="printed-list"></div>
+                <button type="button" class="btn-ghost btn-sm" id="edit-goal-trigger" aria-label="Editar meta semanal">Editar meta</button>
+              </div>
+              <div class="progress-goal-summary">
+                <span id="progress-goal-current">0 de 150</span>
+                <strong id="progress-goal-percent">0%</strong>
+              </div>
+              <div class="training-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso de la meta semanal">
+                <span id="progress-goal-bar"></span>
+              </div>
+              <!-- Formulario inline para editar meta (hidden by default) -->
+              <form id="progress-goal-form" class="progress-goal-form hidden" aria-label="Formulario de edición de meta">
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="progress-goal-type" class="bowl-label">Tipo de meta</label>
+                    <select id="progress-goal-type" aria-label="Tipo de meta">
+                      <option value="minutes">Minutos entrenados</option>
+                      <option value="exercises">Ejercicios completados</option>
+                    </select>
+                  </div>
+                  <div class="bowl">
+                    <label for="progress-goal-target" class="bowl-label">Valor objetivo</label>
+                    <input id="progress-goal-target" type="number" min="1" max="10000" value="150" aria-label="Valor de la meta">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-droplet">Guardar</button>
+                  <button type="button" class="btn-ghost" id="cancel-goal-edit">Cancelar</button>
+                </div>
+              </form>
+            </section>
+          </main>
+
+          <!-- SECONDARY (accordion): Detalles - Historial y Medallas -->
+          <aside class="sheet-secondary" id="progress-secondary" aria-label="Detalles de progreso">
+            <details class="accordion-item" open>
+              <summary class="accordion-header" aria-expanded="true">
+                <h3><i data-lucide="clock" aria-hidden="true"></i> Historial de entrenamientos</h3>
+                <i data-lucide="chevron-down" class="accordion-icon" aria-hidden="true"></i>
+              </summary>
+              <div class="accordion-content">
+                <div id="progress-workout-history" class="printed-list" aria-label="Lista de entrenamientos recientes">
+                  <div class="skeleton skeleton-line" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-line" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-line" aria-hidden="true"></div>
+                </div>
+                <p id="history-empty-state" class="empty-state hidden">
+                  <i data-lucide="calendar-x" aria-hidden="true"></i>
+                  <span>Sin entrenamientos en los últimos 7 días</span>
+                </p>
+              </div>
+            </details>
+
+            <details class="accordion-item">
+              <summary class="accordion-header" aria-expanded="false">
+                <h3><i data-lucide="medal" aria-hidden="true"></i> Medallas (<span id="medal-count-badge">0</span>/18)</h3>
+                <i data-lucide="chevron-down" class="accordion-icon" aria-hidden="true"></i>
+              </summary>
+              <div class="accordion-content">
+                <div id="progress-medals-list" class="medals-grid" aria-label="Galería de medallas">
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                  <div class="skeleton skeleton-card" aria-hidden="true"></div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </details>
+
+            <details class="accordion-item">
+              <summary class="accordion-header" aria-expanded="false">
+                <h3><i data-lucide="trending-up" aria-hidden="true"></i> Estadísticas totales</h3>
+                <i data-lucide="chevron-down" class="accordion-icon" aria-hidden="true"></i>
+              </summary>
+              <div class="accordion-content">
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <span class="stat-label">Minutos totales</span>
+                    <strong id="progress-total-minutes" class="stat-value">0 min</strong>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Ejercicios totales</span>
+                    <strong id="progress-completed-exercises" class="stat-value">0</strong>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Puntos acumulados</span>
+                    <strong id="progress-total-points" class="stat-value">0 pts</strong>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Nivel actual</span>
+                    <strong id="progress-progress-level" class="stat-value">Nivel 1</strong>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </aside>
       </section>
 
-      <section id="screen-routines" class="screen-tab paper-sheet hidden">
+      <section id="screen-routines" class="screen-tab paper-sheet hidden" aria-labelledby="routines-title">
         <div class="marbled-print" aria-hidden="true"></div>
         <div class="sheet-content">
-          <header class="printed-brand">
-            <i data-lucide="list-todo" class="brand-mark" aria-hidden="true"></i>
-            <h1 class="printed-title">Mis <span>Rutinas</span></h1>
+          <!-- HERO IDENTITY -->
+          <header class="hero-identity sheet-hero">
+            <div class="expanding-rings" aria-hidden="true">
+              <span class="ring" style="--i:0; --delay:0s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:1; --delay:0.2s; --color:var(--pigment-teal);"></span>
+              <span class="ring" style="--i:2; --delay:0.4s; --color:var(--pigment-teal);"></span>
+            </div>
+            <h1 id="routines-title" class="printed-title">Mis <span>Rutinas</span></h1>
             <p class="printed-promise">Crea, edita, duplica. Cada rutina es una hoja en tu baño.</p>
-          </header>
-          <div class="deckle-divider" aria-hidden="true"></div>
-          <div class="printed-form">
-            <div class="routines-header-printed">
-              <h2>Rutinas guardadas</h2>
-              <button class="btn-droplet" onclick="openRoutineModal()">
-                <i data-lucide="plus"></i> Nueva Rutina
+            <div class="routines-hero-actions">
+              <button type="button" class="btn-droplet" onclick="openRoutineModal()" aria-label="Crear nueva rutina">
+                <i data-lucide="plus" aria-hidden="true"></i> Nueva rutina
               </button>
             </div>
-            <div id="routines-list" class="routines-printed-grid">
-              <!-- Empty state will be rendered by routines.js -->
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+
+          <!-- PRIMARY: Lista de rutinas -->
+          <main class="sheet-primary" id="routines-primary">
+            <div id="routines-list" class="routines-printed-grid" role="list" aria-label="Tus rutinas guardadas">
+              <!-- Empty state rendered by routines.js -->
+              <div class="skeleton skeleton-card" aria-hidden="true"></div>
+              <div class="skeleton skeleton-card" aria-hidden="true"></div>
+              <div class="skeleton skeleton-card" aria-hidden="true"></div>
+            </div>
+            <div id="routines-empty-state" class="empty-state-center hidden" aria-live="polite">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <h3>No tienes rutinas aún</h3>
+              <p>Crea tu primera rutina para empezar a entrenar con estructura.</p>
+              <button type="button" class="btn-droplet" onclick="openRoutineModal()">
+                <i data-lucide="plus" aria-hidden="true"></i> Crear mi primera rutina
+              </button>
+            </div>
+          </main>
+
+          <!-- SECONDARY (modal wizard): Crear/Editar Rutina -->
+          <div id="routine-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="routine-modal-title">
+            <div class="modal-sheet routine-wizard">
+              <header class="modal-header">
+                <h2 id="routine-modal-title">Nueva Rutina</h2>
+                <button type="button" class="modal-close" onclick="closeRoutineModal()" aria-label="Cerrar">
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              </header>
+              <div class="wizard-progress" role="navigation" aria-label="Pasos del asistente">
+                <ol class="wizard-steps">
+                  <li class="wizard-step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Datos</span>
+                  </li>
+                  <li class="wizard-step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Ejercicios</span>
+                  </li>
+                  <li class="wizard-step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Revisar</span>
+                  </li>
+                </ol>
+              </div>
+              <form id="routine-wizard-form" novalidate>
+                <!-- Paso 1: Datos básicos -->
+                <section class="wizard-panel active" data-panel="1" aria-labelledby="step1-heading">
+                  <h3 id="step1-heading" class="visually-hidden">Paso 1: Datos de la rutina</h3>
+                  <input type="hidden" id="routine-edit-id">
+                  <div class="form-row">
+                    <div class="bowl">
+                      <label for="routine-name" class="bowl-label">Nombre de la rutina</label>
+                      <input id="routine-name" type="text" maxlength="80" required autocomplete="off" placeholder="Ej: Fuerza superior">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="bowl">
+                      <label for="routine-description" class="bowl-label">Descripción (opcional)</label>
+                      <textarea id="routine-description" maxlength="300" rows="3" placeholder="Objetivo, notas..."></textarea>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="bowl">
+                      <label for="routine-goal" class="bowl-label">Objetivo</label>
+                      <select id="routine-goal" required>
+                        <option value="strength">Fuerza</option>
+                        <option value="endurance">Resistencia</option>
+                        <option value="mobility">Movilidad</option>
+                        <option value="hiit">HIIT</option>
+                        <option value="custom">Personalizado</option>
+                      </select>
+                    </div>
+                    <div class="bowl">
+                      <label for="routine-level" class="bowl-label">Nivel</label>
+                      <select id="routine-level" required>
+                        <option value="beginner">Principiante</option>
+                        <option value="intermediate">Intermedio</option>
+                        <option value="advanced">Avanzado</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="bowl">
+                      <label for="routine-estimated-time" class="bowl-label">Tiempo estimado (min)</label>
+                      <input id="routine-estimated-time" type="number" min="5" max="180" value="30" required>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Paso 2: Ejercicios -->
+                <section class="wizard-panel" data-panel="2" aria-labelledby="step2-heading">
+                  <h3 id="step2-heading" class="visually-hidden">Paso 2: Seleccionar ejercicios</h3>
+                  <div class="exercise-selector">
+                    <div class="selector-search">
+                      <label class="visually-hidden" for="exercise-search">Buscar ejercicios</label>
+                      <input type="text" id="exercise-search" placeholder="Buscar ejercicio..." autocomplete="off">
+                      <i data-lucide="search" aria-hidden="true"></i>
+                    </div>
+                    <div class="selector-filters" role="group" aria-label="Filtrar por categoría">
+                      <button type="button" class="filter-chip active" data-category="all" aria-pressed="true">Todos</button>
+                      <button type="button" class="filter-chip" data-category="strength" aria-pressed="false">Fuerza</button>
+                      <button type="button" class="filter-chip" data-category="cardio" aria-pressed="false">Cardio</button>
+                      <button type="button" class="filter-chip" data-category="mobility" aria-pressed="false">Movilidad</button>
+                      <button type="button" class="filter-chip" data-category="core" aria-pressed="false">Core</button>
+                    </div>
+                    <div id="exercise-selector-list" class="exercise-selector-list" role="listbox" aria-label="Ejercicios disponibles">
+                      <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                      <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                      <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                    </div>
+                  </div>
+                  <div class="selected-exercises" aria-label="Ejercicios añadidos a la rutina">
+                    <h4>Ejercicios en la rutina (<span id="selected-count">0</span>/12)</h4>
+                    <ul id="selected-exercises-list" class="selected-exercises-list" role="list" aria-label="Lista ordenada de ejercicios">
+                      <li class="empty-selected">Arrastra ejercicios aquí o haz clic en "+" para añadirlos</li>
+                    </ul>
+                  </div>
+                </section>
+
+                <!-- Paso 3: Revisar -->
+                <section class="wizard-panel" data-panel="3" aria-labelledby="step3-heading">
+                  <h3 id="step3-heading" class="visually-hidden">Paso 3: Revisar y guardar</h3>
+                  <div class="routine-summary">
+                    <dl class="summary-grid">
+                      <dt>Nombre</dt>
+                      <dd id="summary-name">—</dd>
+                      <dt>Objetivo</dt>
+                      <dd id="summary-goal">—</dd>
+                      <dt>Nivel</dt>
+                      <dd id="summary-level">—</dd>
+                      <dt>Tiempo est.</dt>
+                      <dd id="summary-time">— min</dd>
+                      <dt>Ejercicios</dt>
+                      <dd id="summary-exercise-count">0</dd>
+                    </dl>
+                    <div class="summary-exercises">
+                      <h4>Orden de ejercicios</h4>
+                      <ol id="summary-exercises-list"></ol>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="wizard-navigation">
+                  <button type="button" class="btn-ghost" id="wizard-prev" onclick="routineWizardPrev()" aria-label="Paso anterior">Anterior</button>
+                  <div class="wizard-actions">
+                    <button type="button" class="btn-ghost" id="wizard-next" onclick="routineWizardNext()" aria-label="Siguiente paso">Siguiente</button>
+                    <button type="submit" class="btn-droplet hidden" id="wizard-submit" aria-label="Guardar rutina">
+                      <i data-lucide="save" aria-hidden="true"></i> Guardar rutina
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
+
+          <!-- DANGER ZONE: Acciones destructivas (en menú de cada tarjeta, no aquí global) -->
+          <!-- Se maneja vía dropdown en cada routine-card -->
       </section>
 
-            <!-- Perfil de Usuario -->
-            <section id="screen-profile" class="screen-tab paper-sheet hidden">
-              <div class="marbled-print" aria-hidden="true"></div>
-              <div class="sheet-content">
-                <header class="printed-brand">
-                  <i data-lucide="user" class="brand-mark" aria-hidden="true"></i>
-                  <h1 class="printed-title">Mi <span>Perfil</span></h1>
-                  <p class="printed-promise">Personaliza tu experiencia y preferencias.</p>
-                </header>
-                <div class="deckle-divider" aria-hidden="true"></div>
-                <div class="printed-form">
-                  <form id="profile-form" class="profile-form" novalidate>
-                    <div class="profile-section">
-                      <h3><i data-lucide="user" aria-hidden="true"></i> Información Personal</h3>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="profile-fullname" class="bowl-label">Nombre completo</label>
-                          <input id="profile-fullname" type="text" maxlength="120" required autocomplete="name">
-                        </div>
-                      </div>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="profile-email" class="bowl-label">Correo electrónico</label>
-                          <input id="profile-email" type="email" maxlength="254" required autocomplete="email">
-                        </div>
-                      </div>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="profile-avatar-color" class="bowl-label">Color de avatar</label>
-                          <input id="profile-avatar-color" type="color" value="#4adecd">
-                        </div>
-                        <div class="bowl">
-                          <label for="profile-avatar-initials" class="bowl-label">Iniciales</label>
-                          <input id="profile-avatar-initials" type="text" maxlength="3" placeholder="JD">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="profile-section">
-                      <h3><i data-lucide="lock" aria-hidden="true"></i> Cambiar Contraseña</h3>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="profile-current-password" class="bowl-label">Contraseña actual</label>
-                          <input id="profile-current-password" type="password" autocomplete="current-password">
-                        </div>
-                      </div>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="profile-new-password" class="bowl-label">Nueva contraseña</label>
-                          <input id="profile-new-password" type="password" minlength="8" autocomplete="new-password">
-                        </div>
-                        <div class="bowl">
-                          <label for="profile-confirm-password" class="bowl-label">Confirmar nueva contraseña</label>
-                          <input id="profile-confirm-password" type="password" autocomplete="new-password">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="profile-section">
-                      <h3><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Preferencias de Accesibilidad</h3>
-                      <p class="profile-hint">Estas preferencias se sincronizan con tu cuenta y se aplican en todos tus dispositivos.</p>
-                      <div class="preferences-grid">
-                        <label class="preference-item">
-                          <input type="checkbox" id="pref-high-contrast" data-pref="highContrast">
-                          <span>Alto contraste</span>
-                        </label>
-                        <label class="preference-item">
-                          <input type="checkbox" id="pref-reduced-motion" data-pref="reducedMotion">
-                          <span>Reducir animaciones</span>
-                        </label>
-                        <label class="preference-item">
-                          <input type="checkbox" id="pref-grayscale" data-pref="grayscale">
-                          <span>Escala de grises</span>
-                        </label>
-                        <label class="preference-item">
-                          <input type="checkbox" id="pref-dark-mode" data-pref="darkMode">
-                          <span>Modo oscuro</span>
-                        </label>
-                      </div>
-                      <div class="form-row">
-                        <div class="bowl">
-                          <label for="pref-font-size" class="bowl-label">Tamaño de texto</label>
-                          <select id="pref-font-size" data-pref="fontSize">
-                            <option value="small">Pequeño</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="large">Grande</option>
-                            <option value="xlarge">Muy grande</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="profile-actions">
-                      <button type="submit" class="btn-droplet" id="profile-save-btn">
-                        <i data-lucide="save" aria-hidden="true"></i> Guardar Cambios
-                      </button>
-                      <button type="button" class="btn-ghost" onclick="confirmDeleteAccount()">
-                        <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar Cuenta
-                      </button>
-                    </div>
-                  </form>
+      <section id="screen-profile" class="screen-tab paper-sheet hidden" aria-labelledby="profile-title">
+        <div class="marbled-print" aria-hidden="true"></div>
+        <div class="sheet-content">
+          <!-- HERO IDENTITY (GRANDE - ancla principal) -->
+          <header class="hero-identity sheet-hero large" aria-label="Identidad del perfil">
+            <div class="hero-avatar-wrapper">
+              <div id="profile-avatar-editor" class="hero-avatar-editor" role="button" tabindex="0" aria-label="Editar avatar" aria-expanded="false">
+                <div id="profile-avatar-3d" class="hero-avatar" aria-hidden="true"></div>
+                <div class="avatar-edit-overlay">
+                  <i data-lucide="camera" aria-hidden="true"></i>
+                  <span>Cambiar</span>
                 </div>
               </div>
-            </section>
+            </div>
+            <div class="hero-identity-info">
+              <h1 id="profile-title" class="printed-title">Mi <span>Perfil</span></h1>
+              <p class="printed-promise">Personaliza tu experiencia y preferencias.</p>
+              <div class="hero-profile-meta">
+                <span id="profile-display-name" class="display-name">Cargando...</span>
+                <span id="profile-display-email" class="display-email">cargando@ejemplo.com</span>
+              </div>
+              <button type="button" class="btn-ghost btn-sm" id="edit-profile-trigger" aria-label="Editar información personal">
+                <i data-lucide="edit-2" aria-hidden="true"></i> Editar perfil
+              </button>
+            </div>
+          </header>
+          <div class="deckle-divider" aria-hidden="true"></div>
+
+          <!-- PRIMARY (accordion abierto por defecto): Accesibilidad -->
+          <main class="sheet-primary" id="profile-primary">
+            <details class="accordion-item" open>
+              <summary class="accordion-header" aria-expanded="true">
+                <h3><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Accesibilidad</h3>
+                <i data-lucide="chevron-down" class="accordion-icon" aria-hidden="true"></i>
+              </summary>
+              <div class="accordion-content">
+                <form id="accessibility-form" class="accessibility-form">
+                  <p class="profile-hint">Estos ajustes se sincronizan con tu cuenta y se aplican en todos tus dispositivos.</p>
+                  <div class="toggle-group">
+                    <label class="toggle-switch" for="pref-dark-mode">
+                      <input type="checkbox" id="pref-dark-mode" data-pref="darkMode" aria-label="Activar modo oscuro">
+                      <span class="toggle-label">
+                        <strong>Modo oscuro</strong>
+                        <span>Interfaz con fondo oscuro</span>
+                      </span>
+                    </label>
+                    <label class="toggle-switch" for="pref-high-contrast">
+                      <input type="checkbox" id="pref-high-contrast" data-pref="highContrast" aria-label="Activar alto contraste">
+                      <span class="toggle-label">
+                        <strong>Alto contraste</strong>
+                        <span>Colores de máximo contraste</span>
+                      </span>
+                    </label>
+                    <label class="toggle-switch" for="pref-reduced-motion">
+                      <input type="checkbox" id="pref-reduced-motion" data-pref="reducedMotion" aria-label="Reducir animaciones">
+                      <span class="toggle-label">
+                        <strong>Reducir animaciones</strong>
+                        <span>Desactiva transiciones y efectos</span>
+                      </span>
+                    </label>
+                    <label class="toggle-switch" for="pref-grayscale">
+                      <input type="checkbox" id="pref-grayscale" data-pref="grayscale" aria-label="Activar escala de grises">
+                      <span class="toggle-label">
+                        <strong>Escala de grises</strong>
+                        <span>Elimina color de la interfaz</span>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="form-row">
+                    <div class="bowl">
+                      <label for="pref-font-size" class="bowl-label">Tamaño de texto</label>
+                      <select id="pref-font-size" data-pref="fontSize">
+                        <option value="small">Pequeño</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Grande</option>
+                        <option value="xlarge">Muy grande</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn-droplet" id="accessibility-save-btn">
+                      <i data-lucide="save" aria-hidden="true"></i> Guardar preferencias
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </details>
+          </main>
+
+          <!-- SECONDARY (accordion cerrado): Seguridad -->
+          <aside class="sheet-secondary" id="profile-secondary" aria-label="Seguridad de la cuenta">
+            <details class="accordion-item">
+              <summary class="accordion-header" aria-expanded="false">
+                <h3><i data-lucide="shield" aria-hidden="true"></i> Seguridad</h3>
+                <i data-lucide="chevron-down" class="accordion-icon" aria-hidden="true"></i>
+              </summary>
+              <div class="accordion-content">
+                <button type="button" class="btn-droplet btn-block" onclick="openChangePasswordModal()" aria-label="Cambiar contraseña">
+                  <i data-lucide="lock" aria-hidden="true"></i> Cambiar contraseña
+                </button>
+                <p class="security-hint">Tu contraseña actual es necesaria para confirmar el cambio.</p>
+              </div>
+            </details>
+          </aside>
+
+          <!-- DANGER ZONE (aislada visualmente) -->
+          <section class="danger-zone" aria-labelledby="danger-heading">
+            <h3 id="danger-heading" class="danger-title">Zona peligrosa</h3>
+            <p class="danger-description">Esta acción es irreversible. Perderás todos tus datos: rutinas, progreso, medallas e historial.</p>
+            <button type="button" class="btn-ghost btn-danger" onclick="confirmDeleteAccount()" aria-label="Eliminar mi cuenta permanentemente">
+              <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar mi cuenta
+            </button>
+          </section>
+
+          <!-- MODAL: Editar perfil (inline en hero) -->
+          <div id="edit-profile-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="edit-profile-modal-title">
+            <div class="modal-sheet">
+              <header class="modal-header">
+                <h2 id="edit-profile-modal-title">Editar información personal</h2>
+                <button type="button" class="modal-close" onclick="closeEditProfileModal()" aria-label="Cerrar">
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              </header>
+              <form id="edit-profile-form" novalidate>
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="edit-fullname" class="bowl-label">Nombre completo</label>
+                    <input id="edit-fullname" type="text" maxlength="120" required autocomplete="name">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="edit-email" class="bowl-label">Correo electrónico</label>
+                    <input id="edit-email" type="email" maxlength="254" required autocomplete="email">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="edit-avatar-color" class="bowl-label">Color de avatar</label>
+                    <input id="edit-avatar-color" type="color" value="#4adecd">
+                  </div>
+                  <div class="bowl">
+                    <label for="edit-avatar-initials" class="bowl-label">Iniciales</label>
+                    <input id="edit-avatar-initials" type="text" maxlength="3" placeholder="JD">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-ghost" onclick="closeEditProfileModal()">Cancelar</button>
+                  <button type="submit" class="btn-droplet">
+                    <i data-lucide="save" aria-hidden="true"></i> Guardar cambios
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- MODAL: Cambiar contraseña -->
+          <div id="change-password-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="change-password-modal-title">
+            <div class="modal-sheet">
+              <header class="modal-header">
+                <h2 id="change-password-modal-title">Cambiar contraseña</h2>
+                <button type="button" class="modal-close" onclick="closeChangePasswordModal()" aria-label="Cerrar">
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              </header>
+              <form id="change-password-form" novalidate>
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="cp-current" class="bowl-label">Contraseña actual</label>
+                    <input id="cp-current" type="password" autocomplete="current-password" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="bowl">
+                    <label for="cp-new" class="bowl-label">Nueva contraseña</label>
+                    <input id="cp-new" type="password" minlength="8" autocomplete="new-password" required aria-describedby="cp-hint">
+                    <span id="cp-hint" class="form-hint">Mínimo 8 caracteres</span>
+                  </div>
+                  <div class="bowl">
+                    <label for="cp-confirm" class="bowl-label">Confirmar nueva contraseña</label>
+                    <input id="cp-confirm" type="password" autocomplete="new-password" required>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-ghost" onclick="closeChangePasswordModal()">Cancelar</button>
+                  <button type="submit" class="btn-droplet">
+                    <i data-lucide="lock" aria-hidden="true"></i> Actualizar contraseña
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- MODAL: Confirmar eliminación de cuenta -->
+          <div id="delete-account-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+            <div class="modal-sheet modal-danger">
+              <header class="modal-header">
+                <h2 id="delete-modal-title">Eliminar cuenta</h2>
+                <button type="button" class="modal-close" onclick="closeDeleteAccountModal()" aria-label="Cerrar">
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              </header>
+              <div class="modal-body">
+                <div class="danger-icon" aria-hidden="true">
+                  <i data-lucide="alert-triangle"></i>
+                </div>
+                <h3>Esta acción no se puede deshacer</h3>
+                <p>Se eliminarán permanentemente:</p>
+                <ul>
+                  <li>Todas tus rutinas creadas</li>
+                  <li>Tu historial de entrenamientos</li>
+                  <li>Medallas y logros obtenidos</li>
+                  <li>Tu progreso y nivel</li>
+                  <li>Preferencias de accesibilidad</li>
+                </ul>
+                <div class="confirmation-input">
+                  <label for="delete-confirm-text">Escribe <strong>ELIMINAR</strong> para confirmar:</label>
+                  <input type="text" id="delete-confirm-text" autocomplete="off" placeholder="ELIMINAR">
+                </div>
+                <p id="delete-error" class="form-error hidden"></p>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-ghost" onclick="closeDeleteAccountModal()">Cancelar</button>
+                <button type="button" class="btn-droplet btn-danger" id="delete-account-confirm" disabled onclick="executeDeleteAccount()">
+                  <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar mi cuenta para siempre
+                </button>
+              </div>
+            </div>
+          </div>
+      </section>
     </div> <!-- /.bath -->
     </main>
   </div>
@@ -1091,7 +1551,7 @@
   <!-- JavaScript modules -->
   <script src="js/api-config.js?v=3"></script>
   <script src="js/notifications.js?v=2"></script>
-  <script src="js/navigation.js?v=3"></script>
+  <script src="js/navigation.js?v=4"></script>
   <script src="js/auth.js?v=2"></script>
   <script src="js/chatbot.js?v=6"></script>
   <script src="js/accessibility.js?v=3"></script>
@@ -1102,7 +1562,14 @@
   <script src="js/exercises.js?v=12"></script>
   <script src="js/progress.js?v=4"></script>
   <script src="js/social-comments.js?v=2"></script>
-    <script src="js/profile.js?v=1"></script>
+  <script src="js/profile.js?v=2"></script>
+  <!-- Nuevos módulos Hoja de Identidad -->
+  <script src="js/accordionController.js?v=1"></script>
+  <script src="js/heroAvatarEditor.js?v=1"></script>
+  <script src="js/workoutStateMachine.js?v=1"></script>
+  <script src="js/routineWizard.js?v=1"></script>
+  <script src="js/mapPlacesPanel.js?v=1"></script>
+  <script src="js/progressCharts.js?v=1"></script>
   <script>
     // Legal modals functions
     function openLegalModal(modalId) {

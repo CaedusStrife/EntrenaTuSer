@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critique Frontend-Design: Entrena Tu Ser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --vital-vital: #ff6b35;
+            --vital-balance: #2dd4bf;
+            --paper: #fcfaf7;
+            --ink: #4a4a4a;
+            --muted: #7d746d;
+            --fiber: #e8e3db;
+            --bg-dark: #0a0a0f;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        h1, h2, h3 { font-family: 'Syne', sans-serif; }
+        a { text-decoration: none; color: inherit; }
+        .max-width { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        header { background: var(--bg-dark); padding: 20px 0; position: fixed; width: 100%; top: 0; z-index: 100; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .logo { font-family: 'Syne', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--vital-vital); letter-spacing: -0.02em; }
+        .nav a { color: var(--muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: color 300ms ease; }
+        .nav a:hover { color: var(--vital-vital); }
+        
+        /* Sections */
+        section { padding: 100px 0 40px; }
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-tag { display: inline-block; padding: 6px 12px; background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.3); border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--vital-vital); margin-bottom: 20px; }
+        .section-title { font-size: 2rem; font-weight: 800; color: var(--bg-dark); line-height: 1.2; letter-spacing: -0.02em; }
+        
+        /* Cards */
+        .card { background: white; border-radius: 16px; padding: 32px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 300ms ease; }
+        .card:hover { transform: translateY(-4px); }
+        .card h3 { font-size: 1.25rem; color: var(--ink); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--fiber); }
+        
+        /* Lists */
+        .critique-list { margin: 16px 0; }
+        .critique-list li { margin: 8px 0; font-size: 0.9rem; color: var(--ink); padding-left: 20px; position: relative; }
+        .critique-list li::before { content: '→'; position: absolute; left: 0; color: var(--vital-vital); font-weight: 600; font-size: 0.8rem; }
+        
+        /* Recommendations */
+        .rec-box { background: var(--paper); padding: 24px; border-radius: 16px; border-left: 4px solid var(--vital-vital); margin: 20px 0; }
+        .rec-box h4 { margin: 0 0 12px 0; font-size: 1rem; color: var(--bg-dark); }
+        .rec-box ul { margin: 0; padding-left: 20px; }
+        .rec-box li { margin: 4px 0; font-size: 0.875rem; }
+        
+        /* What Works */
+        .works-box { background: #f0fff4; padding: 24px; border-radius: 16px; border-left: 4px solid var(--vital-balance); margin: 20px 0; }
+        .works-box h4 { margin: 0 0 12px 0; font-size: 1rem; color: var(--bg-dark); }
+        
+        /* Table */
+        .analysis-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .analysis-table th { background: var(--bg-dark); color: white; padding: 12px 8px; text-align: left; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .analysis-table td { padding: 12px 8px; border-bottom: 1px solid var(--fiber); }
+        .analysis-table tr:nth-child(even) { background: var(--water); }
+        
+        /* Footer */
+        footer { padding: 60px 0 20px; background: var(--bg-dark); color: var(--muted); }
+        .footer-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .footer-links a { color: var(--muted); font-size: 0.85rem; margin-left: 20px; transition: color 300ms ease; }
+        .footer-links a:hover { color: var(--vital-vital); }
+        .footer-text { font-size: 0.8rem; }
+        
+        @media (max-width: 768px) { .nav { display: none; } .section { padding: 60px 0; } .section-title { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-wrapper">
+            <div class="logo">ETS</div>
+            <nav class="nav">
+                <a href="#">Inicio</a>
+                <a href="#">Rutinas</a>
+                <a href="#">Progreso</a>
+                <a href="#">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        
+        <!-- Design Concept -->
+        <section>
+            <div class="section-header">
+                <span class="section-tag">Critique</span>
+                <h1>Análisis Frontend‑Design de "Entrena Tu Ser"</h1>
+            </div>
+            
+            <div class="rec-box">
+                <h4>Concepto de Diseño (1–3 oraciones)</h4>
+                <p>El proyecto presenta una identidad visual basada en texturas de papel marmoleado (Ebru) con acentos naranja y verde agua. Sin embargo, el diseño actual choca con varios principios del framework <em>frontend‑design</em>: usa fuentes del sistema genéricas, una paleta de color que no sigue una coherencia intencional y componentes de interfaz que carecen de jerarquía visual definida. El reto es dotar a la app fitness de una dirección estética memorable, producción‑grade y coherente con el vital balance (#ff6b35, #2dd4bf) sin caer en patrones SaaS genéricos.</p>
+            </div>
+        </section>
+
+        <!-- What Works Well -->
+        <section>
+            <div class="works-box">
+                <h4>✔️ Qué Funciona Bien</h4>
+                <ul>
+                    <li>El uso de una cuadrícula base (grid) en las pantallas de dashboard brinda ritmo y predictibilidad al usuario.</li>
+                    <li>Los estados :focus-visible están presentes, lo cual es un buen punto de partida para accesibilidad.</li>
+                    <li>La estructura de 6 pantallas (Login, Register, Progress, Workout, Map, Profile) cubre el flujo principal de una app fitness.</li>
+                    <li>Las dimensiones móviles (375px × 812px) indican que el diseño nació pensando en experiencia real de dispositivo.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Detailed Critique -->
+        <section>
+            <h2>📌 Crítica Detallada Según Guidelines Frontend‑Design</h2>
+
+            <div class="analysis-table">
+                <thead>
+                    <tr>
+                        <th>Área</th>
+                        <th>Actual</th>
+                        <th>Expected (Frontend‑Design)</th>
+                        <th>Impacto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tipografía</td>
+                        <td>Outfit + Playfair Display (Google Fonts)</td>
+                        <td>Syne (display) + DM Sans (cuerpo) — combinadas intencionalmente, sin fuentes "default" del sistema</td>
+                        <td>Alto — Syne/DM Sans dan personalidad; Outfit/Playfair pueden verse genéricos SaaS</td>
+                    </tr>
+                    <tr>
+                        <td>Paleta de Colores</td>
+                        <td>--ebru-paper, --ebru-water, --ebru-orange (#8da399, verde oliva), --ebru-teal (#a67c52)</td>
+                        <td>Vital Balance: --vital-vital (#ff6b35), --vital-balance (#2dd4bf), --paper (#fcfaf7) — paleta cohesiva, cálida, con contraste fuerte</td>
+                        <td>Alto — la variable --ebru-orange #8da399 parece verde oliva, no naranja; rompe la identidad "vital"</td>
+                    </tr>
+                    <tr>
+                        <td>Layout & Composición</td>
+                        <td>Grid de 2 columnas en dashboards, sidebar full‑width en móviles</td>
+                        <td>Asimetría intencional, break de grid cuando mejora el diseño, layouts que guíen la mirada (no grids genéricos SaaS)</td>
+                        <td>Medio — grids funcionales pero predecibles; oportunidad de añadir overlay, capas, asymmetry</td>
+                    </tr>
+                    <tr>
+                        <td>Detalles Visuales</td>
+                        <td>Sombras suaves, border-radius, transiciones en hover</td>
+                        <td>Texturas (grain, noise), shadows con propósito, borders diferenciados, background treatments (gradientes intencionales, patrones, overlays)</td>
+                        <td>Alto — el diseño actual es "plano" sin texturas ni detalles que aporten profundidad y personalidad</td>
+                    <tr>
+                        <td>Color & Contrast</td>
+                        <td>Contraste AA ~4.5:1 en textos</td>
+                        <td>Contraste AAA cuando sea posible; cues independientes del color (íconos, posición, no solo color); focus rings temáticos desde la paleta</td>
+                        <td>Medio — buena base, pero se puede mejorar con cues no-color y focus rings en color vital</td>
+                    </tr>
+                    <tr>
+                        <td>Motion & Interaction</td>
+                        <td>Transiciones CSS basic en botones/nav</td>
+                        <td>Animaciones con propósito: sequences de load, hover impactful, scroll-triggered; preferir CSS a JS cuando sea posible</td>
+                        <td>Medio — las transiciones existen pero son pequeñas; oportunidad de añadir momentos de carga, efectos más notables</td>
+                    </tr>
+                    <tr>
+                        <td>Avoid Generic SaaS</td>
+                        <td>Sin direc. visual definida, usa patterns comunes</td>
+                        <td>Dirección estética clara (Bolder/Quieter/Distill), evitar gradients purple/blue típicos, font pairings expresivos, layouts que rompan la predictibilidad SaaS</td>
+                        <td>Crítico — este es el punto más fuerte a mejorar; el diseño actual se siente "plantilla genérica"</td>
+                    </tr>
+                </tbody>
+            </div>
+        </section>
+
+        <!-- Areas for Improvement -->
+        <section>
+            <div class="rec-box" style="border-color: var(--vital-vital); background: #fff0f0;">
+                <h4>🚨 Áreas Críticas de Mejora</h4>
+                <ul>
+                    <li><strong>Paleta de color:</strong> Reemplazar --ebru-orange #8da399 (verde oliva) por naranja vital #ff6b35 consistente en toda la UI.</li>
+                    <li><strong>Tipografía:</strong> Comprometerse con Syne (headings) + DM Sans (cuerpo); remover Playfair Display a menos que sea override controlado.</li>
+                    <li><strong>Details visuales:</strong> Añadir texturas de grain, shadows más definidos, borders accentuados con color vital, background treatments que no sean solid-color aburridos.</li>
+                    <li><strong>Avoid SaaS:</strong> Definir una dirección (Bolder para onquierking, Quieter para workspace, Distill para docs) y comprometerse totalmente.</li>
+                    <li><strong>Jerarquía visual:</strong> Los headings deben usar Syne con peso 700-800; body text DM Sans a 16px mínimo con line-height generoso.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Recommended Actions -->
+        <section>
+            <div class="rec-box" style="border-color: var(--vital-balance); background: #f0fff4;">
+                <h4>💡 Acciones Recomendadas (Seguir Framework Impeccable)</h4>
+                <ol>
+                    <li><strong>Definir una dirección estética:</strong> Elegir BOLDER (marketing/onboarding), QUIETER (workspace/dashboards) o DISTILL (docs/tutorials). No mezclar estilos conflictivos.</li>
+                    <li><strong>Commit a la tipografía:</strong> Syne 800 para títulos, DM Sans regular/medium para cuerpo. Evitar system fonts (Arial, Roboto, Inter "defaults").</li>
+                    <li><strong>Unificar la paleta:</strong> --vital-vital (#ff6b35) como primary, --vital-balance (#2dd4bf) como secondary/accent. Remover variables confuses como --ebru-orange #8da399.</li>
+                    <li><strong>Añadir detalles de profundidad:</strong> Texturas sutlegras (10% opacity), shadows capas (0 10px 30px en elementos primarios), borders de 3px con color vital en states hover.</li>
+                    <li><strong>Evitar patterns SaaS:</strong> Grids genéricos centrados, gradients púrpura‑azul, cards idénticas sin variación, CTAs predecibles.</li>
+                    <li><strong>Producción‑grade:</strong> Todas las states (hover, focus-visible, active) deben tener estilos consistentes; el código debe ser limpio, sin placeholders, listo para run.</li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-wrapper">
+            <div class="footer-links">
+                <a href="#">Términos y Condiciones</a>
+                <a href="#">Política de Privacidad</a>
+                <a href="#">Contacto</a>
+            </div>
+            <div class="footer-text">
+                &copy; 2024 Entrena Tu Ser. Crítica aplicando el skill <strong>frontend‑design</strong>.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -80,7 +80,15 @@ if (exerciseVideo) {
 }
 
 function renderExercises(exercises, routineExerciseIds = null, routineExercises = null) {
-  if (!exerciseList) return;
+  const listEl = document.getElementById('exercise-list');
+  const emptyEl = document.getElementById('exercise-empty-state');
+  const loadingEl = listEl?.querySelector('.skeleton');
+  
+  if (!listEl) return;
+
+  // Clear loading skeletons
+  if (loadingEl) loadingEl.remove();
+  listEl.querySelectorAll('.skeleton').forEach(el => el.remove());
 
   // Si se proporciona routineExerciseIds, filtrar solo esos ejercicios
   let exercisesToRender = exercises;
@@ -110,66 +118,52 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
     const catA = getExerciseCategory(a);
     const catB = getExerciseCategory(b);
     
-    // Primero: calentamiento antes que todo
     if (catA === 'warmup' && catB !== 'warmup') return -1;
     if (catA !== 'warmup' && catB === 'warmup') return 1;
     
-    // Si ambos son calentamiento o ambos no lo son, ordenar por orden de la rutina
     const orderA = orderMap.get(a.id) ?? 999;
     const orderB = orderMap.get(b.id) ?? 999;
     return orderA - orderB;
   });
 
-  const sections = [
-    {
-      title: 'Calentamiento',
-      description: 'Prepara tu cuerpo con movimientos suaves y controlados.',
-      exercises: exercisesToRender.filter((exercise) => getExerciseCategory(exercise) === 'warmup')
-    },
-    {
-      title: 'Ejercicios principales',
-      description: 'Realiza estos ejercicios para activar y fortalecer tu cuerpo.',
-      exercises: exercisesToRender.filter((exercise) => getExerciseCategory(exercise) === 'main')
-    },
-    {
-      title: 'Estiramiento y recuperación',
-      description: 'Finaliza la rutina relajando los músculos.',
-      exercises: exercisesToRender.filter((exercise) => getExerciseCategory(exercise) === 'recovery')
-    }
-  ].filter((section) => section.exercises.length > 0);
-
   const exerciseCount = document.getElementById('exercise-count');
   if (exerciseCount) exerciseCount.textContent = `${exercisesToRender.length} EJERCICIOS`;
   window.trainingExercises = exercisesToRender;
 
-  let exerciseNumber = 0;
-  exerciseList.innerHTML = sections.map((section) => `
-    <details class="exercise-category-section">
-      <summary class="exercise-category-header-printed">
-        <h4>${section.title}</h4>
-        <span class="exercise-category-count">${section.exercises.length} ${section.exercises.length === 1 ? 'ejercicio' : 'ejercicios'}</span>
-      </summary>
-      <div class="exercise-category-cards">
-        ${section.exercises.map((exercise) => {
-          exerciseNumber += 1;
-          return `
-            <button class="exercise-printed-card" type="button" data-exercise-id="${exercise.id}">
-              <span class="exercise-printed-number">${String(exerciseNumber).padStart(2, '0')}</span>
-              <div class="exercise-printed-content">
-                <strong>${escapeExerciseText(exercise.name)}</strong>
-                <div class="exercise-printed-meta">
-                  <span class="exercise-category-tag">${section.title}</span>
-                  <span>${Math.ceil(exercise.durationSeconds / 60)} min</span>
-                </div>
-              </div>
-            </button>
-          `;
-        }).join('')}
-      </div>
-    </details>
-  `).join('');
+  // Empty state
+  if (exercisesToRender.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.classList.remove('hidden');
+    return;
+  }
+  if (emptyEl) emptyEl.classList.add('hidden');
 
-  exerciseList.querySelectorAll('.exercise-printed-card').forEach((card) => {
+  // Render as flat grid of exercise-card (new Hoja de Identidad structure)
+  let exerciseNumber = 0;
+  listEl.innerHTML = exercisesToRender.map((exercise) => {
+    exerciseNumber += 1;
+    const category = getExerciseCategory(exercise);
+    const categoryLabels = { warmup: 'Calentamiento', main: 'Principal', recovery: 'Recuperación' };
+    return `
+      <article class="exercise-card" data-exercise-id="${exercise.id}" data-category="${category}">
+        <header class="exercise-card-header">
+          <span class="exercise-card-number">${String(exerciseNumber).padStart(2, '0')}</span>
+          <span class="exercise-card-category">${categoryLabels[category]}</span>
+        </header>
+        <h3>${escapeExerciseText(exercise.name)}</h3>
+        <div class="exercise-card-meta">
+          <span><i data-lucide="clock" aria-hidden="true"></i> ${Math.ceil(exercise.durationSeconds / 60)} min</span>
+          ${exercise.points ? `<span><i data-lucide="star" aria-hidden="true"></i> ${exercise.points} pts</span>` : ''}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // Initialize lucide icons for new cards
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Add click handlers
+  listEl.querySelectorAll('.exercise-card').forEach((card) => {
     const exercise = exercisesToRender.find((item) => String(item.id) === card.dataset.exerciseId);
     card.addEventListener('click', () => selectExercise(exercise, card));
   });
@@ -198,14 +192,33 @@ function selectExercise(exercise, selectedCard) {
   window.selectedExercise = exercise;
   const exerciseIndex = window.trainingExercises.findIndex((item) => item.id === exercise.id);
   window.trainingExerciseIndex = exerciseIndex >= 0 ? exerciseIndex : 0;
-  document.querySelector('.printed-form')?.classList.add('exercise-selected-layout');
-  const categorySection = selectedCard.closest('.exercise-category-section');
-  if (categorySection) categorySection.open = true;
-  exerciseList.querySelectorAll('.exercise-printed-card').forEach((card) => card.classList.remove('selected'));
+
+  // New Hoja de Identidad state management - use .active class for workout-state
+  const selectionState = document.getElementById('exercise-selection-state');
+  const activeState = document.getElementById('exercise-active-state');
+  
+  if (selectionState) {
+    selectionState.classList.remove('active');
+    selectionState.classList.add('hidden');
+  }
+  if (activeState) {
+    activeState.classList.remove('hidden');
+    activeState.classList.add('active');
+  }
+
+  // Update selected card
+  document.querySelectorAll('.exercise-card').forEach((card) => card.classList.remove('selected'));
   selectedCard.classList.add('selected');
-  selectedExerciseTitle.textContent = `Video: ${exercise.name}`;
-  selectedExerciseDescription.textContent = `${exercise.description}. Observa la postura y repite el ejercicio con movimientos controlados.`;
-  selectedExercisePanel.classList.remove('hidden');
+
+  // Update video panel
+  const videoTitle = document.getElementById('selected-exercise-title');
+  const videoDesc = document.getElementById('selected-exercise-description');
+  if (videoTitle) videoTitle.textContent = `Video: ${exercise.name}`;
+  if (videoDesc) videoDesc.textContent = `${exercise.description}. Observa la postura y repite el ejercicio con movimientos controlados.`;
+
+  // Show video panel
+  const panel = document.getElementById('selected-exercise-panel');
+  if (panel) panel.classList.remove('hidden');
   exerciseVideo.loop = true;
 
   // Preferir el video de YouTube del ejercicio si existe; si no, usar video_url de la API
@@ -229,7 +242,6 @@ function selectExercise(exercise, selectedCard) {
     }
     exerciseVideo.classList.remove('hidden');
     if (exercise.videoUrl) {
-      // Use absolute URL for video (prepend API base URL if relative)
       const videoUrl = exercise.videoUrl.startsWith('http')
         ? exercise.videoUrl
         : `${window.API_BASE_URL || 'http://localhost:5143'}${exercise.videoUrl}`;
@@ -243,7 +255,15 @@ function selectExercise(exercise, selectedCard) {
     exerciseVideo.load();
   }
   startTrainingTimer(exercise);
-  selectedExercisePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+  // Update routine badge in hero
+  const badge = document.getElementById('workout-routine-badge');
+  if (badge && window.activeRoutineName) {
+    badge.textContent = window.activeRoutineName;
+    badge.classList.remove('hidden');
+  }
+  
+  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function closeSelectedExercise() {
@@ -260,11 +280,35 @@ function closeSelectedExercise() {
     youtubeContainer.classList.add('hidden');
   }
   exerciseVideo.classList.remove('hidden');
-  selectedExercisePanel.classList.add('hidden');
-  document.querySelector('.printed-form')?.classList.remove('exercise-selected-layout');
-  exerciseList.querySelectorAll('.exercise-printed-card').forEach((card) => card.classList.remove('selected'));
+  
+  // Hide active state, show selection state - use .active class for workout-state
+  const activeState = document.getElementById('exercise-active-state');
+  const selectionState = document.getElementById('exercise-selection-state');
+  const panel = document.getElementById('selected-exercise-panel');
+  
+  if (panel) panel.classList.add('hidden');
+  if (activeState) {
+    activeState.classList.remove('active');
+    activeState.classList.add('hidden');
+  }
+  if (selectionState) {
+    selectionState.classList.remove('hidden');
+    selectionState.classList.add('active');
+  }
+  
+  document.querySelectorAll('.exercise-card').forEach((card) => card.classList.remove('selected'));
   window.selectedExercise = null;
-  if (trainingControls) trainingControls.classList.add('hidden');
+  
+  const controls = document.getElementById('training-controls');
+  if (controls) controls.classList.add('hidden');
+  
+  // Hide rest overlay
+  const restOverlay = document.getElementById('training-rest-overlay');
+  if (restOverlay) restOverlay.classList.add('hidden');
+  
+  // Hide routine badge
+  const badge = document.getElementById('workout-routine-badge');
+  if (badge) badge.classList.add('hidden');
 }
 
 function startTrainingTimer(exercise) {
@@ -327,9 +371,15 @@ function stopTrainingRest() {
   trainingRestSkipButton?.classList.add('hidden');
 }
 
-function startTrainingRest() {
+function startTrainingRest(nextExercise = null) {
   const restSeconds = Number(trainingRestSelect?.value || 0);
-  if (!Number.isInteger(restSeconds) || restSeconds <= 0) return;
+  if (!Number.isInteger(restSeconds) || restSeconds <= 0) {
+    // No rest configured, move directly to next exercise
+    if (nextExercise) {
+      selectExerciseByIndex(window.trainingExerciseIndex + 1);
+    }
+    return;
+  }
 
   stopTrainingTimer();
   stopTrainingRest();
@@ -338,14 +388,30 @@ function startTrainingRest() {
   trainingPhase.textContent = 'Descanso';
   trainingPauseButton.disabled = true;
   updateTrainingRestUI();
+  
+  // Show rest overlay (new Hoja de Identidad UI)
+  const restOverlay = document.getElementById('training-rest-overlay');
+  const restCountdown = document.getElementById('rest-countdown');
+  const restNextName = document.getElementById('rest-next-name');
+  
+  if (restOverlay) restOverlay.classList.remove('hidden');
+  if (restCountdown) restCountdown.textContent = `${String(Math.floor(restSeconds/60)).padStart(2,'0')}:${String(restSeconds%60).padStart(2,'0')}`;
+  if (restNextName && nextExercise) restNextName.textContent = nextExercise.name;
+  
   trainingRestTimerId = window.setInterval(() => {
     trainingRestSecondsRemaining -= 1;
     updateTrainingRestUI();
+    if (restCountdown) restCountdown.textContent = `${String(Math.floor(trainingRestSecondsRemaining/60)).padStart(2,'0')}:${String(trainingRestSecondsRemaining%60).padStart(2,'0')}`;
+    
     if (trainingRestSecondsRemaining <= 0) {
       stopTrainingRest();
       trainingPauseButton.disabled = false;
       trainingPhase.textContent = 'Listo para el siguiente ejercicio';
       trainingTimer.textContent = '00:00';
+      if (restOverlay) restOverlay.classList.add('hidden');
+      if (nextExercise) {
+        selectExerciseByIndex(window.trainingExerciseIndex + 1);
+      }
     }
   }, 1000);
 }
@@ -364,6 +430,13 @@ function skipTrainingRest() {
   trainingPauseButton.disabled = false;
   trainingPhase.textContent = 'Listo para el siguiente ejercicio';
   trainingTimer.textContent = '00:00';
+  
+  // Hide rest overlay
+  const restOverlay = document.getElementById('training-rest-overlay');
+  if (restOverlay) restOverlay.classList.add('hidden');
+  
+  // Move to next exercise
+  selectExerciseByIndex(window.trainingExerciseIndex + 1);
 }
 
 function updateTrainingTimerUI(exercise) {
@@ -418,6 +491,15 @@ function finishTraining() {
   const durationMinutes = session
     ? Math.max(1, Math.round((Date.now() - session.startedAt) / 60000))
     : 0;
+  
+  // Stop all timers
+  stopTrainingTimer();
+  stopTrainingRest();
+  
+  // Hide rest overlay
+  const restOverlay = document.getElementById('training-rest-overlay');
+  if (restOverlay) restOverlay.classList.add('hidden');
+  
   closeSelectedExercise();
   if (session && completedCount > 0) {
     if (window.showWorkoutSummary) {
@@ -504,10 +586,19 @@ window.exercisesLoadedPromise = (async function() {
       // Guardar en variable global para acceso posterior
       window.allExercises = exercises;
       renderExercises(exercises);
+      
+      // Initialize workout state machine
+      if (window.workoutStateMachine) {
+        window.workoutStateMachine.initialize(exercises);
+      }
+      
       return exercises;
     } catch (error) {
       if (attempt === 4) {
         exerciseList.innerHTML = `<p class="exercise-error">No se pudieron cargar los ejercicios. Comprueba que la API esté iniciada en ${apiBaseUrl} y recarga la página.</p>`;
+        if (window.workoutStateMachine) {
+          window.workoutStateMachine.initialize([]);
+        }
         return [];
       }
 

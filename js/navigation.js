@@ -74,17 +74,28 @@ function switchTab(tabId, btnElement) {
   }
   if (btnElement) btnElement.classList.add('active');
   
-  // Si se navega manualmente a la pestaña de entrenamiento (sin callback), mostrar todos los ejercicios
-  if (tabId === 'screen-workout' && window.renderExercises && window.allExercises) {
-    console.log('switchTab: Rendering all exercises (manual navigation)');
-    window.renderExercises(window.allExercises);
+  // Initialize screen-specific components
+  if (tabId === 'screen-workout') {
+    if (window.renderExercises && window.allExercises) {
+      console.log('switchTab: Rendering all exercises (manual navigation)');
+      window.renderExercises(window.allExercises);
+      // Initialize workout state machine
+      if (window.workoutStateMachine) {
+        window.workoutStateMachine.initialize(window.allExercises);
+      }
+    }
   }
   
   if (tabId === 'screen-map' && typeof refreshWorkoutMap === 'function') refreshWorkoutMap();
   
   if (tabId === 'screen-progress' && typeof loadProgress === 'function') loadProgress();
   
-    if (tabId === 'screen-profile' && typeof initProfilePage === 'function') initProfilePage();
+  if (tabId === 'screen-routines' && typeof loadRoutines === 'function') loadRoutines();
+  
+  if (tabId === 'screen-profile' && typeof initProfilePage === 'function') initProfilePage();
+  
+  // Re-initialize lucide icons for new content
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

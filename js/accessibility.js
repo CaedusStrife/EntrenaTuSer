@@ -2,7 +2,8 @@ const accessibilityToggle = document.getElementById('accessibility-toggle');
 const accessibilityPanel = document.getElementById('accessibility-panel');
 const accessibilityClose = document.getElementById('accessibility-close');
 const accessibilityStorageKey = 'entrena-accessibility';
-const API_BASE = window.API_BASE_URL || 'https://api-entrenatuse-bge9a6g4cyatcpf4.westus3-01.azurewebsites.net';
+// Use window.API_BASE_URL set by api-config.js, fallback to localhost
+const API_BASE = window.API_BASE_URL || 'http://localhost:5143';
 
 // Check if user is logged in
 function isLoggedIn() {

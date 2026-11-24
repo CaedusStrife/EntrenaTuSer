@@ -64,6 +64,10 @@ function createPlaceIcon(color) {
 function clearPlaceResults() {
   const container = document.getElementById('nearby-places');
   if (container) container.innerHTML = '';
+  // Also update slide-up panel
+  if (window.mapPlacesPanel) {
+    window.mapPlacesPanel.loadPlaces([]);
+  }
 }
 
 function escapeHtml(value) {
@@ -78,24 +82,53 @@ function renderPlaceResults(places, latitude, longitude) {
 
   if (!places.length) {
     container.innerHTML = '<p class="places-empty">No encontramos zonas verdes cercanas marcadas en el mapa.</p>';
+    if (window.mapPlacesPanel) {
+      window.mapPlacesPanel.loadPlaces([]);
+    }
     return;
   }
 
-  container.innerHTML = places.map((place) => {
+  // Transform places for new panel structure
+  const transformedPlaces = places.map((place) => {
     const coordinates = getPlaceCoordinates(place);
     const details = getPlaceDetails(place);
     const distance = Math.round(workoutMap.distance([latitude, longitude], coordinates));
-    const name = escapeHtml(place.tags?.name || details.type);
-    const directions = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${latitude}%2C${longitude}%3B${coordinates[0]}%2C${coordinates[1]}`;
+    const name = place.tags?.name || details.type;
+    
+    // Determine type for filter chips
+    let type = 'park';
+    if (name.toLowerCase().includes('gimnasio') || name.toLowerCase().includes('gym')) type = 'gym';
+    else if (name.toLowerCase().includes('pista') || name.toLowerCase().includes('track')) type = 'track';
+    
+    return {
+      id: `place-${coordinates[0].toFixed(5)}-${coordinates[1].toFixed(5)}`,
+      name: name,
+      type: type,
+      distance: distance < 1000 ? `${distance} m` : `${(distance / 1000).toFixed(1)} km`,
+      lat: coordinates[0],
+      lng: coordinates[1],
+      rawDistance: distance
+    };
+  }).sort((a, b) => a.rawDistance - b.rawDistance).slice(0, 20); // Max 20 for panel
+
+  // Update slide-up panel
+  if (window.mapPlacesPanel) {
+    window.mapPlacesPanel.loadPlaces(transformedPlaces);
+  }
+
+  // Keep legacy container for backward compatibility
+  container.innerHTML = transformedPlaces.map((place) => {
+    const directions = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${latitude}%2C${longitude}%3B${place.lat}%2C${place.lng}`;
+    const details = getPlaceDetails({ tags: { leisure: 'park' } });
 
     return `
       <article class="nearby-place">
         <span class="place-dot" style="background:${details.color}"></span>
         <div>
-          <strong>${name}</strong>
-          <span>${details.type} · ${distance < 1000 ? `${distance} m` : `${(distance / 1000).toFixed(1)} km`}</span>
+          <strong>${escapeHtml(place.name)}</strong>
+          <span>${details.type} · ${place.distance}</span>
         </div>
-        <a href="${directions}" target="_blank" rel="noopener" aria-label="Cómo llegar a ${name}">
+        <a href="${directions}" target="_blank" rel="noopener" aria-label="Cómo llegar a ${escapeHtml(place.name)}">
           Cómo llegar
         </a>
       </article>`;
@@ -307,25 +340,24 @@ function locateUser() {
 // Initialize map controls when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   const locateButton = document.getElementById('locate-button');
-  if (locateButton) {
-    locateButton.addEventListener('click', locateUser);
-  }
+  const locateButtonHero = document.getElementById('locate-button-hero');
+  
+  const handleLocateClick = () => locateUser();
+  
+  if (locateButton) locateButton.addEventListener('click', handleLocateClick);
+  if (locateButtonHero) locateButtonHero.addEventListener('click', handleLocateClick);
 
   const zoomInButton = document.getElementById('zoom-in-btn');
   if (zoomInButton) {
     zoomInButton.addEventListener('click', () => {
-      if (workoutMap) {
-        workoutMap.zoomIn();
-      }
+      if (workoutMap) workoutMap.zoomIn();
     });
   }
 
   const zoomOutButton = document.getElementById('zoom-out-btn');
   if (zoomOutButton) {
     zoomOutButton.addEventListener('click', () => {
-      if (workoutMap) {
-        workoutMap.zoomOut();
-      }
+      if (workoutMap) workoutMap.zoomOut();
     });
   }
 });
@@ -340,3 +372,22 @@ function refreshWorkoutMap() {
 
 // Initialize map on load
 refreshWorkoutMap();
+
+// Center map on a specific place (called from places panel)
+window.centerMapOnPlace = function(lat, lng) {
+  if (!workoutMap) return;
+  workoutMap.setView([lat, lng], 17, { animate: true });
+  
+  // Also update user marker
+  if (userMarker) {
+    userMarker.setLatLng([lat, lng]);
+  } else {
+    userMarker = L.marker([lat, lng], { draggable: true }).addTo(workoutMap);
+    userMarker.on('dragend', () => {
+      const position = userMarker.getLatLng();
+      updateLocation(position.lat, position.lng);
+    });
+  }
+  
+  updateLocation(lat, lng);
+};
