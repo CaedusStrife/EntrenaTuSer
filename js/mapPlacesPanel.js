@@ -171,11 +171,15 @@ class MapPlacesPanel {
 }
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.mapPlacesPanel = new MapPlacesPanel();
-});
+function initMapPlacesPanel() {
+  window.mapPlacesPanel = new MapPlacesPanel();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMapPlacesPanel);
+} else {
+  initMapPlacesPanel();
+}
 
 // Export for manual initialization
-window.initMapPlacesPanel = () => {
-    window.mapPlacesPanel = new MapPlacesPanel();
-};
+window.initMapPlacesPanel = initMapPlacesPanel;

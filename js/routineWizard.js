@@ -148,17 +148,26 @@ class RoutineWizard {
     }
 }
 
-// Global instance initialization (to be called when modal is shown)
-window.routineWizard = new RoutineWizard();
+// Initialize routine wizard when DOM is ready
+function initRoutineWizard() {
+  window.routineWizard = new RoutineWizard();
 
-// Export for global access
-window.openRoutineModal = () => {
+  // Export for global access
+  window.openRoutineModal = () => {
     document.getElementById('routine-modal').classList.remove('hidden');
     window.routineWizard.goToStep(1);
-};
-window.closeRoutineModal = () => {
+  };
+  window.closeRoutineModal = () => {
     window.routineWizard.closeModal();
-};
-// Export functions for navigation.js/UI to call
-window.routineWizardPrev = () => window.routineWizard.nextStep(-1);
-window.routineWizardNext = () => window.routineWizard.nextStep(1);
+  };
+  // Export functions for navigation.js/UI to call
+  window.routineWizardPrev = () => window.routineWizard.nextStep(-1);
+  window.routineWizardNext = () => window.routineWizard.nextStep(1);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initRoutineWizard);
+} else {
+  initRoutineWizard();
+}

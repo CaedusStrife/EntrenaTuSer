@@ -178,11 +178,15 @@ class ProgressCharts {
 }
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.progressCharts = new ProgressCharts();
-});
+function initProgressCharts() {
+  window.progressCharts = new ProgressCharts();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initProgressCharts);
+} else {
+  initProgressCharts();
+}
 
 // Export for manual initialization
-window.initProgressCharts = () => {
-    window.progressCharts = new ProgressCharts();
-};
+window.initProgressCharts = initProgressCharts;

@@ -31,9 +31,17 @@ async function checkDatabaseStatus() {
   }
 }
 
-// Verificar al cargar y cada 30 segundos
-checkDatabaseStatus();
-setInterval(checkDatabaseStatus, 30000);
+// Initialize on DOM ready
+function initDatabaseStatus() {
+  checkDatabaseStatus();
+  setInterval(checkDatabaseStatus, 30000);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDatabaseStatus);
+} else {
+  initDatabaseStatus();
+}
 
 // Exportar para uso manual
 window.checkDatabaseStatus = checkDatabaseStatus;

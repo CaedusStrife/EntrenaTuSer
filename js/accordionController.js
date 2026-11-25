@@ -82,11 +82,15 @@ class AccordionController {
 }
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.accordionController = new AccordionController();
-});
+function initAccordions() {
+  window.accordionController = new AccordionController();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAccordions);
+} else {
+  initAccordions();
+}
 
 // Export for manual initialization if needed
-window.initAccordions = () => {
-    window.accordionController = new AccordionController();
-};
+window.initAccordions = initAccordions;

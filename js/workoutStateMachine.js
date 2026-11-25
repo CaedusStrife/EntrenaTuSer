@@ -112,5 +112,13 @@ class WorkoutStateMachine {
     getCurrentExercise() { return this.currentExercise; }
 }
 
-// Global instance
-window.workoutStateMachine = new WorkoutStateMachine();
+// Initialize when DOM is ready
+function initWorkoutStateMachine() {
+  window.workoutStateMachine = new WorkoutStateMachine();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWorkoutStateMachine);
+} else {
+  initWorkoutStateMachine();
+}
