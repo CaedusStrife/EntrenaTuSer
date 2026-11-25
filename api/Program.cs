@@ -26,7 +26,8 @@ builder.Services.AddCors(options =>
             "http://localhost:49366",
             "http://127.0.0.1:49366")
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 builder.Services
@@ -589,6 +590,106 @@ app.MapPost("/api/auth/register", async (
     }
 });
 
+// ==================== PASSWORD RECOVERY ====================
+
+// POST /api/auth/recovery - Solicitar reset de contraseña
+app.MapPost("/api/auth/recovery", async (RecoveryRequest request, IConfiguration configuration) =>
+{
+    var email = request.Email?.Trim().ToLowerInvariant();
+    if (!IsValidEmail(email))
+        return Results.BadRequest(new { message = "Correo inválido." });
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var cmd = new SqlCommand("SELECT id FROM dbo.usuarios WHERE email = @email;", connection);
+    cmd.Parameters.AddWithValue("@email", email);
+    var userIdObj = await cmd.ExecuteScalarAsync();
+
+    if (userIdObj != null)
+    {
+        int userId = Convert.ToInt32(userIdObj);
+
+        await using var invalidate = new SqlCommand(
+            "UPDATE dbo.password_reset_tokens SET usado = 1 WHERE usuario_id = @userId AND usado = 0;", connection);
+        invalidate.Parameters.AddWithValue("@userId", userId);
+        await invalidate.ExecuteNonQueryAsync();
+
+        var rawToken = RandomNumberGenerator.GetBytes(32);
+        var tokenHash = HashPassword(Convert.ToBase64String(rawToken));
+        var tokenString = Convert.ToBase64String(rawToken);
+
+        await using var insert = new SqlCommand("""
+            INSERT INTO dbo.password_reset_tokens (usuario_id, token_hash, expira_en)
+            VALUES (@userId, @hash, DATEADD(hour, 1, SYSUTCDATETIME()));
+            """, connection);
+        insert.Parameters.AddWithValue("@userId", userId);
+        insert.Parameters.AddWithValue("@hash", tokenHash);
+        await insert.ExecuteNonQueryAsync();
+
+        Console.WriteLine($"[DEV] Password reset token for {email}: {tokenString}");
+    }
+
+    // Always return success to prevent email enumeration
+    var response = new { message = "Si el correo existe, recibirás instrucciones para restablecer tu contraseña." };
+    if (app.Environment.IsDevelopment())
+    {
+        response = new { message = "Si el correo existe, recibirás instrucciones para restablecer tu contraseña.", devToken = tokenString };
+    }
+    return Results.Ok(response);
+});
+
+// POST /api/auth/reset-password - Restablecer contraseña con token
+app.MapPost("/api/auth/reset-password", async (ResetPasswordRequest request, IConfiguration configuration) =>
+{
+    var email = request.Email?.Trim().ToLowerInvariant();
+    var token = request.Token?.Trim();
+    var newPassword = request.NewPassword ?? string.Empty;
+
+    if (!IsValidEmail(email) || string.IsNullOrWhiteSpace(token) || newPassword.Length < 8)
+        return Results.BadRequest(new { message = "Datos inválidos." });
+
+    await using var connection = new SqlConnection(configuration.GetConnectionString("EntrenaTuSer"));
+    await connection.OpenAsync();
+
+    await using var cmd = new SqlCommand("""
+        SELECT id, token_hash FROM dbo.password_reset_tokens
+        WHERE usuario_id = (SELECT id FROM dbo.usuarios WHERE email = @email)
+          AND usado = 0 AND expira_en > SYSUTCDATETIME()
+        ORDER BY creado_en DESC;
+        """, connection);
+    cmd.Parameters.AddWithValue("@email", email);
+
+    await using var reader = await cmd.ExecuteReaderAsync();
+    if (!await reader.ReadAsync())
+    {
+        return Results.BadRequest(new { message = "Token inválido o expirado." });
+    }
+
+    long tokenId = reader.GetInt64(0);
+    string storedHash = reader.GetString(1);
+    await reader.CloseAsync();
+
+    if (!VerifyPassword(token, storedHash))
+    {
+        return Results.BadRequest(new { message = "Token inválido." });
+    }
+
+    await using var useCmd = new SqlCommand(
+        "UPDATE dbo.password_reset_tokens SET usado = 1 WHERE id = @id;", connection);
+    useCmd.Parameters.AddWithValue("@id", tokenId);
+    await useCmd.ExecuteNonQueryAsync();
+
+    var newHash = HashPassword(newPassword);
+    await using var updateCmd = new SqlCommand(
+        "UPDATE dbo.usuarios SET password_hash = @hash, actualizado_en = SYSUTCDATETIME() WHERE email = @email;", connection);
+    updateCmd.Parameters.AddWithValue("@hash", newHash);
+    updateCmd.Parameters.AddWithValue("@email", email);
+    await updateCmd.ExecuteNonQueryAsync();
+
+    return Results.Ok(new { message = "Contraseña restablecida correctamente. Ya puedes iniciar sesión." });
+});
+
 // ==================== RUTINAS ====================
 
 // GET /api/routines/user/{userId} - Listar rutinas del usuario
@@ -1141,3 +1242,7 @@ record UpdateProfileRequest(string FullName, string? Email, string? AvatarColor,
 record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 record UpdatePreferencesRequest(string? Theme, string? FontSize, bool? HighContrast, bool? ReducedMotion, bool? Grayscale);
 record DeleteAccountRequest(string Password);
+
+// Password recovery records
+record RecoveryRequest(string? Email);
+record ResetPasswordRequest(string? Email, string? Token, string? NewPassword);
