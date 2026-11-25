@@ -29,7 +29,6 @@ import './registration.js';
 
 // Initialize Lucide icons
 import { createIcons, icons } from 'lucide';
-createIcons({ icons });
 
 // Legal modals functions
 function openLegalModal(modalId) {
@@ -50,26 +49,30 @@ function closeLegalModal(modalId) {
   }
 }
 
-// Close on Escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.legal-modal-overlay:not(.hidden)').forEach(modal => {
-      closeLegalModal(modal.id);
-    });
-  }
-});
+// Initialize main module when DOM is ready
+function initMain() {
+  // Initialize Lucide icons
+  createIcons({ icons });
 
-// Close on overlay click
-document.querySelectorAll('.legal-modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-      closeLegalModal(overlay.id);
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.legal-modal-overlay:not(.hidden)').forEach(modal => {
+        closeLegalModal(modal.id);
+      });
     }
   });
-});
 
-// Footer link handlers
-document.addEventListener('DOMContentLoaded', () => {
+  // Close on overlay click
+  document.querySelectorAll('.legal-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeLegalModal(overlay.id);
+      }
+    });
+  });
+
+  // Footer link handlers
   const termsLink = document.getElementById('footer-terms');
   const privacyLink = document.getElementById('footer-privacy');
   const cookiesLink = document.getElementById('footer-cookies');
@@ -79,4 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (privacyLink) privacyLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('privacy-modal'); });
   if (cookiesLink) cookiesLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('cookies-modal'); });
   if (contactLink) contactLink.addEventListener('click', (e) => { e.preventDefault(); openLegalModal('contact-modal'); });
-});
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMain);
+} else {
+  initMain();
+}
