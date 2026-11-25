@@ -18,7 +18,20 @@ class RoutineWizard {
             exercises: [] // Array of { exerciseId: string, order: number }
         };
         
-        // DOM Elements
+        // DOM Elements - populated on init()
+        this.wizardForm = null;
+        this.wizardSteps = null;
+        this.wizardPanels = null;
+        this.wizardPrev = null;
+        this.wizardNext = null;
+        this.wizardSubmit = null;
+        this.initialized = false;
+    }
+
+    init() {
+        if (this.initialized) return;
+        
+        // DOM Elements - only available when modal is open
         this.wizardForm = document.getElementById('routine-wizard-form');
         this.wizardSteps = document.querySelectorAll('.wizard-step');
         this.wizardPanels = document.querySelectorAll('.wizard-panel');
@@ -26,13 +39,22 @@ class RoutineWizard {
         this.wizardNext = document.getElementById('wizard-next');
         this.wizardSubmit = document.getElementById('wizard-submit');
         
+        // Null checks - elements only exist when modal is rendered
+        if (!this.wizardForm) return;
+        
         this.setupEventListeners();
+        this.initialized = true;
     }
 
     setupEventListeners() {
         this.wizardForm.addEventListener('submit', this.handleFormSubmit.bind(this));
-        this.wizardPrev.addEventListener('click', () => this.nextStep(-1));
-        this.wizardNext.addEventListener('click', () => this.nextStep(1));
+        
+        if (this.wizardPrev) {
+            this.wizardPrev.addEventListener('click', () => this.nextStep(-1));
+        }
+        if (this.wizardNext) {
+            this.wizardNext.addEventListener('click', () => this.nextStep(1));
+        }
         
         // Event delegation for exercise search/selection (must be implemented in exercises.js/map.js integration)
         // TODO: Connect selector filters to exercise selection logic
@@ -57,22 +79,32 @@ class RoutineWizard {
 
     updateUI() {
         // Update Step 1 fields
-        document.getElementById('routine-name').value = this.routineData.name;
-        document.getElementById('routine-description').value = this.routineData.description;
-        document.getElementById('routine-goal').value = this.routineData.goal;
-        document.getElementById('routine-level').value = this.routineData.level;
-        document.getElementById('routine-estimated-time').value = this.routineData.estimatedTime;
+        const nameEl = document.getElementById('routine-name');
+        if (nameEl) nameEl.value = this.routineData.name;
+        const descEl = document.getElementById('routine-description');
+        if (descEl) descEl.value = this.routineData.description;
+        const goalEl = document.getElementById('routine-goal');
+        if (goalEl) goalEl.value = this.routineData.goal;
+        const levelEl = document.getElementById('routine-level');
+        if (levelEl) levelEl.value = this.routineData.level;
+        const timeEl = document.getElementById('routine-estimated-time');
+        if (timeEl) timeEl.value = this.routineData.estimatedTime;
         
         // Update Step 3 summary
-        document.getElementById('summary-name').textContent = this.routineData.name;
-        document.getElementById('summary-goal').textContent = this.routineData.goal;
-        document.getElementById('summary-level').textContent = this.routineData.level;
-        document.getElementById('summary-time').textContent = this.routineData.estimatedTime;
-        document.getElementById('summary-exercise-count').textContent = this.routineData.exercises.length;
+        const summaryName = document.getElementById('summary-name');
+        if (summaryName) summaryName.textContent = this.routineData.name;
+        const summaryGoal = document.getElementById('summary-goal');
+        if (summaryGoal) summaryGoal.textContent = this.routineData.goal;
+        const summaryLevel = document.getElementById('summary-level');
+        if (summaryLevel) summaryLevel.textContent = this.routineData.level;
+        const summaryTime = document.getElementById('summary-time');
+        if (summaryTime) summaryTime.textContent = this.routineData.estimatedTime;
+        const summaryCount = document.getElementById('summary-exercise-count');
+        if (summaryCount) summaryCount.textContent = this.routineData.exercises.length;
         
         // Update exercise list in Step 3
         const listEl = document.getElementById('summary-exercises-list');
-        listEl.innerHTML = this.routineData.exercises.map(ex => `<li>${ex.exerciseId}</li>`).join('');
+        if (listEl) listEl.innerHTML = this.routineData.exercises.map(ex => `<li>${ex.exerciseId}</li>`).join('');
         
         // Update exercise selector list (requires integration with exercise data)
         // TODO: Re-render exercise selector list based on global exercise data
@@ -80,6 +112,8 @@ class RoutineWizard {
 
     goToStep(step) {
         if (step < 1 || step > this.maxSteps) return;
+        this.init(); // Initialize DOM elements on first use
+        if (!this.wizardForm) return; // Modal not rendered yet
         this.currentStep = step;
         this.updateUI();
         this.updateWizardVisibility();
@@ -140,11 +174,11 @@ class RoutineWizard {
     }
 
     closeModal() {
-        document.getElementById('routine-modal').classList.add('hidden');
+        document.getElementById('routine-modal')?.classList.add('hidden');
         // Cleanup state
         this.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', estimatedTime: 30, exercises: [] };
         this.currentStep = 1;
-        this.updateUI();
+        // Don't call updateUI() here - modal is hidden, elements not accessible
     }
 }
 
