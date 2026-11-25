@@ -1,55 +1,68 @@
-const registerForm = document.getElementById('register-form');
+// Cache DOM elements - will be populated after DOM is ready
+let registerForm = null;
 
-if (registerForm) {
-  registerForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+// Initialize registration module after DOM is ready
+function initRegistration() {
+  registerForm = document.getElementById('register-form');
 
-    const status = document.getElementById('register-status');
-    const submitButton = registerForm.querySelector('button[type="submit"]');
-    const formData = new FormData(registerForm);
-    if (formData.get('password') !== formData.get('passwordConfirmation')) {
-      status.textContent = 'Las contraseñas no coinciden.';
-      status.className = 'form-status form-status-error';
-      return;
-    }
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-    status.textContent = 'Creando tu cuenta...';
-    status.className = 'form-status';
-    submitButton.disabled = true;
-
-    try {
-      const response = await fetch(`${window.API_BASE_URL || 'http://localhost:5143'}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: formData.get('fullName'),
-          email: formData.get('email'),
-          password: formData.get('password')
-        })
-      });
-      const responseText = await response.text();
-      let result = {};
-      try {
-        result = responseText ? JSON.parse(responseText) : {};
-      } catch {
-        throw new Error('El servidor devolvió una respuesta no válida. Comprueba que la API esté actualizada.');
+      const status = document.getElementById('register-status');
+      const submitButton = registerForm.querySelector('button[type="submit"]');
+      const formData = new FormData(registerForm);
+      if (formData.get('password') !== formData.get('passwordConfirmation')) {
+        status.textContent = 'Las contraseñas no coinciden.';
+        status.className = 'form-status form-status-error';
+        return;
       }
 
-      if (!response.ok) throw new Error(result.message || 'No se pudo crear la cuenta.');
+      status.textContent = 'Creando tu cuenta...';
+      status.className = 'form-status';
+      submitButton.disabled = true;
 
-      localStorage.setItem('entrena-user', JSON.stringify(result));
-      status.textContent = 'Cuenta creada correctamente. Iniciando sesión...';
-      status.classList.add('form-status-success');
-      registerForm.reset();
-      window.setTimeout(() => {
-              switchScreen('screen-progress');
-        window.dispatchEvent(new Event('user-authenticated'));
-      }, 500);
-    } catch (error) {
-      status.textContent = error.message;
-      status.classList.add('form-status-error');
-    } finally {
-      submitButton.disabled = false;
-    }
-  });
+      try {
+        const response = await fetch(`${window.API_BASE_URL || 'http://localhost:5143'}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: formData.get('fullName'),
+            email: formData.get('email'),
+            password: formData.get('password')
+          })
+        });
+        const responseText = await response.text();
+        let result = {};
+        try {
+          result = responseText ? JSON.parse(responseText) : {};
+        } catch {
+          throw new Error('El servidor devolvió una respuesta no válida. Comprueba que la API esté actualizada.');
+        }
+
+        if (!response.ok) throw new Error(result.message || 'No se pudo crear la cuenta.');
+
+        localStorage.setItem('entrena-user', JSON.stringify(result));
+        status.textContent = 'Cuenta creada correctamente. Iniciando sesión...';
+        status.classList.add('form-status-success');
+        registerForm.reset();
+        window.setTimeout(() => {
+          switchScreen('screen-progress');
+          window.dispatchEvent(new Event('user-authenticated'));
+        }, 500);
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add('form-status-error');
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initRegistration);
+} else {
+  initRegistration();
 }

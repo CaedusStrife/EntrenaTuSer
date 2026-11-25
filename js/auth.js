@@ -82,6 +82,8 @@
    */
   window.mostrarLogin = function () {
     hideAllAuthCards();
+    document.getElementById('login-card-register')?.classList.add('hidden');
+    document.getElementById('login-card-recovery')?.classList.add('hidden');
     document.getElementById('login-card-auth')?.classList.remove('hidden');
     toggleSocialProof(true);
     clearFormStatus();
@@ -94,71 +96,74 @@
    */
   window.mostrarRecuperacion = function () {
     hideAllAuthCards();
+    document.getElementById('login-card-auth')?.classList.add('hidden');
+    document.getElementById('login-card-register')?.classList.add('hidden');
     document.getElementById('login-card-recovery')?.classList.remove('hidden');
     toggleSocialProof(false);
     clearFormStatus();
   };
 
   /**
-   * Shows the password reset form with pre-filled email and token.
+   * Shows the reset password form with pre-filled email and token.
    * @global
-   * @function mostrarReset
-   * @param {string} email - The user's email address.
-   * @param {string} token - The password reset token.
+   * @function mostrarResetPassword
+   * @param {string} email - The user's email.
+   * @param {string} token - The reset token.
    */
-  window.mostrarReset = function (email, token) {
+  window.mostrarResetPassword = function (email, token) {
     hideAllAuthCards();
     const resetCard = document.getElementById('login-card-reset');
     if (resetCard) {
       resetCard.classList.remove('hidden');
-      // Pre-fill email and token
       document.getElementById('reset-email').value = email || '';
       document.getElementById('reset-token').value = token || '';
       document.getElementById('reset-code').value = token || ''; // Show token in code field for UX
+      toggleSocialProof(false);
+      clearFormStatus();
     }
-    toggleSocialProof(false);
-    clearFormStatus();
   };
 
-  // Also handle the "back to login" links in register/recovery/reset
-  const showLoginFromReg = document.getElementById('show-login');
-  if (showLoginFromReg) {
-    showLoginFromReg.addEventListener('click', e => {
-      e.preventDefault();
-      window.mostrarLogin();
-    });
-  }
+  // Initialize form switch links
+  function initFormSwitchLinks() {
+    const showLoginFromReg = document.getElementById('show-login');
+    if (showLoginFromReg) {
+      showLoginFromReg.addEventListener('click', e => {
+        e.preventDefault();
+        window.mostrarLogin();
+      });
+    }
 
-  const showLoginFromRecovery = document.getElementById('show-login-from-recovery');
-  if (showLoginFromRecovery) {
-    showLoginFromRecovery.addEventListener('click', e => {
-      e.preventDefault();
-      window.mostrarLogin();
-    });
-  }
+    const showLoginFromRecovery = document.getElementById('show-login-from-recovery');
+    if (showLoginFromRecovery) {
+      showLoginFromRecovery.addEventListener('click', e => {
+        e.preventDefault();
+        window.mostrarLogin();
+      });
+    }
 
-  const showLoginFromReset = document.getElementById('show-login-from-reset');
-  if (showLoginFromReset) {
-    showLoginFromReset.addEventListener('click', e => {
-      e.preventDefault();
-      window.mostrarLogin();
-    });
-  }
+    const showLoginFromReset = document.getElementById('show-login-from-reset');
+    if (showLoginFromReset) {
+      showLoginFromReset.addEventListener('click', e => {
+        e.preventDefault();
+        window.mostrarLogin();
+      });
+    }
 
-  const showRegister = document.getElementById('show-register');
-  if (showRegister) {
-    showRegister.addEventListener('click', e => {
-      e.preventDefault();
-      window.mostrarRegistro();
-    });
-  }
+    const showRegister = document.getElementById('show-register');
+    if (showRegister) {
+      showRegister.addEventListener('click', e => {
+        e.preventDefault();
+        window.mostrarRegistro();
+      });
+    }
 
-  const showRecovery = document.getElementById('show-recovery');
-  if (showRecovery) {
-    showRecovery.addEventListener('click', e => {
-      e.preventDefault();
-      window.mostrarRecuperacion();
-    });
+    const showRecovery = document.getElementById('show-recovery');
+    if (showRecovery) {
+      showRecovery.addEventListener('click', e => {
+        e.preventDefault();
+        window.mostrarRecuperacion();
+      });
+    }
   }
 
   /**
@@ -197,300 +202,206 @@
   }
 
   // ============================================================================
-  // Form validation & submission
+  // Form submission handlers
   // ============================================================================
-  /**
-   * Sets the status message for a form.
-   * @param {string} formId - The ID of the form.
-   * @param {string} message - The message to display.
-   * @param {boolean} isError - Whether the message is an error.
-   */
-  function setFormStatus(formId, message, isError = false) {
-    const statusEl = document.getElementById(`${formId.replace('-form', '')}-status`);
-    if (!statusEl) return;
-    statusEl.textContent = message;
-    statusEl.className = `form-status${isError ? ' form-status-error' : ''}`;
-  }
 
   /**
-   * Sets the submitting state of a button.
-   * @param {HTMLButtonElement} button - The button element.
-   * @param {boolean} submitting - Whether the form is submitting.
-   */
-  function setSubmitting(button, submitting) {
-    if (!button) return;
-    button.classList.toggle('submitting', submitting);
-    if (submitting) {
-      button.disabled = true;
-    } else {
-      button.disabled = false;
-    }
-  }
-
-  /**
-   * Validates that an email domain is allowed.
-   * @param {string} formId - The ID of the form.
-   * @param {string} email - The email address to validate.
-   * @returns {boolean} True if the domain is allowed, false otherwise.
-   */
-  function validateEmailDomain(formId, email) {
-    if (!isAllowedDomain(email)) {
-      const input = document.getElementById(
-        formId === 'register-form' ? 'register-email' : 'login-email'
-      );
-      const bowl = input?.closest('.bowl');
-      if (bowl) bowl.classList.add('error');
-      setFormStatus(
-        formId,
-        'El dominio de tu correo no está permitido. Usa Gmail, Outlook, Hotmail, iCloud, Live o Yahoo.',
-        true
-      );
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Handles form submission for auth forms.
+   * Handles form submission for login, register, recovery, reset.
    * @param {HTMLFormElement} form - The form element.
-   * @param {string} endpoint - The API endpoint to call.
-   * @param {string} successMessage - Message to show on success.
-   * @param {string} redirectScreen - Screen to redirect to after success.
+   * @param {string} endpoint - The API endpoint.
+   * @param {Function} onSuccess - Callback on successful submission.
+   * @param {Object} [options] - Additional options.
+   * @param {boolean} [options.validatePasswordConfirmation=false] - Whether to validate password confirmation.
    */
-  async function handleSubmit(form, endpoint, successMessage, redirectScreen) {
+  function handleFormSubmit(form, endpoint, onSuccess, options = {}) {
+    const { validatePasswordConfirmation = false } = options;
     const formId = form.id;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const bowls = form.querySelectorAll('.bowl');
 
-    // Validate
-    let valid = true;
-    bowls.forEach(bowl => {
-      const input = bowl.querySelector('.bowl-input');
-      if (input && !input.checkValidity()) {
-        bowl.classList.add('error');
-        valid = false;
-      } else if (input) {
-        bowl.classList.remove('error');
-      }
-    });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
 
-    // Password confirmation check for register
-    if (formId === 'register-form') {
-      const pwd = form.querySelector('#register-password');
-      const pwdConfirm = form.querySelector('#register-password-confirmation');
-      if (pwd && pwdConfirm && pwd.value !== pwdConfirm.value) {
-        pwdConfirm.closest('.bowl').classList.add('error');
-        setFormStatus(formId, 'Las contraseñas no coinciden', true);
-        valid = false;
-      }
+      const statusEl = document.getElementById(`${formId.replace('-form', '')}-status`);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const bowls = form.querySelectorAll('.bowl');
 
-      // Terms checkbox validation
-      const termsCheckbox = form.querySelector('#register-terms');
-      if (termsCheckbox && !termsCheckbox.checked) {
-        termsCheckbox.closest('.bowl').classList.add('error');
-        setFormStatus(formId, 'Debes aceptar los términos y condiciones', true);
-        valid = false;
-      }
-
-      // Email domain validation
-      const emailInput = form.querySelector('#register-email');
-      if (emailInput && !validateEmailDomain(formId, emailInput.value)) {
-        valid = false;
-      }
-    }
-
-    // Email domain validation for login
-    if (formId === 'login-form') {
-      const emailInput = form.querySelector('#login-email');
-      if (emailInput && !validateEmailDomain(formId, emailInput.value)) {
-        valid = false;
-      }
-    }
-
-    // Password confirmation check for reset
-    if (formId === 'reset-form') {
-      const pwd = form.querySelector('#reset-password');
-      const pwdConfirm = form.querySelector('#reset-password-confirmation');
-      if (pwd && pwdConfirm && pwd.value !== pwdConfirm.value) {
-        pwdConfirm.closest('.bowl').classList.add('error');
-        setFormStatus(formId, 'Las contraseñas no coinciden', true);
-        valid = false;
-      }
-    }
-
-    if (!valid) return;
-
-    setSubmitting(submitBtn, true);
-    setFormStatus(formId, 'Procesando...', false);
-
-    try {
-      const formData = new FormData(form);
-      const payload = {};
-      formData.forEach((value, key) => {
-        payload[key] = value;
+      // Validate required fields
+      let hasError = false;
+      bowls.forEach(bowl => {
+        const input = bowl.querySelector('.bowl-input');
+        if (input && input.required && !input.value.trim()) {
+          bowl.classList.add('error');
+          hasError = true;
+        } else if (input) {
+          bowl.classList.remove('error');
+        }
       });
 
-      // For reset form, send email, token (as code), and newPassword
-      if (formId === 'reset-form') {
-        payload.token = payload.code;
-        delete payload.code;
-        delete payload.newPasswordConfirmation;
+      // Validate password confirmation if needed
+      if (validatePasswordConfirmation) {
+        const pwd = form.querySelector('#register-password');
+        const pwdConfirm = form.querySelector('#register-password-confirmation');
+        if (pwd && pwdConfirm && pwd.value !== pwdConfirm.value) {
+          if (pwdConfirm.closest('.bowl')) {
+            pwdConfirm.closest('.bowl').classList.add('error');
+          }
+          hasError = true;
+        }
       }
 
-      const baseUrl = window.API_BASE_URL || 'http://localhost:5143';
-      const response = await fetch(`${baseUrl}/api/auth/${endpoint}`, {
+      // Validate terms checkbox
+      if (formId === 'register-form') {
+        const termsCheckbox = form.querySelector('#register-terms');
+        if (termsCheckbox && !termsCheckbox.checked) {
+          hasError = true;
+        }
+      }
+
+      if (hasError) {
+        if (statusEl) {
+          statusEl.textContent = 'Por favor, completa todos los campos requeridos.';
+          statusEl.className = 'form-status form-status-error';
+        }
+        return;
+      }
+
+      if (statusEl) {
+        statusEl.textContent = formId === 'login-form' ? 'Iniciando sesión...' : 'Procesando...';
+        statusEl.className = 'form-status';
+      }
+      if (submitBtn) submitBtn.disabled = true;
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      // Remove confirmation fields from payload
+      delete payload.passwordConfirmation;
+
+      fetch(`${window.API_BASE_URL || 'http://localhost:5143'}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-        credentials: 'include',
-      });
+      })
+        .then(async response => {
+          const responseText = await response.text();
+          let result = {};
+          try {
+            result = responseText ? JSON.parse(responseText) : {};
+          } catch {
+            throw new Error('El servidor devolvió una respuesta no válida. Comprueba que la API esté actualizada.');
+          }
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(
-          err.message ||
-            (response.status === 401 ? 'Credenciales incorrectas' : 'Error del servidor')
-        );
-      }
+          if (!response.ok) throw new Error(result.message || 'Error en la solicitud.');
 
-      const data = await response.json();
+          if (statusEl) {
+            statusEl.textContent = formId === 'login-form' ? '¡Bienvenido! Redirigiendo...' : '¡Cuenta creada! Iniciando sesión...';
+            statusEl.className = 'form-status form-status-success';
+          }
 
-      // On login/register success, store user and redirect
-      if (endpoint === 'login' || endpoint === 'register') {
-        // Store JWT token and user data
-        if (data.token) localStorage.setItem('auth_token', data.token);
-        const userName = data.fullName || data.nombre_completo || data.name || 'Usuario';
-        localStorage.setItem(
-          'user_data',
-          JSON.stringify({
-            id: data.id,
-            fullName: userName,
-            email: data.email,
-            avatar: data.avatar || {
-              color: '#4adecd',
-              initials: userName
-                .split(' ')
-                .map(n => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 3),
-            },
-          })
-        );
-        localStorage.setItem('entrena-user', JSON.stringify(data)); // Legacy compatibility
+          onSuccess(result, form, formId);
+        })
+        .catch(error => {
+          if (statusEl) {
+            statusEl.textContent = error.message;
+            statusEl.className = 'form-status form-status-error';
+          }
+        })
+        .finally(() => {
+          if (submitBtn) submitBtn.disabled = false;
+        });
+    });
+  }
 
-        setFormStatus(formId, successMessage || '¡Bienvenido!', false);
-        submitBtn.classList.remove('submitting');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i data-lucide="check" style="width:20px;height:20px;"></i>';
-        submitBtn.style.background = 'var(--pigment-teal)';
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-
+  // ============================================================================
+  // Login form
+  // ============================================================================
+  function initLoginForm() {
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      handleFormSubmit(loginForm, '/api/auth/login', (result, form) => {
+        localStorage.setItem('entrena-user', JSON.stringify(result));
+        form.reset();
         setTimeout(() => {
-          submitBtn.innerHTML = '<span class="btn-text">Iniciar sesión</span>';
-          submitBtn.style.background = '';
-          if (typeof lucide !== 'undefined') lucide.createIcons();
-          window.switchScreen(redirectScreen || 'screen-progress');
+          window.switchScreen('screen-progress');
           window.dispatchEvent(new Event('user-authenticated'));
-        }, 800);
-      } else if (endpoint === 'recovery') {
-        // Recovery success - show reset screen with token (for dev: token is logged to console)
-        setFormStatus(formId, 'Se ha enviado un código de recuperación a tu correo.', false);
-        setSubmitting(submitBtn, false);
-
-        // For development: show reset screen immediately with the token
-        // In production, this would be via email link with token in URL
-        const email = payload.email;
-        // Check if API returned devToken (dev mode only)
-        const devToken = data.devToken;
-        if (devToken) {
-          setTimeout(() => {
-            window.mostrarReset(email, devToken);
-          }, 1500);
-        }
-      } else if (endpoint === 'reset-password') {
-        // Reset password success
-        setFormStatus(
-          formId,
-          successMessage ||
-            'Contraseña restablecida correctamente. Redirigiendo al inicio de sesión...',
-          false
-        );
-        setSubmitting(submitBtn, false);
-
-        setTimeout(() => {
-          window.mostrarLogin();
-        }, 1500);
-      }
-    } catch (error) {
-      setFormStatus(formId, error.message, true);
-      setSubmitting(submitBtn, false);
+        }, 500);
+      });
     }
   }
 
-  // Login form
-  const loginForm = document.getElementById('login-form');
-  if (loginForm) {
-    loginForm.addEventListener('submit', e => {
-      e.preventDefault();
-      handleSubmit(loginForm, 'login', '¡Accediendo...', 'screen-progress');
-    });
-  }
-
+  // ============================================================================
   // Register form
-  const registerForm = document.getElementById('register-form');
-  if (registerForm) {
-    registerForm.addEventListener('submit', e => {
-      e.preventDefault();
-      handleSubmit(registerForm, 'register', '¡Cuenta creada!', 'screen-progress');
-    });
+  // ============================================================================
+  function initRegisterForm() {
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      handleFormSubmit(registerForm, '/api/auth/register', (result, form) => {
+        localStorage.setItem('entrena-user', JSON.stringify(result));
+        form.reset();
+        setTimeout(() => {
+          window.switchScreen('screen-progress');
+          window.dispatchEvent(new Event('user-authenticated'));
+        }, 500);
+      }, { validatePasswordConfirmation: true });
+    }
   }
 
+  // ============================================================================
   // Recovery form
-  const recoveryForm = document.getElementById('recovery-form');
-  if (recoveryForm) {
-    recoveryForm.addEventListener('submit', e => {
-      e.preventDefault();
-      handleSubmit(
-        recoveryForm,
-        'recovery',
-        'Si el correo existe, recibirás instrucciones para restablecer tu contraseña'
-      );
-    });
+  // ============================================================================
+  function initRecoveryForm() {
+    const recoveryForm = document.getElementById('recovery-form');
+    if (recoveryForm) {
+      handleFormSubmit(recoveryForm, '/api/auth/forgot-password', (result) => {
+        if (result && result.token) {
+          window.mostrarResetPassword(result.email, result.token);
+        }
+      });
+    }
   }
 
-  // Reset form
-  const resetForm = document.getElementById('reset-form');
-  if (resetForm) {
-    resetForm.addEventListener('submit', e => {
-      e.preventDefault();
-      handleSubmit(resetForm, 'reset-password', 'Contraseña restablecida correctamente');
-    });
+  // ============================================================================
+  // Reset password form
+  // ============================================================================
+  function initResetForm() {
+    const resetForm = document.getElementById('reset-form');
+    if (resetForm) {
+      handleFormSubmit(resetForm, '/api/auth/reset-password', (result) => {
+        if (result && result.token) {
+          localStorage.setItem('entrena-user', JSON.stringify(result));
+          setTimeout(() => {
+            window.switchScreen('screen-progress');
+            window.dispatchEvent(new Event('user-authenticated'));
+          }, 500);
+        }
+      });
+    }
   }
 
   // ============================================================================
   // "Forgot password" link in login form
   // ============================================================================
-  const showRecoveryLink = document.getElementById('show-recovery');
-  if (!showRecoveryLink) {
-    // Add "Forgot password" link to login form if not present
-    const loginFormEl = document.getElementById('login-form');
-    if (loginFormEl) {
-      const statusEl = document.getElementById('login-status');
-      if (statusEl && statusEl.nextElementSibling) {
-        const forgotLink = document.createElement('a');
-        forgotLink.href = '#';
-        forgotLink.className = 'login-link washi-tape';
-        forgotLink.id = 'show-recovery';
-        forgotLink.textContent = '¿Olvidaste tu contraseña?';
-        forgotLink.style.display = 'block';
-        forgotLink.style.marginTop = 'var(--space-sm)';
-        statusEl.insertAdjacentElement('afterend', forgotLink);
+  function initForgotPasswordLink() {
+    const showRecoveryLink = document.getElementById('show-recovery');
+    if (!showRecoveryLink) {
+      // Add "Forgot password" link to login form if not present
+      const loginFormEl = document.getElementById('login-form');
+      if (loginFormEl) {
+        const statusEl = document.getElementById('login-status');
+        if (statusEl && statusEl.nextElementSibling) {
+          const forgotLink = document.createElement('a');
+          forgotLink.href = '#';
+          forgotLink.className = 'login-link washi-tape';
+          forgotLink.id = 'show-recovery';
+          forgotLink.textContent = '¿Olvidaste tu contraseña?';
+          forgotLink.style.display = 'block';
+          forgotLink.style.marginTop = 'var(--space-sm)';
+          statusEl.insertAdjacentElement('afterend', forgotLink);
 
-        forgotLink.addEventListener('click', e => {
-          e.preventDefault();
-          window.mostrarRecuperacion();
-        });
+          forgotLink.addEventListener('click', e => {
+            e.preventDefault();
+            window.mostrarRecuperacion();
+          });
+        }
       }
     }
   }
@@ -547,42 +458,70 @@
       <li>Acceder, rectificar o eliminar tus datos</li>
       <li>Exportar tus datos (portabilidad)</li>
       <li>Retirar consentimiento en cualquier momento</li>
-      <li>Oponerte al procesamiento</li>
     </ul>
-    <p>Ejercita tus derechos en: perfil → configuración → eliminar cuenta, o contactando a privacidad@entrenatuser.com</p>
-    <h4>5. Retención</h4>
-    <p>Mantenemos tus datos mientras tu cuenta esté activa. Tras eliminación, se anonimizan o borran en 30 días salvo obligación legal.</p>
-    <h4>6. Seguridad</h4>
-    <p>Usamos encriptación (TLS/HTTPS), hashing de contraseñas (PBKDF2), JWT para sesiones, y medidas técnicas/organizativas apropiadas.</p>
-    <h4>7. Menores de edad</h4>
-    <p>La plataforma no está dirigida a menores de 16 años. No recopilamos datos de menores intencionadamente.</p>
-    <h4>8. Cambios</h4>
-    <p>Publicaremos cambios en esta página. Uso continuado implica aceptación.</p>
+    <h4>5. Seguridad</h4>
+    <p>Usamos medidas técnicas y organizativas apropiadas para proteger tus datos. Sin embargo, ninguna transmisión por Internet es 100% segura.</p>
+    <h4>6. Retención</h4>
+    <p>Conservamos tus datos mientras tu cuenta esté activa o según lo requiera la ley. Puedes solicitar la eliminación en cualquier momento.</p>
+    <h4>7. Contacto</h4>
+    <p>Para ejercer tus derechos: <a href="mailto:privacidad@entrenatuser.es">privacidad@entrenatuser.es</a></p>
   `;
 
+  const legalCookies = `
+    <h3>Política de Cookies</h3>
+    <p>Última actualización: 24 de noviembre de 2026</p>
+    <h4>1. ¿Qué son las cookies?</h4>
+    <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web.</p>
+    <h4>2. Tipos de cookies que usamos</h4>
+    <ul>
+      <li><strong>Esenciales:</strong> Necesarias para el funcionamiento (sesión, autenticación, seguridad). No se pueden desactivar.</li>
+      <li><strong>Preferencias:</strong> Guardan tus ajustes (tema, idioma, accesibilidad).</li>
+      <li><strong>Analíticas:</strong> Nos ayudan a entender cómo usas la plataforma (anónimas).</li>
+    </ul>
+    <h4>3. Gestión de cookies</h4>
+    <p>Puedes configurar tu navegador para bloquear o alertar sobre cookies, pero algunas funciones podrían no funcionar.</p>
+    <h4>4. Cookies de terceros</h4>
+    <p>No usamos cookies de publicidad de terceros.</p>
+  `;
+
+  const legalContact = `
+    <h3>Contacto</h3>
+    <p>Si tienes preguntas, sugerencias o necesitas ayuda:</p>
+    <ul>
+      <li>Email: <a href="mailto:soporte@entrenatuser.es">soporte@entrenatuser.es</a></li>
+      <li>Privacidad: <a href="mailto:privacidad@entrenatuser.es">privacidad@entrenatuser.es</a></li>
+    </ul>
+    <p>Responderemos lo antes posible.</p>
+  `;
+
+  const legalContentMap = {
+    terms: legalTerms,
+    privacy: legalPrivacy,
+    cookies: legalCookies,
+    contact: legalContact,
+  };
+
   /**
-   * Opens the legal modal (Terms or Privacy).
-   * @param {string} type - The type of legal content to show: 'terms' or 'privacy'.
+   * Opens a legal modal with the specified content.
+   * @param {string} type - The type of legal content ('terms', 'privacy', 'cookies', 'contact').
    */
   function openLegalModal(type) {
     const modal = document.getElementById('legal-modal');
     const title = document.getElementById('legal-modal-title');
     const content = document.getElementById('legal-modal-content');
-
     if (!modal || !title || !content) return;
 
-    if (type === 'privacy') {
-      title.textContent = 'Política de Privacidad';
-      content.innerHTML = legalPrivacy;
-    } else {
-      title.textContent = 'Términos y Condiciones';
-      content.innerHTML = legalTerms;
-    }
+    const titles = {
+      terms: 'Términos y Condiciones',
+      privacy: 'Política de Privacidad',
+      cookies: 'Política de Cookies',
+      contact: 'Contacto',
+    };
 
+    title.textContent = titles[type] || 'Información legal';
+    content.innerHTML = legalContentMap[type] || '';
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-
-    // Focus trap
     const closeBtn = modal.querySelector('.modal-close, #legal-modal-close');
     if (closeBtn) closeBtn.focus();
   }
@@ -597,45 +536,68 @@
     document.body.style.overflow = '';
   }
 
-  // Event delegation for legal links
-  document.addEventListener('click', e => {
-    const link = e.target.closest('a.washi-tape');
-    if (!link) return;
+  // Initialize legal modal handlers
+  function initLegalModal() {
+    // Event delegation for legal links
+    document.addEventListener('click', e => {
+      const link = e.target.closest('a.washi-tape');
+      if (!link) return;
 
-    const href = link.getAttribute('href');
-    if (href === '#' && link.textContent.includes('términos')) {
-      e.preventDefault();
-      openLegalModal('terms');
-    } else if (href === '#' && link.textContent.includes('privacidad')) {
-      e.preventDefault();
-      openLegalModal('privacy');
-    }
-  });
-
-  // Close modal handlers
-  const legalModal = document.getElementById('legal-modal');
-  if (legalModal) {
-    legalModal.querySelectorAll('.modal-close, #legal-modal-close').forEach(btn => {
-      btn.addEventListener('click', closeLegalModal);
-    });
-    // Close on backdrop click
-    legalModal.addEventListener('click', e => {
-      if (e.target === legalModal) closeLegalModal();
-    });
-    // Close on Escape key
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && !legalModal.classList.contains('hidden')) {
-        closeLegalModal();
+      const href = link.getAttribute('href');
+      if (href === '#' && link.textContent.includes('términos')) {
+        e.preventDefault();
+        openLegalModal('terms');
+      } else if (href === '#' && link.textContent.includes('privacidad')) {
+        e.preventDefault();
+        openLegalModal('privacy');
+      } else if (href === '#' && link.textContent.includes('cookies')) {
+        e.preventDefault();
+        openLegalModal('cookies');
+      } else if (href === '#' && link.textContent.includes('contacto')) {
+        e.preventDefault();
+        openLegalModal('contact');
       }
     });
+
+    // Close modal handlers
+    const legalModal = document.getElementById('legal-modal');
+    if (legalModal) {
+      legalModal.querySelectorAll('.modal-close, #legal-modal-close').forEach(btn => {
+        btn.addEventListener('click', closeLegalModal);
+      });
+      // Close on backdrop click
+      legalModal.addEventListener('click', e => {
+        if (e.target === legalModal) closeLegalModal();
+      });
+      // Close on Escape key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !legalModal.classList.contains('hidden')) {
+          closeLegalModal();
+        }
+      });
+    }
   }
 
   // ============================================================================
-  // Initialize on DOM ready
+  // Initialize all auth functionality on DOM ready
   // ============================================================================
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFloatingLabels);
-  } else {
+  function initAuth() {
+    initFormSwitchLinks();
     initFloatingLabels();
+    initLoginForm();
+    initRegisterForm();
+    initRecoveryForm();
+    initResetForm();
+    initForgotPasswordLink();
+    initLegalModal();
+    // Initialize lucide icons
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAuth);
+  } else {
+    initAuth();
   }
 })();

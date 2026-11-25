@@ -1,20 +1,22 @@
-const exerciseList = document.getElementById('exercise-list');
-const selectedExercisePanel = document.getElementById('selected-exercise-panel');
-const selectedExerciseTitle = document.getElementById('selected-exercise-title');
-const selectedExerciseDescription = document.getElementById('selected-exercise-description');
-const exerciseVideo = document.getElementById('exercise-video');
-const getYoutubeContainer = () => document.getElementById('exercise-youtube');
-const trainingControls = document.getElementById('training-controls');
-const trainingProgressLabel = document.getElementById('training-progress-label');
-const trainingTimer = document.getElementById('training-timer');
-const trainingPhase = document.getElementById('training-phase');
-const trainingProgressBar = document.getElementById('training-progress-bar');
-const trainingProgressTrack = document.querySelector('.training-progress-track');
-const trainingPauseButton = document.getElementById('training-pause');
-const trainingPreviousButton = document.getElementById('training-previous');
-const trainingNextButton = document.getElementById('training-next');
-const trainingRestSelect = document.getElementById('training-rest');
-const trainingRestSkipButton = document.getElementById('training-rest-skip');
+// Cache DOM elements - will be populated after DOM is ready
+let exerciseList = null;
+let selectedExercisePanel = null;
+let selectedExerciseTitle = null;
+let selectedExerciseDescription = null;
+let exerciseVideo = null;
+let getYoutubeContainer = () => document.getElementById('exercise-youtube');
+let trainingControls = null;
+let trainingProgressLabel = null;
+let trainingTimer = null;
+let trainingPhase = null;
+let trainingProgressBar = null;
+let trainingProgressTrack = null;
+let trainingPauseButton = null;
+let trainingPreviousButton = null;
+let trainingNextButton = null;
+let trainingRestSelect = null;
+let trainingRestSkipButton = null;
+
 const apiBaseUrl = window.API_BASE_URL || 'http://localhost:5143';
 const exercisesEndpoint = `${apiBaseUrl}/api/exercises`;
 let trainingTimerId = null;
@@ -74,9 +76,37 @@ window.onYouTubeIframeAPIReady = function () {
   }
 };
 
-if (exerciseVideo) {
-  exerciseVideo.addEventListener('play', () => beginTrainingTimer());
-  exerciseVideo.addEventListener('pause', () => pauseTrainingTimer());
+// Initialize exercises module after DOM is ready
+function initExercises() {
+  exerciseList = document.getElementById('exercise-list');
+  selectedExercisePanel = document.getElementById('selected-exercise-panel');
+  selectedExerciseTitle = document.getElementById('selected-exercise-title');
+  selectedExerciseDescription = document.getElementById('selected-exercise-description');
+  exerciseVideo = document.getElementById('exercise-video');
+  getYoutubeContainer = () => document.getElementById('exercise-youtube');
+  trainingControls = document.getElementById('training-controls');
+  trainingProgressLabel = document.getElementById('training-progress-label');
+  trainingTimer = document.getElementById('training-timer');
+  trainingPhase = document.getElementById('training-phase');
+  trainingProgressBar = document.getElementById('training-progress-bar');
+  trainingProgressTrack = document.querySelector('.training-progress-track');
+  trainingPauseButton = document.getElementById('training-pause');
+  trainingPreviousButton = document.getElementById('training-previous');
+  trainingNextButton = document.getElementById('training-next');
+  trainingRestSelect = document.getElementById('training-rest');
+  trainingRestSkipButton = document.getElementById('training-rest-skip');
+
+  if (exerciseVideo) {
+    exerciseVideo.addEventListener('play', () => beginTrainingTimer());
+    exerciseVideo.addEventListener('pause', () => pauseTrainingTimer());
+  }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initExercises);
+} else {
+  initExercises();
 }
 
 function renderExercises(exercises, routineExerciseIds = null, routineExercises = null) {
