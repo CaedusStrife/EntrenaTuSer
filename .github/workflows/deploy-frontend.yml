@@ -42,3 +42,4 @@ jobs:
           app_name: 'EntrenaTuSer'
           production_branch: 'main'
           action: 'upload'
+          skip_app_build: true
