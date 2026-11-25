@@ -16,6 +16,9 @@ class AccordionController {
             const content = accordion.querySelector('.accordion-content');
             const icon = accordion.querySelector('.accordion-icon');
 
+            // Null check - skip accordions without proper header
+            if (!summary) return;
+
             // Initialize ARIA attributes
             summary.setAttribute('role', 'button');
             summary.setAttribute('aria-expanded', String(accordion.open));

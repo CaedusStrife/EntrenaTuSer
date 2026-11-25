@@ -20,7 +20,7 @@ class MapPlacesPanel {
     }
 
     init() {
-        if (!this.panel) return;
+        if (!this.panel || !this.handle) return;
 
         // Handle click to toggle panel
         this.handle.addEventListener('click', () => this.togglePanel());
