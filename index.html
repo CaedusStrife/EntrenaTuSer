@@ -6,23 +6,21 @@
   <title>Entrena Tu Ser - Plataforma Web</title>
   <meta name="description" content="Plataforma de fitness personal - Entrena Tu Ser. Entrena con rutinas personalizadas, seguimiento de progreso y más.">
   <meta name="theme-color" content="#4adecd">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="manifest" href="manifest.webmanifest">
-  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+
   <!-- Resource Hints: preconnect to font origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
+
   <!-- Fonts: Playfair Display (headlines) + Outfit (body) -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  
-  <!-- Preload critical CSS (Vite will inject the actual CSS) -->
-  <link rel="preload" href="css/styless.css?v=31" as="style">
-  <link rel="stylesheet" href="css/styless.css?v=31">
-  
+
   <!-- Leaflet CSS (from CDN for map screen) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+  <!-- Vite will inject the actual CSS and JS -->
 </head>
 <body>
   <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -44,7 +42,7 @@
       <div class="comb-trail trail-3" aria-hidden="true"></div>
     </div>
     <div class="login-container" role="main">
-      
+
       <!-- Sub-screen 1A: Login -->
       <div id="login-card-auth" class="auth-form form-bowls" role="region" aria-label="Iniciar sesión">
         <header class="login-header">
@@ -358,7 +356,7 @@
   <!-- ==================== APP LAYOUT (Post-login) ==================== -->
   <div id="app-layout" class="app-layout hidden">
     <main id="main-content" class="app-main" role="main">
-      
+
       <!-- ==================== PROGRESS SCREEN ==================== -->
       <section id="screen-progress" class="screen-tab active" aria-labelledby="progress-title">
         <!-- Hero -->
@@ -570,7 +568,7 @@
                 </div>
               </div>
               <div class="video-wrapper">
-                <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="images/video-entrenamiento.svg" aria-label="Video del ejercicio"></video>
+                <video id="exercise-video" class="printed-video" controls loop playsinline preload="metadata" poster="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgMzYwIiB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCI+DQogIDxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlOGY0ZjgiLz4NCiAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTgwIiByPSI2MCIgZmlsbD0iI2ZmNmIzNSIgb3BhY2l0eT0iMC4yIi8+DQogIDxwb2x5Z29uIHBvaW50cz0iMzAwLDE1MCAzMDAsMjEwIDM2MCwxODAiIGZpbGw9IiNmZjZiMzUiLz4NCiAgPHRleHQgeD0iMzIwIiB5PSIyNzAiIGZvbnQtZmFtaWx5PSJETSBTYW5zLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNmI2NzYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WaWRlbyBkZSBlbnRyZW5hbWllbnRvPC90ZXh0Pg0KPC9zdmc+" aria-label="Video del ejercicio"></video>
                 <div id="exercise-youtube" class="printed-video" style="display:none; width:100%; height:100%;" title="Video demostrativo del ejercicio" aria-label="Video alternativo en YouTube"></div>
               </div>
               <p id="selected-exercise-description" class="video-caption"></p>
@@ -793,312 +791,649 @@
                     </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label" for="routine-estimated-time">Tiempo estimado (min)</label>
-                  <input id="routine-estimated-time" type="number" min="5" max="180" value="30" required class="form-input">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="routine-duration">Duración estimada</label>
+                    <select id="routine-duration" required class="form-select">
+                      <option value="10">10 min</option>
+                      <option value="15">15 min</option>
+                      <option value="20" selected>20 min</option>
+                      <option value="30">30 min</option>
+                      <option value="45">45 min</option>
+                      <option value="60">60 min</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="routine-frequency">Frecuencia semanal</label>
+                    <select id="routine-frequency" required class="form-select">
+                      <option value="2">2 días</option>
+                      <option value="3" selected>3 días</option>
+                      <option value="4">4 días</option>
+                      <option value="5">5 días</option>
+                      <option value="6">6 días</option>
+                    </select>
+                  </div>
                 </div>
               </section>
 
               <!-- Step 2: Exercises -->
               <section class="wizard-panel" data-panel="2" aria-labelledby="step2-heading">
-                <h3 id="step2-heading" class="visually-hidden">Paso 2: Seleccionar ejercicios</h3>
-                <div class="exercise-selector">
-                  <div class="selector-search" style="position: relative; margin-bottom: var(--space-md);">
-                    <label class="visually-hidden" for="exercise-search">Buscar ejercicios</label>
-                    <input type="text" id="exercise-search" placeholder="Buscar ejercicio..." class="form-input" style="padding-right: 44px;" autocomplete="off">
-                    <i data-lucide="search" aria-hidden="true" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-light); pointer-events: none; width: 20px; height: 20px;"></i>
-                  </div>
-                  <div class="selector-filters" role="group" aria-label="Filtrar por categoría" style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); flex-wrap: wrap;">
-                    <button type="button" class="filter-chip active" data-category="all" aria-pressed="true" style="padding: 8px 16px; background: var(--water); border: 1px solid var(--fiber); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 600; color: var(--ink); cursor: pointer;">Todos</button>
-                    <button type="button" class="filter-chip" data-category="strength" aria-pressed="false" style="padding: 8px 16px; background: var(--water); border: 1px solid var(--fiber); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 600; color: var(--ink); cursor: pointer;">Fuerza</button>
-                    <button type="button" class="filter-chip" data-category="cardio" aria-pressed="false" style="padding: 8px 16px; background: var(--water); border: 1px solid var(--fiber); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 600; color: var(--ink); cursor: pointer;">Cardio</button>
-                    <button type="button" class="filter-chip" data-category="mobility" aria-pressed="false" style="padding: 8px 16px; background: var(--water); border: 1px solid var(--fiber); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 600; color: var(--ink); cursor: pointer;">Movilidad</button>
-                    <button type="button" class="filter-chip" data-category="core" aria-pressed="false" style="padding: 8px 16px; background: var(--water); border: 1px solid var(--fiber); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 600; color: var(--ink); cursor: pointer;">Core</button>
-                  </div>
-                  <div id="exercise-selector-list" class="list" role="listbox" aria-label="Ejercicios disponibles" style="max-height: 300px; overflow-y: auto;">
-                    <div class="skeleton skeleton-text" aria-hidden="true"></div>
-                    <div class="skeleton skeleton-text" aria-hidden="true"></div>
-                    <div class="skeleton skeleton-text" aria-hidden="true"></div>
-                  </div>
+                <h3 id="step2-heading" class="visually-hidden">Paso 2: Ejercicios</h3>
+                <div class="wizard-exercise-search">
+                  <label class="visually-hidden" for="wizard-exercise-search">Buscar ejercicio</label>
+                  <input type="search" id="wizard-exercise-search" placeholder="Buscar ejercicio..." class="form-input" aria-label="Buscar ejercicio">
                 </div>
-                <div class="selected-exercises" aria-label="Ejercicios añadidos a la rutina" style="margin-top: var(--space-lg);">
-                  <h4 style="margin-bottom: var(--space-sm); font-family: var(--font-display); font-size: var(--text-base);">Ejercicios en la rutina (<span id="selected-count">0</span>/12)</h4>
-                  <ul id="selected-exercises-list" class="list" role="list" aria-label="Lista ordenada de ejercicios" style="max-height: 200px; overflow-y: auto;">
-                    <li class="empty-state-center" style="padding: var(--space-lg); font-size: var(--text-sm);">Arrastra ejercicios aquí o haz clic en "+" para añadirlos</li>
-                  </ul>
+                <div class="wizard-exercise-categories" id="wizard-exercise-list" role="list">
+                  <!-- Populated by routineWizard.js -->
+                </div>
+                <div id="wizard-selected-exercises" class="wizard-selected" role="list" aria-label="Ejercicios seleccionados">
+                  <p class="wizard-selected-empty">No hay ejercicios añadidos. Busca y selecciona ejercicios de la lista.</p>
                 </div>
               </section>
 
               <!-- Step 3: Review -->
               <section class="wizard-panel" data-panel="3" aria-labelledby="step3-heading">
-                <h3 id="step3-heading" class="visually-hidden">Paso 3: Revisar y guardar</h3>
-                <div class="routine-summary" style="background: var(--water); border-radius: var(--radius-md); padding: var(--space-lg); margin-bottom: var(--space-lg);">
-                  <dl class="summary-grid" style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-sm) var(--space-md); font-size: var(--text-sm);">
-                    <dt style="color: var(--ink-muted);">Nombre</dt><dd id="summary-name" style="font-weight: 600; color: var(--ink);">—</dd>
-                    <dt style="color: var(--ink-muted);">Objetivo</dt><dd id="summary-goal" style="font-weight: 600; color: var(--ink);">—</dd>
-                    <dt style="color: var(--ink-muted);">Nivel</dt><dd id="summary-level" style="font-weight: 600; color: var(--ink);">—</dd>
-                    <dt style="color: var(--ink-muted);">Tiempo est.</dt><dd id="summary-time" style="font-weight: 600; color: var(--ink);">— min</dd>
-                    <dt style="color: var(--ink-muted);">Ejercicios</dt><dd id="summary-exercise-count" style="font-weight: 600; color: var(--ink);">0</dd>
-                  </dl>
-                  <div class="summary-exercises" style="margin-top: var(--space-lg);">
-                    <h4 style="font-family: var(--font-display); font-size: var(--text-base); margin-bottom: var(--space-sm);">Orden de ejercicios</h4>
-                    <ol id="summary-exercises-list" style="padding-left: var(--space-lg); color: var(--ink-muted); font-size: var(--text-sm);"></ol>
-                  </div>
+                <h3 id="step3-heading" class="visually-hidden">Paso 3: Revisar</h3>
+                <div class="wizard-review" id="wizard-review-content">
+                  <!-- Populated by routineWizard.js -->
                 </div>
               </section>
 
-              <div class="wizard-navigation">
-                <button type="button" class="btn btn-ghost" id="wizard-prev" onclick="routineWizardPrev()" aria-label="Paso anterior">Anterior</button>
-                <div class="wizard-actions">
-                  <button type="button" class="btn btn-ghost" id="wizard-next" onclick="routineWizardNext()" aria-label="Siguiente paso">Siguiente</button>
-                  <button type="submit" class="btn btn-primary hidden" id="wizard-submit" aria-label="Guardar rutina"><i data-lucide="save" aria-hidden="true"></i> Guardar rutina</button>
-                </div>
+              <div class="wizard-actions">
+                <button type="button" class="btn btn-ghost" id="wizard-prev" onclick="routineWizardPrev()" aria-label="Paso anterior"><i data-lucide="chevron-left" aria-hidden="true"></i> Anterior</button>
+                <button type="button" class="btn btn-primary" id="wizard-next" onclick="routineWizardNext()" aria-label="Paso siguiente">Siguiente <i data-lucide="chevron-right" aria-hidden="true"></i></button>
+                <button type="submit" class="btn btn-primary" id="wizard-submit" style="display: none;"><i data-lucide="save" aria-hidden="true"></i> Guardar rutina</button>
               </div>
             </form>
           </div>
         </div>
+
       </section>
 
       <!-- ==================== PROFILE SCREEN ==================== -->
       <section id="screen-profile" class="screen-tab" aria-labelledby="profile-title">
-        <header class="screen-hero" style="text-align: center; padding-bottom: var(--space-xl);">
-          <div id="profile-avatar-editor" class="profile-avatar-large" role="button" tabindex="0" aria-label="Editar avatar" aria-expanded="false">
-            <div id="profile-avatar-3d" class="hero-avatar" aria-hidden="true" style="width: 100%; height: 100%;"></div>
-            <div class="avatar-edit-overlay" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-xs); background: rgba(74,74,74,0.6); color: white; border-radius: inherit; opacity: 0; transition: opacity var(--transition-base);">
-              <i data-lucide="camera" aria-hidden="true" style="width: 24px; height: 24px;"></i>
-              <span style="font-size: var(--text-sm); font-weight: 600;">Cambiar</span>
+        <header class="screen-hero">
+          <div class="hero-main">
+            <div class="hero-title-group">
+              <h1 id="profile-title" class="hero-title">Mi <span>Perfil</span></h1>
+              <p class="hero-subtitle">Gestiona tu información y preferencias</p>
             </div>
           </div>
-          <h1 id="profile-title" class="hero-title" style="margin-top: var(--space-lg);">Mi <span>Perfil</span></h1>
-          <p class="hero-subtitle">Personaliza tu experiencia y preferencias.</p>
-          <div class="hero-profile-meta" style="margin-top: var(--space-md); display: flex; flex-direction: column; gap: 2px; align-items: center;">
-            <span id="profile-display-name" class="display-name" style="font-weight: 600; color: var(--ink);">Cargando...</span>
-            <span id="profile-display-email" class="display-email" style="color: var(--ink-muted); font-size: var(--text-sm);">cargando@ejemplo.com</span>
-          </div>
-          <button type="button" class="btn btn-ghost btn-sm" id="edit-profile-trigger" style="margin-top: var(--space-lg);" aria-label="Editar información personal"><i data-lucide="edit-2" aria-hidden="true"></i> Editar perfil</button>
         </header>
 
-        <div id="profile-content" class="profile-content" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-xl);">
-          <!-- Personal Info Section (Display + Edit Button) -->
-          <section class="form-section">
-            <h3 class="form-section-title"><i data-lucide="user" aria-hidden="true"></i> Información Personal</h3>
-            <div class="profile-info-display" style="display: flex; flex-direction: column; gap: var(--space-md);">
-              <div class="info-row" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md); background: var(--water); border-radius: var(--radius-md); border: 1px solid var(--fiber);">
-                <div>
-                  <span class="info-label" style="font-size: var(--text-sm); color: var(--ink-muted);">Nombre completo</span>
-                  <span id="profile-info-name" class="info-value" style="display: block; font-weight: 600; color: var(--ink); margin-top: 2px;">—</span>
-                </div>
+        <div class="profile-layout" style="display: flex; flex-direction: column; gap: var(--space-xl); flex: 1;">
+
+          <!-- Avatar & Basic Info -->
+          <section class="profile-hero" aria-labelledby="profile-avatar-heading">
+            <div class="profile-avatar-wrapper">
+              <div id="profile-avatar-display" class="profile-avatar-large" role="img" aria-label="Avatar del usuario">
+                <span id="profile-avatar-initials">U</span>
               </div>
-              <div class="info-row" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md); background: var(--water); border-radius: var(--radius-md); border: 1px solid var(--fiber);">
-                <div>
-                  <span class="info-label" style="font-size: var(--text-sm); color: var(--ink-muted);">Correo electrónico</span>
-                  <span id="profile-info-email" class="info-value" style="display: block; font-weight: 600; color: var(--ink); margin-top: 2px;">—</span>
-                </div>
-              </div>
-              <div class="info-row" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md); background: var(--water); border-radius: var(--radius-md); border: 1px solid var(--fiber);">
-                <div>
-                  <span class="info-label" style="font-size: var(--text-sm); color: var(--ink-muted);">Avatar</span>
-                  <span id="profile-info-avatar" class="info-value" style="display: block; font-weight: 600; color: var(--ink); margin-top: 2px;">—</span>
-                </div>
-              </div>
+              <button type="button" class="btn btn-ghost btn-icon" onclick="openEditProfileModal()" aria-label="Editar avatar">
+                <i data-lucide="edit-2" aria-hidden="true"></i>
+              </button>
             </div>
-            <div style="margin-top: var(--space-md);">
-              <button type="button" class="btn btn-primary" onclick="window.openEditProfileModal?.()"><i data-lucide="edit-2" aria-hidden="true"></i> Editar información</button>
+            <div class="profile-basic-info">
+              <h2 id="profile-display-name" class="profile-name">Usuario</h2>
+              <p id="profile-display-email" class="profile-email">correo@ejemplo.com</p>
+              <div class="profile-stats-mini">
+                <span class="stat-mini"><strong id="profile-level">Nivel 1</strong> <span>Nivel</span></span>
+                <span class="stat-mini"><strong id="profile-total-workouts">0</strong> <span>Entrenamientos</span></span>
+                <span class="stat-mini"><strong id="profile-streak">0</strong> <span>Días racha</span></span>
+              </div>
             </div>
           </section>
 
-          <!-- Change Password Section (Trigger) -->
-          <section class="form-section">
-            <h3 class="form-section-title"><i data-lucide="lock" aria-hidden="true"></i> Cambiar Contraseña</h3>
-            <p class="profile-hint" style="margin-bottom: var(--space-md);">Por seguridad, necesitarás tu contraseña actual.</p>
-            <button type="button" class="btn btn-ghost" onclick="window.openChangePasswordModal?.()"><i data-lucide="key" aria-hidden="true"></i> Cambiar contraseña</button>
+          <!-- Personal Info Section -->
+          <section class="profile-section" aria-labelledby="personal-info-heading">
+            <h3 id="personal-info-heading" class="section-title">Información Personal</h3>
+            <div class="profile-fields">
+              <div class="profile-field">
+                <label class="field-label">Nombre completo</label>
+                <span id="profile-fullname" class="field-value">—</span>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="openEditProfileModal()">Editar</button>
+              </div>
+              <div class="profile-field">
+                <label class="field-label">Correo electrónico</label>
+                <span id="profile-email" class="field-value">—</span>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="openEditProfileModal()">Editar</button>
+              </div>
+            </div>
           </section>
 
-          <!-- Accessibility Preferences Section (Inline - Auto-save) -->
-          <section class="form-section">
-            <h3 class="form-section-title"><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Preferencias de Accesibilidad</h3>
-            <p class="profile-hint">Estos ajustes se sincronizan con tu cuenta y se aplican en todos tus dispositivos.</p>
-            <div class="toggle-group">
-              <label class="toggle-switch">
-                <input type="checkbox" id="pref-dark-mode" data-pref="darkMode" aria-label="Activar modo oscuro">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label"><strong>Modo oscuro</strong><span>Interfaz con fondo oscuro</span></span>
+          <!-- Change Password -->
+          <section class="profile-section" aria-labelledby="change-password-heading">
+            <h3 id="change-password-heading" class="section-title">Cambiar Contraseña</h3>
+            <button type="button" class="btn btn-primary" onclick="openChangePasswordModal()">
+              <i data-lucide="lock" aria-hidden="true"></i> Cambiar contraseña
+            </button>
+          </section>
+
+          <!-- Accessibility Preferences -->
+          <section class="profile-section" aria-labelledby="accessibility-heading">
+            <h3 id="accessibility-heading" class="section-title">Preferencias de Accesibilidad</h3>
+            <div class="accessibility-options">
+              <label class="accessibility-option">
+                <input type="checkbox" id="pref-darkmode" aria-label="Activar modo oscuro">
+                <span><i data-lucide="moon"></i> Modo Oscuro</span>
               </label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="pref-high-contrast" data-pref="highContrast" aria-label="Activar alto contraste">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label"><strong>Alto contraste</strong><span>Colores de máximo contraste</span></span>
+              <label class="accessibility-option">
+                <input type="checkbox" id="pref-contrast" aria-label="Activar alto contraste">
+                <span><i data-lucide="contrast"></i> Alto Contraste</span>
               </label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="pref-reduced-motion" data-pref="reducedMotion" aria-label="Reducir animaciones">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label"><strong>Reducir animaciones</strong><span>Desactiva transiciones y efectos</span></span>
+              <label class="accessibility-option">
+                <input type="checkbox" id="pref-reduced-motion" aria-label="Reducir animaciones">
+                <span><i data-lucide="pause-circle"></i> Reducir Animaciones</span>
               </label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="pref-grayscale" data-pref="grayscale" aria-label="Activar escala de grises">
-                <span class="toggle-slider"></span>
-                <span class="toggle-label"><strong>Escala de grises</strong><span>Elimina color de la interfaz</span></span>
+              <label class="accessibility-option">
+                <input type="checkbox" id="pref-grayscale" aria-label="Activar escala de grises">
+                <span><i data-lucide="circle-slash"></i> Escala de Grises</span>
               </label>
-            </div>
-            <div class="form-row">
-              <div class="bowl">
-                <label class="bowl-label" for="pref-font-size">Tamaño de texto</label>
-                <select id="pref-font-size" data-pref="fontSize" class="form-select">
+              <div class="accessibility-option">
+                <label for="pref-text-size" class="field-label">Tamaño de Texto</label>
+                <select id="pref-text-size" class="form-select" style="width: auto;">
                   <option value="small">Pequeño</option>
                   <option value="normal" selected>Normal</option>
                   <option value="large">Grande</option>
-                  <option value="xlarge">Muy grande</option>
+                  <option value="xlarge">Muy Grande</option>
                 </select>
               </div>
             </div>
-            <p id="pref-save-status" class="profile-hint hidden" style="color: var(--pigment-sage); margin-top: var(--space-sm);">✓ Preferencias guardadas automáticamente</p>
           </section>
 
           <!-- Danger Zone -->
-          <section class="form-section danger-zone" style="border-top: 2px solid var(--error); padding-top: var(--space-xl); margin-top: var(--space-xl);">
-            <h3 class="form-section-title" style="color: var(--error);"><i data-lucide="alert-triangle" aria-hidden="true"></i> Zona de Peligro</h3>
-            <p class="profile-hint" style="color: var(--ink-muted);">Esta acción es irreversible.</p>
-            <button type="button" class="btn btn-ghost danger-btn" onclick="confirmDeleteAccount()" style="width: 100%; justify-content: center;"><i data-lucide="trash-2" aria-hidden="true"></i> Eliminar mi cuenta</button>
+          <section class="profile-section danger-zone" aria-labelledby="danger-zone-heading">
+            <h3 id="danger-zone-heading" class="section-title">Zona de Peligro</h3>
+            <div class="danger-actions">
+              <button type="button" class="btn btn-danger" onclick="openDeleteAccountModal()">
+                <i data-lucide="trash-2" aria-hidden="true"></i> Eliminar mi cuenta
+              </button>
+            </div>
           </section>
+
         </div>
       </section>
 
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" role="navigation" aria-label="Navegación principal">
-      <button class="nav-item active" role="button" onclick="switchTab('screen-progress', this)" aria-label="Progreso" aria-current="page">
-        <i data-lucide="bar-chart-2" aria-hidden="true"></i>
+    <!-- ==================== MAIN NAVIGATION ==================== -->
+    <nav id="main-navigation" class="main-navigation" role="navigation" aria-label="Navegación principal">
+      <button id="nav-progress" class="nav-item active" data-screen="progress" aria-label="Progreso" aria-current="true">
+        <i data-lucide="trending-up" aria-hidden="true"></i>
         <span>Progreso</span>
       </button>
-      <button class="nav-item" role="button" onclick="switchTab('screen-workout', this)" aria-label="Entrenamiento">
-        <i data-lucide="play-circle" aria-hidden="true"></i>
+      <button id="nav-workout" class="nav-item" data-screen="workout" aria-label="Entrenamiento">
+        <i data-lucide="dumbbell" aria-hidden="true"></i>
         <span>Entrenamiento</span>
       </button>
-      <button class="nav-item" role="button" onclick="switchTab('screen-routines', this)" aria-label="Mis Rutinas">
+      <button id="nav-routines" class="nav-item" data-screen="routines" aria-label="Mis Rutinas">
         <i data-lucide="list-todo" aria-hidden="true"></i>
         <span>Mis Rutinas</span>
       </button>
-      <button class="nav-item" role="button" onclick="switchTab('screen-map', this)" aria-label="Mapa y Ubicación">
-        <i data-lucide="map-pin" aria-hidden="true"></i>
+      <button id="nav-map" class="nav-item" data-screen="map" aria-label="Mapa y Ubicación">
+        <i data-lucide="map" aria-hidden="true"></i>
         <span>Mapa</span>
       </button>
-      <button class="nav-item" onclick="switchTab('screen-profile', this)" aria-label="Mi Perfil">
+      <button id="nav-profile" class="nav-item" data-screen="profile" aria-label="Mi Perfil">
         <i data-lucide="user" aria-hidden="true"></i>
         <span>Perfil</span>
       </button>
     </nav>
-
   </div>
 
-  <!-- ==================== CHATBOT ASSISTANT ==================== -->
-  <div id="chatbot" class="chatbot-container">
-    <button class="chatbot-toggle" id="chatbot-toggle" aria-label="Abrir asistente de entrenamiento" aria-expanded="false">
-      <i data-lucide="message-circle" aria-hidden="true"></i>
+  <!-- Chatbot (Ebru Paper-Sheet) -->
+  <aside id="chatbot" class="chatbot" aria-label="Chatbot de Entrena tu ser">
+    <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-label="Abrir asistente de entrenamiento" aria-expanded="false">
+      <i data-lucide="message-circle"></i>
     </button>
 
-    <div class="chatbot-panel hidden" id="chatbot-panel" role="dialog" aria-modal="true" aria-labelledby="chatbot-title">
+    <section id="chatbot-panel" class="chatbot-panel" aria-label="Asistente virtual">
       <header class="chatbot-header">
-        <h2 id="chatbot-title" class="chatbot-title"><i data-lucide="bot" aria-hidden="true"></i> Asistente Entrena</h2>
-        <button class="chatbot-close" id="chatbot-close" aria-label="Cerrar chatbot"><i data-lucide="x" aria-hidden="true"></i></button>
-      </header>
-      <div class="chatbot-messages" id="chatbot-messages" aria-live="polite">
-        <div class="chat-message bot-message">
-          <div class="message-avatar">AI</div>
-          <div class="message-content">Hola, soy tu asistente. Puedo ayudarte con rutinas, calentamientos, hábitos saludables y ejercicios seguros.</div>
+        <div>
+          <strong>Asistente Entrena</strong>
+          <span>Consejos de bienestar con IA</span>
         </div>
+        <button id="chatbot-close" class="chatbot-icon-button" type="button" aria-label="Cerrar chatbot">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div id="chatbot-messages" class="chatbot-messages" aria-live="polite">
+        <div class="chat-message bot-message">Hola, soy tu asistente de entrenamiento. ¿Cómo puedo ayudarte hoy?</div>
       </div>
-      <form id="chatbot-form" class="chatbot-form" onsubmit="event.preventDefault(); sendChatbotMessage();">
-        <input type="text" id="chatbot-input" placeholder="Escribe tu consulta..." aria-label="Tu mensaje" autocomplete="off">
-        <button type="submit" id="chatbot-send" aria-label="Enviar mensaje"><i data-lucide="send" aria-hidden="true"></i></button>
+      <form id="chatbot-form" class="chatbot-form">
+        <label class="hidden" for="chatbot-input">Escribe tu mensaje</label>
+        <div class="chatbot-input-wrapper">
+          <input id="chatbot-input" type="text" maxlength="500" placeholder="Escribe tu consulta..." autocomplete="off">
+        </div>
+        <button class="chatbot-send" type="submit" aria-label="Enviar mensaje">
+          <i data-lucide="send"></i>
+        </button>
       </form>
+    </section>
+  </aside>
+
+  <!-- Accessibility widget (Ebru Paper-Clips) -->
+  <aside id="accessibility-widget" class="accessibility-widget" aria-label="Opciones de accesibilidad">
+    <button id="accessibility-toggle" class="accessibility-toggle" type="button"
+      aria-label="Abrir opciones de accesibilidad" aria-expanded="false">
+      <i data-lucide="accessibility"></i>
+    </button>
+    <section id="accessibility-panel" class="accessibility-panel" aria-label="Configuración de accesibilidad">
+      <header class="accessibility-header">
+        <strong>Accesibilidad</strong>
+        <button id="accessibility-close" class="accessibility-close" type="button" aria-label="Cerrar opciones de accesibilidad">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="accessibility-options">
+        <div class="accessibility-text-size">
+          <span>Tamaño del texto</span>
+          <div>
+            <button type="button" data-font-action="decrease" aria-label="Reducir tamaño del texto">A-</button>
+            <button type="button" data-font-action="reset" aria-label="Restablecer tamaño del texto">A</button>
+            <button type="button" data-font-action="increase" aria-label="Aumentar tamaño del texto">A+</button>
+          </div>
+        </div>
+        <button type="button" class="accessibility-option" data-accessibility-action="darkmode" aria-pressed="false">
+          <i data-lucide="moon"></i><span>Modo Oscuro</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="contrast" aria-pressed="false">
+          <i data-lucide="contrast"></i><span>Alto Contraste</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="motion" aria-pressed="false">
+          <i data-lucide="pause-circle"></i><span>Reducir Animaciones</span>
+        </button>
+        <button type="button" class="accessibility-option" data-accessibility-action="grayscale" aria-pressed="false">
+          <i data-lucide="circle-slash"></i><span>Escala de Grises</span>
+        </button>
+        <button type="button" class="accessibility-reset" data-accessibility-action="reset">
+          Restablecer opciones
+        </button>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Routine modal (Ebru overlay paper-sheet) -->
+  <div id="routine-modal-legacy" class="routine-modal-overlay" aria-labelledby="routine-modal-title" role="dialog" aria-modal="true">
+    <div class="routine-modal-sheet">
+      <header class="routine-modal-header">
+        <h3 id="routine-modal-title">Nueva Rutina</h3>
+        <button class="routine-modal-close" onclick="closeRoutineModal()" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="routine-modal-body">
+        <form id="routine-form">
+          <input type="hidden" id="routine-id" name="routineId" aria-hidden="true">
+          <fieldset id="routine-personalization" class="routine-personalization">
+            <legend>Generar rutina personalizada</legend>
+            <div class="routine-personalization-fields">
+              <label>
+                Objetivo
+                <select id="personalization-goal">
+                  <option value="full">Cuerpo completo</option>
+                  <option value="strength">Fuerza</option>
+                  <option value="core">Abdomen y core</option>
+                  <option value="mobility">Movilidad</option>
+                </select>
+              </label>
+              <label>
+                Nivel
+                <select id="personalization-level">
+                  <option value="beginner">Principiante</option>
+                  <option value="intermediate">Intermedio</option>
+                  <option value="advanced">Avanzado</option>
+                </select>
+              </label>
+              <label>
+                Tiempo
+                <select id="personalization-time">
+                  <option value="10">10 minutos</option>
+                  <option value="20" selected>20 minutos</option>
+                  <option value="30">30 minutos</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" class="btn-droplet routine-generate-button" onclick="generatePersonalizedRoutine()">Generar rutina</button>
+          </fieldset>
+          <div class="routine-modal-field">
+            <label for="routine-name">Nombre de la rutina *</label>
+            <input type="text" id="routine-name" name="name" maxlength="100" required placeholder="Ej: Rutina Full Body">
+          </div>
+          <div class="routine-modal-field">
+            <label for="routine-description">Descripción</label>
+            <textarea id="routine-description" name="description" maxlength="500" rows="3" placeholder="Detalles, objetivo, nivel..."></textarea>
+          </div>
+          <div class="routine-modal-field">
+            <label>Ejercicios de la rutina</label>
+            <div id="routine-exercises" class="routine-modal-exercises"></div>
+            <button type="button" class="routine-modal-add-exercise" onclick="addRoutineExerciseRow()">
+              <i data-lucide="plus"></i> Añadir ejercicio
+            </button>
+          </div>
+          <div class="routine-modal-actions">
+            <button type="button" class="btn-droplet" style="background: transparent; border-color: var(--fiber); color: var(--ink-muted); min-width: 140px;" onclick="closeRoutineModal()">Cancelar</button>
+            <button type="submit" class="btn-droplet" style="min-width: 140px;">Guardar rutina</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
-  <!-- ==================== ACCESSIBILITY PANEL ==================== -->
-  <button class="accessibility-toggle" id="accessibility-toggle" aria-label="Abrir opciones de accesibilidad" aria-expanded="false">
-    <i data-lucide="accessibility" aria-hidden="true"></i>
-  </button>
+  <!-- Footer with Legal Links -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <i data-lucide="activity" class="footer-logo" aria-hidden="true"></i>
+        <span>Entrena tu ser</span>
+      </div>
+      <nav class="footer-links" aria-label="Enlaces legales">
+        <a href="#" id="footer-terms" class="footer-link">Términos y Condiciones</a>
+        <a href="#" id="footer-privacy" class="footer-link">Política de Privacidad</a>
+        <a href="#" id="footer-cookies" class="footer-link">Política de Cookies</a>
+        <a href="#" id="footer-contact" class="footer-link">Contacto</a>
+      </nav>
+      <p class="footer-copyright">&copy; 2026 Entrena tu ser. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
-  <div class="accessibility-panel hidden" id="accessibility-panel" role="dialog" aria-modal="true" aria-labelledby="accessibility-title">
-    <header class="accessibility-header">
-      <h2 id="accessibility-title" class="accessibility-title">Accesibilidad</h2>
-      <button class="accessibility-close" id="accessibility-close" aria-label="Cerrar opciones"><i data-lucide="x" aria-hidden="true"></i></button>
-    </header>
-    <div class="accessibility-options">
-      <button class="accessibility-btn" data-font-action="decrease" aria-label="Reducir texto"><i data-lucide="minus" aria-hidden="true"></i> Reducir texto</button>
-      <button class="accessibility-btn" data-font-action="reset" aria-label="Restablecer texto"><i data-lucide="rotate-ccw" aria-hidden="true"></i> Restablecer texto</button>
-      <button class="accessibility-btn" data-font-action="increase" aria-label="Aumentar texto"><i data-lucide="plus" aria-hidden="true"></i> Aumentar texto</button>
-      <button class="accessibility-btn" data-accessibility-action="darkmode" aria-label="Modo Oscuro"><i data-lucide="moon" aria-hidden="true"></i> Modo Oscuro</button>
-      <button class="accessibility-btn" data-accessibility-action="contrast" aria-label="Alto contraste"><i data-lucide="contrast" aria-hidden="true"></i> Alto contraste</button>
-      <button class="accessibility-btn" data-accessibility-action="motion" aria-label="Reducir animaciones"><i data-lucide="move" aria-hidden="true"></i> Reducir animaciones</button>
-      <button class="accessibility-btn" data-accessibility-action="grayscale" aria-label="Escala de grises"><i data-lucide="circle" aria-hidden="true"></i> Escala de grises</button>
-      <button class="accessibility-btn" data-accessibility-action="reset" aria-label="Restablecer opciones"><i data-lucide="refresh-cw" aria-hidden="true"></i> Restablecer opciones</button>
+  <!-- Legal Modals (Ebru overlay paper-sheet) -->
+  <div id="terms-modal" class="legal-modal-overlay hidden" aria-labelledby="terms-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="terms-modal-title">Términos y Condiciones</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('terms-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>1. Aceptación de los Términos</h4>
+          <p>Al acceder y utilizar la plataforma "Entrena tu ser", aceptas cumplir y estar sujeto a estos Términos y Condiciones. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio.</p>
+        </section>
+        <section class="legal-section">
+          <h4>2. Descripción del Servicio</h4>
+          <p>"Entrena tu ser" es una plataforma web de fitness que proporciona rutinas de ejercicio, seguimiento de progreso, videos demostrativos, chatbot de entrenamiento y herramientas de gamificación para motivar a los usuarios en su camino hacia una vida más saludable.</p>
+        </section>
+        <section class="legal-section">
+          <h4>3. Registro y Cuenta de Usuario</h4>
+          <ul>
+            <li>Debes tener al menos 13 años para crear una cuenta.</li>
+            <li>Eres responsable de mantener la confidencialidad de tu contraseña.</li>
+            <li>Debes proporcionar información veraz y actualizada durante el registro.</li>
+            <li>Eres responsable de todas las actividades que ocurran bajo tu cuenta.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>4. Uso Aceptable</h4>
+          <p>Te comprometes a no utilizar el servicio para:</p>
+          <ul>
+            <li>Actividades ilegales o no autorizadas.</li>
+            <li>Transmitir virus, malware o código dañino.</li>
+            <li>Suplantar a otra persona o entidad.</li>
+            <li>Interferir con la seguridad o integridad del servicio.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>5. Propiedad Intelectual</h4>
+          <p>Todo el contenido de la plataforma (textos, gráficos, logos, videos, código) es propiedad de "Entrena tu ser" o sus licenciantes y está protegido por leyes de propiedad intelectual. No puedes reproducir, distribuir o crear obras derivadas sin permiso expreso.</p>
+        </section>
+        <section class="legal-section">
+          <h4>6. Limitación de Responsabilidad</h4>
+          <p>La información proporcionada en esta plataforma es solo para fines educativos e informativos. No constituye asesoramiento médico profesional. Consulta a un profesional de la salud antes de iniciar cualquier programa de ejercicio. "Entrena tu ser" no se hace responsable de lesiones o daños derivados del uso de la plataforma.</p>
+        </section>
+        <section class="legal-section">
+          <h4>7. Modificaciones del Servicio</h4>
+          <p>Nos reservamos el derecho de modificar, suspender o discontinuar el servicio (o cualquier parte de él) en cualquier momento, con o sin previo aviso.</p>
+        </section>
+        <section class="legal-section">
+          <h4>8. Terminación</h4>
+          <p>Podemos terminar o suspender tu acceso al servicio inmediatamente, sin previo aviso, por conducta que consideremos que viola estos Términos.</p>
+        </section>
+        <section class="legal-section">
+          <h4>9. Ley Aplicable</h4>
+          <p>Estos Términos se regirán e interpretarán de acuerdo con las leyes de los Estados Unidos Mexicanos y del Estado de Nuevo León, sin tener en cuenta sus disposiciones sobre conflicto de leyes.</p>
+        </section>
+        <section class="legal-section">
+          <h4>10. Responsable</h4>
+          <p>El responsable de la plataforma es la <strong>Universidad Tecnológica de Santa Catarina</strong> (UTSC), con domicilio en Carretera Saltillo-Monterrey Km. 61.5, C.P. 66359, Santa Catarina, N.L., México.</p>
+        </section>
+        <section class="legal-section">
+          <h4>11. Contacto</h4>
+          <p>Si tienes preguntas sobre estos Términos, contáctanos en: <a href="mailto:legal@utsc.edu.mx">legal@utsc.edu.mx</a></p>
+        </section>
+        <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
     </div>
   </div>
 
-  <!-- ==================== TOAST CONTAINER ==================== -->
-  <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-label="Notificaciones"></div>
+  <div id="privacy-modal" class="legal-modal-overlay hidden" aria-labelledby="privacy-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="privacy-modal-title">Política de Privacidad</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('privacy-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>1. Responsable del Tratamiento</h4>
+          <p>El responsable del tratamiento de tus datos personales es "Universidad Tecnológica de Santa Catarina" (en adelante, "la Institución"), con correo de contacto: <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></p>
+        </section>
+        <section class="legal-section">
+          <h4>2. Datos que Recopilamos</h4>
+          <p>Recopilamos los siguientes datos cuando te registras y usas la plataforma:</p>
+          <ul>
+            <li><strong>Datos de identidad:</strong> Nombre, correo electrónico.</li>
+            <li><strong>Datos de autenticación:</strong> Contraseña hasheada (nunca almacenamos la contraseña en texto plano).</li>
+            <li><strong>Datos de actividad:</strong> Rutinas creadas, entrenamientos completados, progreso, medallas obtenidas.</li>
+            <li><strong>Datos técnicos:</strong> Dirección IP, tipo de navegador, sistema operativo, páginas visitadas (para analítica y seguridad).</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>3. Finalidad del Tratamiento</h4>
+          <p>Utilizamos tus datos para:</p>
+          <ul>
+            <li>Crear y gestionar tu cuenta de usuario.</li>
+            <li>Proporcionar las funcionalidades de la plataforma (rutinas, progreso, chatbot, mapa).</li>
+            <li>Personalizar tu experiencia y recomendaciones.</li>
+            <li>Enviar notificaciones relacionadas con tu cuenta (nunca spam).</li>
+            <li>Mejorar la plataforma mediante analítica anonimizada.</li>
+            <li>Cumplir obligaciones legales.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>4. Base Legal</h4>
+          <p>El tratamiento se basa en:</p>
+          <ul>
+            <li>Ejecución de un contrato (términos de servicio) para la prestación del servicio.</li>
+            <li>Consentimiento del usuario para comunicaciones opcionales y analítica.</li>
+            <li>Interés legítimo para seguridad y prevención de fraude.</li>
+            <li>Obligación legal para cumplimiento normativo.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>5. Compartición de Datos</h4>
+          <p><strong>No vendemos tus datos a terceros.</strong> Solo compartimos datos con:</p>
+          <ul>
+            <li>Proveedores de servicios esenciales (hosting, base de datos, email) bajo contratos de procesamiento de datos.</li>
+            <li>Autoridades competentes cuando lo exija la ley.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>6. Transferencias Internacionales</h4>
+          <p>Los datos se almacenan en servidores ubicados en México. No realizamos transferencias internacionales sin las garantías adecuadas conforme a la LFPDPPP.</p>
+        </section>
+        <section class="legal-section">
+          <h4>7. Conservación de Datos</h4>
+          <p>Conservamos tus datos mientras tu cuenta esté activa. Tras la eliminación de la cuenta, los datos se anonimizan o eliminan en un plazo máximo de 30 días, salvo obligación legal de conservación.</p>
+        </section>
+        <section class="legal-section">
+          <h4>8. Tus Derechos (LFPDPPP)</h4>
+          <p>Tienes derecho a ejercer tus derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares:</p>
+          <ul>
+            <li><strong>Acceso:</strong> Obtener confirmación de si tratamos tus datos y acceder a ellos.</li>
+            <li><strong>Rectificación:</strong> Corregir datos inexactos o incompletos.</li>
+            <li><strong>Cancelación:</strong> Solicitar la eliminación de tus datos cuando no sean necesarios.</li>
+            <li><strong>Oposición:</strong> Oponerte al tratamiento de tus datos para fines específicos.</li>
+            <li><strong>Revocar consentimiento:</strong> En cualquier momento, sin afectar la licitud del tratamiento previo.</li>
+          </ul>
+          <p>Para ejercer tus derechos, envía un email a <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a> con el asunto "Derechos ARCO".</p>
+        </section>
+        <section class="legal-section">
+          <h4>9. Seguridad</h4>
+          <p>Implementamos medidas técnicas y organizativas apropiadas: cifrado TLS en tránsito, hashing de contraseñas con bcrypt, JWT para autenticación, validación de entrada, y principio de menor privilegio en base de datos.</p>
+        </section>
+        <section class="legal-section">
+          <h4>10. Cookies y Tecnologías Similares</h4>
+          <p>Utilizamos cookies esenciales para el funcionamiento (sesión, preferencias de accesibilidad) y cookies analíticas opcionales (con tu consentimiento). Consulta nuestra <a href="#" onclick="event.preventDefault(); openLegalModal('cookies-modal'); closeLegalModal('privacy-modal')">Política de Cookies</a> para más detalles.</p>
+        </section>
+        <section class="legal-section">
+          <h4>11. Menores de Edad</h4>
+          <p>La plataforma no está dirigida a menores de 13 años. No recopilamos intencionadamente datos de menores. Si detectamos datos de un menor, los eliminaremos inmediatamente.</p>
+        </section>
+        <section class="legal-section">
+          <h4>12. Cambios en esta Política</h4>
+          <p>Podemos actualizar esta política. Te notificaremos de cambios materiales mediante email o aviso en la plataforma. La versión actualizada entrará en vigor tras su publicación.</p>
+        </section>
+        <section class="legal-section">
+          <h4>13. Contacto</h4>
+          <p>Delegado de Protección de Datos: <a href="mailto:dpo@utsc.edu.mx">dpo@utsc.edu.mx</a></p>
+        </section>
+        <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- ==================== LEGAL FOOTER (Login screen) ==================== -->
-  <nav class="legal-nav" aria-label="Enlaces legales" style="display: none;">
-    <a href="#" class="legal-link" data-legal="terms">Términos y Condiciones</a>
-    <a href="#" class="legal-link" data-legal="privacy">Política de Privacidad</a>
-    <a href="#" class="legal-link" data-legal="cookies">Política de Cookies</a>
-    <a href="#" class="legal-link" data-legal="contact">Contacto</a>
-  </nav>
-  <p class="copyright" style="display: none;">© 2026 Entrena Tu Ser. Todos los derechos reservados.</p>
+  <div id="cookies-modal" class="legal-modal-overlay hidden" aria-labelledby="cookies-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="cookies-modal-title">Política de Cookies</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('cookies-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>¿Qué son las cookies?</h4>
+          <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Permiten recordar tus preferencias y mejorar tu experiencia.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Tipos de cookies que utilizamos</h4>
+          <table class="cookies-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Finalidad</th>
+                <th>Duración</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>entrena-user</td>
+                <td>Token JWT de autenticación para mantener la sesión</td>
+                <td>8 horas / Sesión</td>
+              </tr>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>theme</td>
+                <td>Preferencia de tema (claro/oscuro)</td>
+                <td>1 año</td>
+              </tr>
+              <tr>
+                <td><strong>Esenciales</strong></td>
+                <td>accessibility-*</td>
+                <td>Preferencias de accesibilidad (tamaño texto, contraste, movimiento)</td>
+                <td>1 año</td>
+              </tr>
+              <tr>
+                <td><strong>Funcionales</strong></td>
+                <td>routine-draft</td>
+                <td>Borrador de rutina en creación</td>
+                <td>Sesión</td>
+              </tr>
+              <tr>
+                <td><strong>Analíticas (opcional)</strong></td>
+                <td>_ga, _gid</td>
+                <td>Google Analytics: medir uso anonimizado de la plataforma</td>
+                <td>2 años / 24h</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="legal-section">
+          <h4>Gestión de cookies</h4>
+          <p>Puedes aceptar, rechazar o configurar las cookies no esenciales mediante el banner de consentimiento que aparece en tu primera visita. Las cookies esenciales no pueden desactivarse, ya que son necesarias para el funcionamiento de la plataforma.</p>
+          <p>También puedes eliminar o bloquear cookies desde la configuración de tu navegador:</p>
+          <ul>
+            <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Chrome</a></li>
+            <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies" target="_blank" rel="noopener">Firefox</a></li>
+            <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Safari</a></li>
+            <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener">Edge</a></li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Terceros</h4>
+          <p>Las cookies analíticas son gestionadas por Google Analytics. Su política de privacidad está disponible en <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Contacto</h4>
+          <p>Para dudas sobre esta política: <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></p>
+        </section>
+        <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- ==================== SCRIPTS ==================== -->
-  <script type="module" src="js/api-config.js?v=5"></script>
-  <script type="module" src="js/notifications.js?v=2"></script>
-  <script type="module" src="js/navigation.js?v=4"></script>
-  <script type="module" src="js/auth.js?v=2"></script>
-  <script type="module" src="js/chatbot.js?v=7"></script>
-  <script type="module" src="js/accessibility.js?v=5"></script>
-  <script type="module" src="js/routineWizard.js?v=2"></script>
-  <script type="module" src="js/routines.js?v=9"></script>
-  <script type="module" src="js/map.js?v=4"></script>
-  <script type="module" src="js/exercise-videos.js?v=1"></script>
-  <script type="module" src="js/exercises.js?v=12"></script>
-  <script type="module" src="js/progress.js?v=4"></script>
-  <script type="module" src="js/social-comments.js?v=2"></script>
-  <script type="module" src="js/profile.js?v=3"></script>
-  <script type="module" src="js/heroAvatarEditor.js"></script>
-  <script type="module" src="js/dashboard-chart.js"></script>
-  <script type="module" src="js/database-status.js"></script>
-  <script type="module" src="js/accordionController.js"></script>
-  <script type="module" src="js/mapPlacesPanel.js"></script>
-  <script type="module" src="js/progressCharts.js"></script>
+  <div id="contact-modal" class="legal-modal-overlay hidden" aria-labelledby="contact-modal-title" role="dialog" aria-modal="true">
+    <div class="legal-modal-sheet">
+      <header class="legal-modal-header">
+        <h3 id="contact-modal-title">Contacto</h3>
+        <button class="legal-modal-close" onclick="closeLegalModal('contact-modal')" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </header>
+      <div class="legal-modal-body">
+        <section class="legal-section">
+          <h4>¿Necesitas ayuda?</h4>
+          <p>Estamos aquí para ayudarte. Escríbenos y te responderemos lo antes posible.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Canales de contacto</h4>
+          <ul class="contact-list">
+            <li><i data-lucide="mail" aria-hidden="true"></i> <strong>Soporte general:</strong> <a href="mailto:soporte@utsc.edu.mx">soporte@utsc.edu.mx</a></li>
+            <li><i data-lucide="shield" aria-hidden="true"></i> <strong>Privacidad y datos:</strong> <a href="mailto:privacy@utsc.edu.mx">privacy@utsc.edu.mx</a></li>
+            <li><i data-lucide="file-text" aria-hidden="true"></i> <strong>Asuntos legales:</strong> <a href="mailto:legal@utsc.edu.mx">legal@utsc.edu.mx</a></li>
+            <li><i data-lucide="bug" aria-hidden="true"></i> <strong>Reportar errores:</strong> <a href="mailto:bugs@utsc.edu.mx">bugs@utsc.edu.mx</a></li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Horario de atención</h4>
+          <p>Lunes a viernes: 9:00 - 18:00 (CET/CEST)<br>Tiempo de respuesta estimado: 24-48 horas laborables.</p>
+        </section>
+        <section class="legal-section">
+          <h4>Antes de contactar</h4>
+          <p>Para agilizar tu consulta, por favor incluye:</p>
+          <ul>
+            <li>Tu correo electrónico registrado en la plataforma.</li>
+            <li>Descripción detallada del problema o duda.</li>
+            <li>Pasos para reproducir el error (si es un bug).</li>
+            <li>Capturas de pantalla si es posible.</li>
+            <li>Navegador y sistema operativo que utilizas.</li>
+          </ul>
+        </section>
+        <section class="legal-section">
+          <h4>Oficina (correspondencia postal)</h4>
+          <p>Universidad Tecnológica de Santa Catarina<br>Carretera Saltillo-Monterrey Km. 61.5<br>C.P. 66359, Santa Catarina, N.L., México</p>
+        </section>
+        <p class="legal-last-updated">Última actualización: 17 de noviembre de 2026</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- Service Worker Registration for PWA -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('[SW] Registered:', registration.scope);
-            // Check for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New version available - show update prompt
-                  if (window.showNotification) {
-                    window.showNotification('Nueva versión disponible. Recarga la página.', 'info');
-                  } else {
-                    console.log('[SW] New version available');
-                  }
-                }
-              });
-            });
-          })
-          .catch((error) => {
-            console.error('[SW] Registration failed:', error);
-          });
-      });
-    }
-  </script>
+  <!-- Vite entry point -->
+  <script type="module" src="/js/main.js"></script>
 </body>
-</html>#   t r i g g e r   f r o n t e n d   d e p l o y  
- 
+</html>

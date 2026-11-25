@@ -8,6 +8,16 @@ Respaldo_Proyecto_EntrenaTuSer.zip
 *.user
 *.suo
 
+# Archivos de build y publish
+dist/
+api/publish/
+*.dll
+*.exe
+*.pdb
+
+# Archivos archivados (no esenciales)
+archives/
+
 # Resultados de pruebas y reports (no subirlos a GitHub)
 test-results/
 playwright-report/
@@ -15,3 +25,10 @@ playwright-report/
 # Configuración local y variables de entorno
 *.local.env
 .env*.secrets
+
+# Bundle analysis
+bundle-analysis.html
+
+# OS files
+Thumbs.db
+Desktop.ini

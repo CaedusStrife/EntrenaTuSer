@@ -188,11 +188,16 @@ async function updateFontSize(action) {
   applyAccessibilityPreferences(preferences);
 }
 
-accessibilityToggle.addEventListener('click', () => {
-  setAccessibilityOpen(accessibilityPanel.classList.contains('hidden'));
-});
+// Null checks for accessibility toggle elements
+if (accessibilityToggle && accessibilityPanel) {
+  accessibilityToggle.addEventListener('click', () => {
+    setAccessibilityOpen(accessibilityPanel.classList.contains('hidden'));
+  });
+}
 
-accessibilityClose.addEventListener('click', () => setAccessibilityOpen(false));
+if (accessibilityClose) {
+  accessibilityClose.addEventListener('click', () => setAccessibilityOpen(false));
+}
 
 document.querySelectorAll('[data-font-action]').forEach(button => {
   button.addEventListener('click', () => updateFontSize(button.dataset.fontAction));

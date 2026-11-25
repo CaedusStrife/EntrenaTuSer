@@ -1,0 +1,89 @@
+{
+  "name": "Entrena Tu Ser",
+  "short_name": "EntrenaTuSer",
+  "description": "Plataforma de fitness personal - Entrena con rutinas personalizadas, seguimiento de progreso y más",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4adecd",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Entrenamiento",
+      "short_name": "Entrenar",
+      "description": "Iniciar un entrenamiento",
+      "url": "/?screen=workout",
+      "icons": [{ "src": "icons/workout-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mis Rutinas",
+      "short_name": "Rutinas",
+      "description": "Ver y gestionar rutinas",
+      "url": "/?screen=routines",
+      "icons": [{ "src": "icons/routines-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Progreso",
+      "short_name": "Progreso",
+      "description": "Ver estadísticas y progreso",
+      "url": "/?screen=progress",
+      "icons": [{ "src": "icons/progress-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

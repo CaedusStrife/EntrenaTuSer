@@ -1,0 +1,41 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ebru/Marbled background -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="50%" style="stop-color:#1e3a5f"/>
+      <stop offset="100%" style="stop-color:#0f172a"/>
+    </linearGradient>
+    <radialGradient id="accent" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#4adecd"/>
+      <stop offset="100%" style="stop-color:#2dd4bf"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  
+  <!-- Marbled accent waves -->
+  <path d="M80 256 Q180 200 256 256 Q332 312 432 256" stroke="url(#accent)" stroke-width="8" fill="none" opacity="0.3"/>
+  <path d="M80 280 Q180 224 256 280 Q332 336 432 280" stroke="url(#accent)" stroke-width="6" fill="none" opacity="0.2"/>
+  <path d="M80 232 Q180 176 256 232 Q332 288 432 232" stroke="url(#accent)" stroke-width="4" fill="none" opacity="0.15"/>
+  
+  <!-- Activity/Dumbbell icon -->
+  <g transform="translate(136, 144)">
+    <!-- Dumbbell -->
+    <circle cx="120" cy="120" r="40" fill="url(#accent)" opacity="0.9"/>
+    <circle cx="120" cy="120" r="24" fill="#0f172a"/>
+    <rect x="200" y="100" width="80" height="40" rx="8" fill="url(#accent)" opacity="0.9"/>
+    <circle cx="304" cy="120" r="40" fill="url(#accent)" opacity="0.9"/>
+    <circle cx="304" cy="120" r="24" fill="#0f172a"/>
+    
+    <!-- Motion lines -->
+    <path d="M340 100 L380 80" stroke="url(#accent)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+    <path d="M340 120 L380 120" stroke="url(#accent)" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+    <path d="M340 140 L380 160" stroke="url(#accent)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  
+  <!-- "ETS" text -->
+  <text x="256" y="380" font-family="Georgia, serif" font-size="80" font-weight="bold" fill="url(#accent)" text-anchor="middle" letter-spacing="8">ETS</text>
+  
+  <!-- Subtitle -->
+  <text x="256" y="430" font-family="system-ui, sans-serif" font-size="24" fill="#94a3b8" text-anchor="middle" font-weight="500">ENTRENA TU SER</text>
+</svg>

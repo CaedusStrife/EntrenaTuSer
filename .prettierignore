@@ -1,0 +1,13 @@
+node_modules/
+api/
+tests/
+*.min.js
+dist/
+build/
+.vscode/
+.idea/
+*.log
+coverage/
+*.md
+*.html
+*.css

@@ -17,14 +17,30 @@ if (string.IsNullOrWhiteSpace(jwtSecret))
 }
 var jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
+// Health checks - using simple endpoint approach
+// (HealthChecks service requires additional package for async checks)
+
+// CORS - Allow both local and production frontend
+var corsOrigins = new List<string>
+{
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:49366",
+    "http://127.0.0.1:49366",
+    "https://ambitious-ground-0e3dfc61e.3.azurestaticapps.net"
+};
+
+// Add any additional origins from config
+var configOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+if (configOrigins != null)
+{
+    corsOrigins.AddRange(configOrigins);
+}
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LocalWeb", policy => policy
-        .WithOrigins(
-            "http://localhost:5500",
-            "http://127.0.0.1:5500",
-            "http://localhost:49366",
-            "http://127.0.0.1:49366")
+    options.AddPolicy("FrontendPolicy", policy => policy
+        .WithOrigins(corsOrigins.ToArray())
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
@@ -70,7 +86,48 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseCors("LocalWeb");
+// Health check endpoints
+app.MapGet("/health", async (IConfiguration configuration) =>
+{
+    try
+    {
+        var connStr = configuration.GetConnectionString("EntrenaTuSer");
+        if (string.IsNullOrEmpty(connStr))
+            return Results.Problem("Connection string not configured", statusCode: 503);
+
+        await using var connection = new SqlConnection(connStr);
+        await connection.OpenAsync();
+        await using var command = new SqlCommand("SELECT 1;", connection);
+        await command.ExecuteScalarAsync();
+        return Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Database connection failed: {ex.Message}", statusCode: 503);
+    }
+});
+
+app.MapGet("/api/health", async (IConfiguration configuration) =>
+{
+    try
+    {
+        var connStr = configuration.GetConnectionString("EntrenaTuSer");
+        if (string.IsNullOrEmpty(connStr))
+            return Results.Problem("Connection string not configured", statusCode: 503);
+
+        await using var connection = new SqlConnection(connStr);
+        await connection.OpenAsync();
+        await using var command = new SqlCommand("SELECT 1;", connection);
+        await command.ExecuteScalarAsync();
+        return Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Database connection failed: {ex.Message}", statusCode: 503);
+    }
+});
+
+app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();

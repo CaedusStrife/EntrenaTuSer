@@ -208,14 +208,21 @@ async function askAI(message) {
   return fallbackReply(message);
 }
 
-chatbotToggle.addEventListener('click', () => {
-  setChatbotOpen(!chatbotPanel.classList.contains('active'));
-});
+// Null checks for chatbot elements
+if (chatbotToggle && chatbotPanel) {
+  chatbotToggle.addEventListener('click', () => {
+    setChatbotOpen(!chatbotPanel.classList.contains('active'));
+  });
+}
 
-chatbotClose.addEventListener('click', () => setChatbotOpen(false));
+if (chatbotClose) {
+  chatbotClose.addEventListener('click', () => setChatbotOpen(false));
+}
+
 window.addEventListener('user-authenticated', () => loadChatbotProfile());
 
-chatbotForm.addEventListener('submit', async (event) => {
+if (chatbotForm && chatbotInput && chatbotMessages) {
+  chatbotForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const message = chatbotInput.value.trim();
   if (!message) return;
@@ -258,3 +265,4 @@ chatbotForm.addEventListener('submit', async (event) => {
     chatbotInput.focus();
   }
 });
+}

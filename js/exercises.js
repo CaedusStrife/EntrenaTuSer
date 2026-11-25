@@ -573,6 +573,9 @@ async function completeSelectedExercise() {
   }
 }
 
+// Expose globally for inline onclick handlers
+window.completeSelectedExercise = completeSelectedExercise;
+
 // Promise that resolves when exercises are loaded
 window.exercisesLoadedPromise = (async function() {
   if (!exerciseList) return;
