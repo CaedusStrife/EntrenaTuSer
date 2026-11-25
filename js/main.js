@@ -1,5 +1,6 @@
 // Entry point for Vite build
 // Import styles first so Vite includes them in the bundle
+// v4 - DOMContentLoaded fixes for all modules + clean build
 import '../css/styless.css';
 
 // Import api-config first to set window.API_BASE_URL before other modules
