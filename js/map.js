@@ -370,8 +370,12 @@ function refreshWorkoutMap() {
   }
 }
 
-// Initialize map on load
-refreshWorkoutMap();
+// Initialize map on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', refreshWorkoutMap);
+} else {
+  refreshWorkoutMap();
+}
 
 // Center map on a specific place (called from places panel)
 window.centerMapOnPlace = function(lat, lng) {
