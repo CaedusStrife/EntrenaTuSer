@@ -1,11 +1,13 @@
-const chatbot = document.getElementById('chatbot');
-const chatbotToggle = document.getElementById('chatbot-toggle');
-const chatbotPanel = document.getElementById('chatbot-panel');
-const chatbotClose = document.getElementById('chatbot-close');
-const chatbotForm = document.getElementById('chatbot-form');
-const chatbotInput = document.getElementById('chatbot-input');
-const chatbotMessages = document.getElementById('chatbot-messages');
-const chatbotSend = chatbotForm.querySelector('button[type="submit"]');
+// Cache DOM elements - will be populated after DOM is ready
+let chatbot = null;
+let chatbotToggle = null;
+let chatbotPanel = null;
+let chatbotClose = null;
+let chatbotForm = null;
+let chatbotInput = null;
+let chatbotMessages = null;
+let chatbotSend = null;
+
 const conversation = [];
 let chatbotProfile = null;
 
@@ -208,61 +210,81 @@ async function askAI(message) {
   return fallbackReply(message);
 }
 
-// Null checks for chatbot elements
-if (chatbotToggle && chatbotPanel) {
-  chatbotToggle.addEventListener('click', () => {
-    setChatbotOpen(!chatbotPanel.classList.contains('active'));
-  });
-}
+// Initialize chatbot after DOM is ready
+function initChatbot() {
+  chatbot = document.getElementById('chatbot');
+  chatbotToggle = document.getElementById('chatbot-toggle');
+  chatbotPanel = document.getElementById('chatbot-panel');
+  chatbotClose = document.getElementById('chatbot-close');
+  chatbotForm = document.getElementById('chatbot-form');
+  chatbotInput = document.getElementById('chatbot-input');
+  chatbotMessages = document.getElementById('chatbot-messages');
+  chatbotSend = chatbotForm?.querySelector('button[type="submit"]');
 
-if (chatbotClose) {
-  chatbotClose.addEventListener('click', () => setChatbotOpen(false));
-}
-
-window.addEventListener('user-authenticated', () => loadChatbotProfile());
-
-if (chatbotForm && chatbotInput && chatbotMessages) {
-  chatbotForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const message = chatbotInput.value.trim();
-  if (!message) return;
-
-  // Quitar el saludo inicial cuando comienza la conversación para que
-  // la respuesta del asistente quede visible y no parezca repetida.
-  if (conversation.length === 0) {
-    const welcomeMessage = chatbotMessages.querySelector('.bot-message:not(.loading-message)');
-    if (welcomeMessage) welcomeMessage.remove();
+  // Null checks for chatbot elements
+  if (chatbotToggle && chatbotPanel) {
+    chatbotToggle.addEventListener('click', () => {
+      setChatbotOpen(!chatbotPanel.classList.contains('active'));
+    });
   }
 
-  addMessage(message, 'user-message');
-  conversation.push({ role: 'user', content: message });
-  chatbotInput.value = '';
-  chatbotSend.disabled = true;
+  if (chatbotClose) {
+    chatbotClose.addEventListener('click', () => setChatbotOpen(false));
+  }
 
-  const loadingMessage = addMessage('Pensando...', 'bot-message loading-message');
+  if (chatbotForm && chatbotInput && chatbotMessages) {
+    chatbotForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const message = chatbotInput.value.trim();
+      if (!message) return;
 
-  try {
-    await loadChatbotProfile();
-    const reply = await askAI(message);
-    loadingMessage.remove();
-    const msgEl = addMessage(reply, 'bot-message');
-    conversation.push({ role: 'assistant', content: reply });
-
-    // Detectar si la respuesta contiene una rutina y mostrar botón para guardarla
-    if (window.routinesModule?.showSaveRoutineButton) {
-      try {
-        await window.routinesModule.showSaveRoutineButton(reply, msgEl);
-      } catch (error) {
-        console.error('Error al preparar la rutina del chatbot:', error);
+      // Quitar el saludo inicial cuando comienza la conversación para que
+      // la respuesta del asistente quede visible y no parezca repetida.
+      if (conversation.length === 0) {
+        const welcomeMessage = chatbotMessages.querySelector('.bot-message:not(.loading-message)');
+        if (welcomeMessage) welcomeMessage.remove();
       }
-    }
-  } catch (error) {
-    console.error('Error al consultar el chatbot:', error);
-    loadingMessage.remove();
-    addMessage(fallbackReply(message), 'bot-message');
-  } finally {
-    chatbotSend.disabled = false;
-    chatbotInput.focus();
+
+      addMessage(message, 'user-message');
+      conversation.push({ role: 'user', content: message });
+      chatbotInput.value = '';
+      if (chatbotSend) chatbotSend.disabled = true;
+
+      const loadingMessage = addMessage('Pensando...', 'bot-message loading-message');
+
+      try {
+        await loadChatbotProfile();
+        const reply = await askAI(message);
+        loadingMessage.remove();
+        const msgEl = addMessage(reply, 'bot-message');
+        conversation.push({ role: 'assistant', content: reply });
+
+        // Detectar si la respuesta contiene una rutina y mostrar botón para guardarla
+        if (window.routinesModule?.showSaveRoutineButton) {
+          try {
+            await window.routinesModule.showSaveRoutineButton(reply, msgEl);
+          } catch (error) {
+            console.error('Error al preparar la rutina del chatbot:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error al consultar el chatbot:', error);
+        loadingMessage.remove();
+        addMessage(fallbackReply(message), 'bot-message');
+      } finally {
+        if (chatbotSend) chatbotSend.disabled = false;
+        chatbotInput.focus();
+      }
+    });
   }
-});
 }
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChatbot);
+} else {
+  initChatbot();
+}
+
+// Listen for login/logout events to reload preferences
+window.addEventListener('user-authenticated', () => loadChatbotProfile());

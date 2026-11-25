@@ -1,8 +1,10 @@
-const accessibilityToggle = document.getElementById('accessibility-toggle');
-const accessibilityPanel = document.getElementById('accessibility-panel');
-const accessibilityClose = document.getElementById('accessibility-close');
 const accessibilityStorageKey = 'entrena-accessibility';
 // Use window.API_BASE_URL set by api-config.js
+
+// Cache DOM elements - will be populated after DOM is ready
+let accessibilityToggle = null;
+let accessibilityPanel = null;
+let accessibilityClose = null;
 
 /**
  * Checks if the user is logged in.
@@ -188,56 +190,82 @@ async function updateFontSize(action) {
   applyAccessibilityPreferences(preferences);
 }
 
-// Null checks for accessibility toggle elements
-if (accessibilityToggle && accessibilityPanel) {
-  accessibilityToggle.addEventListener('click', () => {
-    setAccessibilityOpen(accessibilityPanel.classList.contains('hidden'));
+// Initialize accessibility widget after DOM is ready
+function initAccessibility() {
+  accessibilityToggle = document.getElementById('accessibility-toggle');
+  accessibilityPanel = document.getElementById('accessibility-panel');
+  accessibilityClose = document.getElementById('accessibility-close');
+
+  // Null checks for accessibility toggle elements
+  if (accessibilityToggle && accessibilityPanel) {
+    accessibilityToggle.addEventListener('click', () => {
+      setAccessibilityOpen(accessibilityPanel.classList.contains('hidden'));
+    });
+  }
+
+  if (accessibilityClose) {
+    accessibilityClose.addEventListener('click', () => setAccessibilityOpen(false));
+  }
+
+  document.querySelectorAll('[data-font-action]').forEach(button => {
+    button.addEventListener('click', () => updateFontSize(button.dataset.fontAction));
   });
-}
 
-if (accessibilityClose) {
-  accessibilityClose.addEventListener('click', () => setAccessibilityOpen(false));
-}
-
-document.querySelectorAll('[data-font-action]').forEach(button => {
-  button.addEventListener('click', () => updateFontSize(button.dataset.fontAction));
-});
-
-document.querySelectorAll('[data-accessibility-action]').forEach(button => {
-  button.addEventListener('click', async () => {
-    const action = button.dataset.accessibilityAction;
-    if (action === 'reset') {
-      localStorage.removeItem(accessibilityStorageKey);
-      if (isLoggedIn()) {
-        // Reset backend preferences to defaults
-        await fetch(`${window.API_BASE_URL}/api/user/preferences`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthToken()}`,
-          },
-          body: JSON.stringify({
-            Theme: 'light',
-            FontSize: 'normal',
-            HighContrast: false,
-            ReducedMotion: false,
-            Grayscale: false,
-          }),
-        });
+  document.querySelectorAll('[data-accessibility-action]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const action = button.dataset.accessibilityAction;
+      if (action === 'reset') {
+        localStorage.removeItem(accessibilityStorageKey);
+        if (isLoggedIn()) {
+          // Reset backend preferences to defaults
+          await fetch(`${window.API_BASE_URL}/api/user/preferences`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthToken()}`,
+            },
+            body: JSON.stringify({
+              Theme: 'light',
+              FontSize: 'normal',
+              HighContrast: false,
+              ReducedMotion: false,
+              Grayscale: false,
+            }),
+          });
+        }
+        applyAccessibilityPreferences({});
+        return;
       }
-      applyAccessibilityPreferences({});
-      return;
-    }
 
-    const preferences = getLocalPreferences();
-    preferences[action] = !preferences[action];
-    await saveAccessibilityPreferences(preferences);
-    applyAccessibilityPreferences(preferences);
+      const preferences = getLocalPreferences();
+      preferences[action] = !preferences[action];
+      await saveAccessibilityPreferences(preferences);
+      applyAccessibilityPreferences(preferences);
+    });
   });
+
+  // Initialize: load preferences (from backend if logged in, else localStorage)
+  loadAccessibilityPreferences().then(applyAccessibilityPreferences);
+}
+
+// Listen for login/logout events to reload preferences
+window.addEventListener('user-authenticated', () => {
+  loadAccessibilityPreferences().then(applyAccessibilityPreferences);
 });
 
-// Initialize: load preferences (from backend if logged in, else localStorage)
-loadAccessibilityPreferences().then(applyAccessibilityPreferences);
+window.addEventListener('storage', e => {
+  if (e.key === 'auth_token' && !e.newValue) {
+    // User logged out - reload from localStorage
+    applyAccessibilityPreferences(getLocalPreferences());
+  }
+});
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAccessibility);
+} else {
+  initAccessibility();
+}
 
 // Listen for login/logout events to reload preferences
 window.addEventListener('user-authenticated', () => {

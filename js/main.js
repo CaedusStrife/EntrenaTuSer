@@ -28,8 +28,8 @@ import './database-status.js';
 import './registration.js';
 
 // Initialize Lucide icons
-import { createIcons } from 'lucide';
-createIcons();
+import { createIcons, icons } from 'lucide';
+createIcons({ icons });
 
 // Legal modals functions
 function openLegalModal(modalId) {
