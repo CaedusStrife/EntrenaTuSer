@@ -606,8 +606,8 @@ async function completeSelectedExercise() {
 // Expose globally for inline onclick handlers
 window.completeSelectedExercise = completeSelectedExercise;
 
-// Promise that resolves when exercises are loaded
-window.exercisesLoadedPromise = (async function() {
+// Load exercises when DOM is ready
+async function loadExercises() {
   if (!exerciseList) return;
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -628,7 +628,9 @@ window.exercisesLoadedPromise = (async function() {
       return exercises;
     } catch (error) {
       if (attempt === 4) {
-        exerciseList.innerHTML = `<p class="exercise-error">No se pudieron cargar los ejercicios. Comprueba que la API esté iniciada en ${apiBaseUrl} y recarga la página.</p>`;
+        if (exerciseList) {
+          exerciseList.innerHTML = `<p class="exercise-error">No se pudieron cargar los ejercicios. Comprueba que la API esté iniciada en ${apiBaseUrl} y recarga la página.</p>`;
+        }
         if (window.workoutStateMachine) {
           window.workoutStateMachine.initialize([]);
         }
@@ -638,11 +640,11 @@ window.exercisesLoadedPromise = (async function() {
       await new Promise((resolve) => window.setTimeout(resolve, 1000));
     }
   }
-})();
-
-async function loadExercises() {
-  return window.exercisesLoadedPromise;
 }
 
-// Iniciar carga de ejercicios al cargar el módulo
-loadExercises();
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadExercises);
+} else {
+  loadExercises();
+}
