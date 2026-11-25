@@ -606,6 +606,8 @@ app.MapPost("/api/auth/recovery", async (RecoveryRequest request, IConfiguration
     cmd.Parameters.AddWithValue("@email", email);
     var userIdObj = await cmd.ExecuteScalarAsync();
 
+    string tokenString = null;
+
     if (userIdObj != null)
     {
         int userId = Convert.ToInt32(userIdObj);
@@ -617,7 +619,7 @@ app.MapPost("/api/auth/recovery", async (RecoveryRequest request, IConfiguration
 
         var rawToken = RandomNumberGenerator.GetBytes(32);
         var tokenHash = HashPassword(Convert.ToBase64String(rawToken));
-        var tokenString = Convert.ToBase64String(rawToken);
+        tokenString = Convert.ToBase64String(rawToken);
 
         await using var insert = new SqlCommand("""
             INSERT INTO dbo.password_reset_tokens (usuario_id, token_hash, expira_en)
@@ -631,10 +633,15 @@ app.MapPost("/api/auth/recovery", async (RecoveryRequest request, IConfiguration
     }
 
     // Always return success to prevent email enumeration
-    var response = new { message = "Si el correo existe, recibirás instrucciones para restablecer tu contraseña." };
-    if (app.Environment.IsDevelopment())
+    var message = "Si el correo existe, recibirás instrucciones para restablecer tu contraseña.";
+    object response;
+    if (app.Environment.IsDevelopment() && tokenString != null)
     {
-        response = new { message = "Si el correo existe, recibirás instrucciones para restablecer tu contraseña.", devToken = tokenString };
+        response = new { message, devToken = tokenString };
+    }
+    else
+    {
+        response = new { message };
     }
     return Results.Ok(response);
 });
