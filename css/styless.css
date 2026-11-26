@@ -1909,9 +1909,9 @@ p { color: var(--ink-muted); }
   transform-origin: left;
   transition: transform var(--transition-base);
 }
-.exercise-card[data-category="warmup"] { --category-color: var(--color-amber); }
-.exercise-card[data-category="main"] { --category-color: var(--color-sage); }
-.exercise-card[data-category="recovery"] { --category-color: var(--color-sienna); }
+.exercise-card[data-category="warmup"] { --category-color: var(--pigment-amber); }
+.exercise-card[data-category="main"] { --category-color: var(--pigment-sage); }
+.exercise-card[data-category="recovery"] { --category-color: var(--pigment-sienna); }
 
 .exercise-card:hover::before,
 .exercise-card.selected::before {
