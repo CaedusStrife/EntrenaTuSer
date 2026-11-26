@@ -26,7 +26,7 @@
   <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
   <!-- ==================== SCREEN 1: LOGIN & REGISTER ==================== -->
-  <section id="screen-login" class="screen-container active" data-theme="light">
+  <section id="screen-login" class="screen-container hidden active" data-theme="light">
     <!-- Ebru Bath Background (ambient animations) -->
     <div class="bath" aria-hidden="true">
       <!-- Water surface with subtle pigment blooms -->
@@ -350,6 +350,16 @@
         </div>
       </section>
 
+      <!-- Login Footer - Solo enlaces legales esenciales -->
+      <footer class="login-legal-footer" role="contentinfo">
+        <nav class="login-footer-links" aria-label="Enlaces legales">
+          <a href="#" id="login-footer-terms" class="login-footer-link">Términos y Condiciones</a>
+          <a href="#" id="login-footer-privacy" class="login-footer-link">Política de Privacidad</a>
+          <a href="#" id="login-footer-cookies" class="login-footer-link">Política de Cookies</a>
+          <a href="#" id="login-footer-contact" class="login-footer-link">Contacto</a>
+        </nav>
+      </footer>
+
     </div>
   </section>
 
@@ -358,7 +368,7 @@
     <main id="main-content" class="app-main" role="main">
 
       <!-- ==================== PROGRESS SCREEN ==================== -->
-      <section id="screen-progress" class="screen-tab active" aria-labelledby="progress-title">
+      <section id="screen-progress" class="screen-tab hidden" aria-labelledby="progress-title">
         <!-- Hero -->
         <header class="screen-hero">
           <div class="hero-main">
@@ -474,11 +484,23 @@
                   <div class="skeleton skeleton-text" aria-hidden="true"></div>
                   <div class="skeleton skeleton-text" aria-hidden="true"></div>
                 </div>
-                <p id="history-empty-state" class="empty-state-center hidden">
-                  <div class="empty-state-icon"><i data-lucide="calendar-x" aria-hidden="true"></i></div>
-                  <h3 class="empty-state-title">Sin entrenamientos recientes</h3>
-                  <p class="empty-state-text">Completa tu primer ejercicio para ver tu historial aquí.</p>
-                </p>
+                <div id="history-empty-state" class="empty-state-center progress-empty hidden" role="status">
+                  <div class="ebru-drops" aria-hidden="true">
+                    <span class="ebru-drop drop-1"></span>
+                    <span class="ebru-drop drop-2"></span>
+                    <span class="ebru-drop drop-3"></span>
+                  </div>
+                  <div class="ebru-comb trail-1" aria-hidden="true"></div>
+                  <div class="ebru-comb trail-2" aria-hidden="true"></div>
+                  <div class="empty-state-icon"><i data-lucide="calendar-clock" aria-hidden="true"></i></div>
+                  <h3 class="empty-state-title">Tu historia empieza hoy</h3>
+                  <p class="empty-state-text">Cada gota cuenta. Completa tu primer ejercicio y verás tu progreso florecer como tinta en el agua.</p>
+                  <div class="empty-state-cta">
+                    <button type="button" class="btn btn-primary" onclick="switchTab('screen-workout')">
+                      <i data-lucide="play" aria-hidden="true"></i> Empezar entrenamiento
+                    </button>
+                  </div>
+                </div>
               </div>
             </details>
 
@@ -551,10 +573,23 @@
             <div class="exercise-categories" id="exercise-list" role="list">
               <!-- Populated by exercises.js -->
             </div>
-            <p id="exercise-empty-state" class="empty-state-center hidden">
-              <div class="empty-state-icon"><i data-lucide="dumbbell" aria-hidden="true"></i></div>
-              <h3 class="empty-state-title">No hay ejercicios disponibles</h3>
-            </p>
+            <div id="exercise-empty-state" class="empty-state-center exercises-empty hidden" role="status">
+              <div class="ebru-drops" aria-hidden="true">
+                <span class="ebru-drop drop-1"></span>
+                <span class="ebru-drop drop-2"></span>
+                <span class="ebru-drop drop-3"></span>
+              </div>
+              <div class="ebru-comb trail-1" aria-hidden="true"></div>
+              <div class="ebru-comb trail-2" aria-hidden="true"></div>
+              <div class="empty-state-icon"><i data-lucide="search" aria-hidden="true"></i></div>
+              <h3 class="empty-state-title">Explora nuestra biblioteca</h3>
+              <p class="empty-state-text">Más de 100 ejercicios guiados te esperan. Filtra por grupo muscular, equipo o nivel.</p>
+              <div class="empty-state-cta">
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('exercise-search-input').focus()">
+                  <i data-lucide="filter" aria-hidden="true"></i> Filtrar ejercicios
+                </button>
+              </div>
+            </div>
           </section>
 
           <!-- Exercise Active (State B) - Hidden by default -->
@@ -677,16 +712,34 @@
             </div>
             <div id="location-status" class="location-status" aria-live="polite" aria-atomic="true" style="padding: var(--space-sm) var(--space-lg); font-size: var(--text-sm); color: var(--ink-muted);"></div>
             <div id="workout-map" role="application" aria-label="Mapa interactivo de zonas de entrenamiento" style="height: 100%; min-height: 360px;"></div>
-            <div id="map-empty-state" class="empty-state-center hidden" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; z-index: 10;">
-              <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-              <h3 class="empty-state-title">Cargando mapa...</h3>
-              <p class="empty-state-text">El mapa se está inicializando. Por favor espera.</p>
+            <div id="map-empty-state" class="empty-state-center map-empty hidden skeleton" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;" role="status" aria-live="polite">
+              <div class="ebru-drops" aria-hidden="true">
+                <span class="ebru-drop drop-1"></span>
+                <span class="ebru-drop drop-2"></span>
+                <span class="ebru-drop drop-3"></span>
+              </div>
+              <div class="ebru-comb trail-1" aria-hidden="true"></div>
+              <div class="ebru-comb trail-2" aria-hidden="true"></div>
+              <div class="empty-state-icon"><i data-lucide="loader" aria-hidden="true"></i></div>
+              <h3 class="empty-state-title">Preparando tu mapa</h3>
+              <p class="empty-state-text">Las corrientes se están alineando. Un momento...</p>
             </div>
-            <div id="map-error-state" class="empty-state-center hidden" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; z-index: 10;">
-              <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
-              <h3 class="empty-state-title">No se pudo cargar el mapa</h3>
-              <p class="empty-state-text">Verifica tu conexión o permisos de ubicación.</p>
-              <button type="button" class="btn btn-primary" onclick="retryMapLoad()">Reintentar</button>
+            <div id="map-error-state" class="empty-state-center map-empty hidden" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;" role="alert">
+              <div class="ebru-drops" aria-hidden="true">
+                <span class="ebru-drop drop-1"></span>
+                <span class="ebru-drop drop-2"></span>
+                <span class="ebru-drop drop-3"></span>
+              </div>
+              <div class="ebru-comb trail-1" aria-hidden="true"></div>
+              <div class="ebru-comb trail-2" aria-hidden="true"></div>
+              <div class="empty-state-icon"><i data-lucide="wifi-off" aria-hidden="true"></i></div>
+              <h3 class="empty-state-title">El mapa no fluye</h3>
+              <p class="empty-state-text">Verifica tu conexión o permisos de ubicación. El agua siempre encuentra su camino.</p>
+              <div class="empty-state-cta">
+                <button type="button" class="btn btn-primary" onclick="retryMapLoad()">
+                  <i data-lucide="refresh-cw" aria-hidden="true"></i> Reintentar
+                </button>
+              </div>
             </div>
           </div>
 
@@ -706,11 +759,23 @@
               <div class="skeleton skeleton-card" aria-hidden="true"></div>
               <div class="skeleton skeleton-card" aria-hidden="true"></div>
             </div>
-            <p id="places-empty-state" class="empty-state-center hidden">
+            <div id="places-empty-state" class="empty-state-center places-empty hidden" role="status">
+              <div class="ebru-drops" aria-hidden="true">
+                <span class="ebru-drop drop-1"></span>
+                <span class="ebru-drop drop-2"></span>
+                <span class="ebru-drop drop-3"></span>
+              </div>
+              <div class="ebru-comb trail-1" aria-hidden="true"></div>
+              <div class="ebru-comb trail-2" aria-hidden="true"></div>
               <div class="empty-state-icon"><i data-lucide="map-pin-off" aria-hidden="true"></i></div>
-              <h3 class="empty-state-title">Sin zonas verdes cercanas</h3>
-              <p class="empty-state-text">No se encontraron lugares en un radio de 5km.</p>
-            </p>
+              <h3 class="empty-state-title">Aún no hay corrientes cerca</h3>
+              <p class="empty-state-text">Amplía el radio de búsqueda o prueba en otra ubicación. La naturaleza siempre está más cerca de lo que parece.</p>
+              <div class="empty-state-cta">
+                <button type="button" class="btn btn-ghost" onclick="document.querySelector('.filter-chip[data-filter=\'all\']').click()">
+                  <i data-lucide="refresh-cw" aria-hidden="true"></i> Ver todos los tipos
+                </button>
+              </div>
+            </div>
           </aside>
         </div>
       </section>
@@ -734,11 +799,22 @@
             <div class="skeleton skeleton-card" aria-hidden="true"></div>
             <div class="skeleton skeleton-card" aria-hidden="true"></div>
           </div>
-          <div id="routines-empty-state" class="empty-state-center hidden" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
-            <h3 class="empty-state-title">No tienes rutinas aún</h3>
-            <p class="empty-state-text">Crea tu primera rutina para empezar a entrenar con estructura.</p>
-            <button type="button" class="btn btn-primary" onclick="openRoutineModal()"><i data-lucide="plus" aria-hidden="true"></i> Crear mi primera rutina</button>
+          <div id="routines-empty-state" class="empty-state-center routines-empty hidden" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;" role="status">
+            <div class="ebru-drops" aria-hidden="true">
+              <span class="ebru-drop drop-1"></span>
+              <span class="ebru-drop drop-2"></span>
+              <span class="ebru-drop drop-3"></span>
+            </div>
+            <div class="ebru-comb trail-1" aria-hidden="true"></div>
+            <div class="ebru-comb trail-2" aria-hidden="true"></div>
+            <div class="empty-state-icon"><i data-lucide="file-plus" aria-hidden="true"></i></div>
+            <h3 class="empty-state-title">Tu baño está vacío</h3>
+            <p class="empty-state-text">Cada rutina es una hoja en el agua. Crea la primera y mira cómo la tinta dibuja tu camino.</p>
+            <div class="empty-state-cta">
+              <button type="button" class="btn btn-primary" onclick="openRoutineModal()">
+                <i data-lucide="plus" aria-hidden="true"></i> Crear mi primera rutina
+              </button>
+            </div>
           </div>
         </section>
 
@@ -751,6 +827,10 @@
             </header>
 
             <div class="wizard-progress" role="navigation" aria-label="Pasos del asistente">
+              <!-- Ebru trail drops - animated pigment drops that appear as progress advances -->
+              <span class="trail-drop" aria-hidden="true"></span>
+              <span class="trail-drop" aria-hidden="true"></span>
+              <span class="trail-drop" aria-hidden="true"></span>
               <ol class="wizard-steps">
                 <li class="wizard-step active" data-step="1"><span class="step-number">1</span><span class="step-label">Datos</span></li>
                 <li class="wizard-step" data-step="2"><span class="step-number">2</span><span class="step-label">Ejercicios</span></li>
@@ -827,7 +907,11 @@
                   <!-- Populated by routineWizard.js -->
                 </div>
                 <div id="wizard-selected-exercises" class="wizard-selected" role="list" aria-label="Ejercicios seleccionados">
-                  <p class="wizard-selected-empty">No hay ejercicios añadidos. Busca y selecciona ejercicios de la lista.</p>
+                  <p class="wizard-selected-empty" style="text-align: center; padding: var(--space-xl); color: var(--ink-muted); font-size: var(--text-sm);">
+                    <i data-lucide="plus-circle" style="width: 24px; height: 24px; margin-bottom: var(--space-sm); opacity: 0.5;"></i>
+                    <br>No hay ejercicios añadidos aún.<br>
+                    <span style="color: var(--pigment-sage); font-weight: 600;">Busca y selecciona</span> de la lista para empezar.
+                  </p>
                 </div>
               </section>
 
@@ -851,7 +935,7 @@
       </section>
 
       <!-- ==================== PROFILE SCREEN ==================== -->
-      <section id="screen-profile" class="screen-tab" aria-labelledby="profile-title">
+      <section id="screen-profile" class="screen-tab hidden" aria-labelledby="profile-title">
         <header class="screen-hero">
           <div class="hero-main">
             <div class="hero-title-group">
@@ -956,30 +1040,7 @@
 
     </main>
 
-    <!-- ==================== MAIN NAVIGATION ==================== -->
-    <nav id="main-navigation" class="main-navigation" role="navigation" aria-label="Navegación principal">
-      <button id="nav-progress" class="nav-item active" data-screen="progress" aria-label="Progreso" aria-current="true">
-        <i data-lucide="trending-up" aria-hidden="true"></i>
-        <span>Progreso</span>
-      </button>
-      <button id="nav-workout" class="nav-item" data-screen="workout" aria-label="Entrenamiento">
-        <i data-lucide="dumbbell" aria-hidden="true"></i>
-        <span>Entrenamiento</span>
-      </button>
-      <button id="nav-routines" class="nav-item" data-screen="routines" aria-label="Mis Rutinas">
-        <i data-lucide="list-todo" aria-hidden="true"></i>
-        <span>Mis Rutinas</span>
-      </button>
-      <button id="nav-map" class="nav-item" data-screen="map" aria-label="Mapa y Ubicación">
-        <i data-lucide="map" aria-hidden="true"></i>
-        <span>Mapa</span>
-      </button>
-      <button id="nav-profile" class="nav-item" data-screen="profile" aria-label="Mi Perfil">
-        <i data-lucide="user" aria-hidden="true"></i>
-        <span>Perfil</span>
-      </button>
-    </nav>
-  </div>
+    </div>
 
   <!-- Chatbot (Ebru Paper-Sheet) -->
   <aside id="chatbot" class="chatbot" aria-label="Chatbot de Entrena tu ser">
@@ -987,7 +1048,7 @@
       <i data-lucide="message-circle"></i>
     </button>
 
-    <section id="chatbot-panel" class="chatbot-panel" aria-label="Asistente virtual">
+    <section id="chatbot-panel" class="chatbot-panel hidden" aria-label="Asistente virtual">
       <header class="chatbot-header">
         <div>
           <strong>Asistente Entrena</strong>
@@ -998,16 +1059,19 @@
         </button>
       </header>
       <div id="chatbot-messages" class="chatbot-messages" aria-live="polite">
-        <div class="chat-message bot-message">Hola, soy tu asistente de entrenamiento. ¿Cómo puedo ayudarte hoy?</div>
+        <div class="chat-message bot-message">
+          <div class="chat-avatar">E</div>
+          <div class="chat-content">Hola, soy tu asistente de entrenamiento. ¿Cómo puedo ayudarte hoy?</div>
+        </div>
       </div>
       <form id="chatbot-form" class="chatbot-form">
         <label class="hidden" for="chatbot-input">Escribe tu mensaje</label>
-        <div class="chatbot-input-wrapper">
+        <div class="chatbot-input">
           <input id="chatbot-input" type="text" maxlength="500" placeholder="Escribe tu consulta..." autocomplete="off">
+          <button type="submit" aria-label="Enviar mensaje">
+            <i data-lucide="send"></i>
+          </button>
         </div>
-        <button class="chatbot-send" type="submit" aria-label="Enviar mensaje">
-          <i data-lucide="send"></i>
-        </button>
       </form>
     </section>
   </aside>
@@ -1018,7 +1082,7 @@
       aria-label="Abrir opciones de accesibilidad" aria-expanded="false">
       <i data-lucide="accessibility"></i>
     </button>
-    <section id="accessibility-panel" class="accessibility-panel" aria-label="Configuración de accesibilidad">
+    <section id="accessibility-panel" class="accessibility-panel hidden" aria-label="Configuración de accesibilidad">
       <header class="accessibility-header">
         <strong>Accesibilidad</strong>
         <button id="accessibility-close" class="accessibility-close" type="button" aria-label="Cerrar opciones de accesibilidad">
@@ -1027,23 +1091,23 @@
       </header>
       <div class="accessibility-options">
         <div class="accessibility-text-size">
-          <span>Tamaño del texto</span>
-          <div>
-            <button type="button" data-font-action="decrease" aria-label="Reducir tamaño del texto">A-</button>
-            <button type="button" data-font-action="reset" aria-label="Restablecer tamaño del texto">A</button>
-            <button type="button" data-font-action="increase" aria-label="Aumentar tamaño del texto">A+</button>
+          <label>Tamaño del texto</label>
+          <div class="text-size-controls">
+            <button type="button" class="text-size-btn" data-font-action="decrease" aria-label="Reducir tamaño del texto">A-</button>
+            <button type="button" class="text-size-btn" data-font-action="reset" aria-label="Restablecer tamaño del texto">A</button>
+            <button type="button" class="text-size-btn" data-font-action="increase" aria-label="Aumentar tamaño del texto">A+</button>
           </div>
         </div>
-        <button type="button" class="accessibility-option" data-accessibility-action="darkmode" aria-pressed="false">
+        <button type="button" class="accessibility-btn" data-accessibility-action="darkmode" aria-pressed="false">
           <i data-lucide="moon"></i><span>Modo Oscuro</span>
         </button>
-        <button type="button" class="accessibility-option" data-accessibility-action="contrast" aria-pressed="false">
+        <button type="button" class="accessibility-btn" data-accessibility-action="contrast" aria-pressed="false">
           <i data-lucide="contrast"></i><span>Alto Contraste</span>
         </button>
-        <button type="button" class="accessibility-option" data-accessibility-action="motion" aria-pressed="false">
+        <button type="button" class="accessibility-btn" data-accessibility-action="motion" aria-pressed="false">
           <i data-lucide="pause-circle"></i><span>Reducir Animaciones</span>
         </button>
-        <button type="button" class="accessibility-option" data-accessibility-action="grayscale" aria-pressed="false">
+        <button type="button" class="accessibility-btn" data-accessibility-action="grayscale" aria-pressed="false">
           <i data-lucide="circle-slash"></i><span>Escala de Grises</span>
         </button>
         <button type="button" class="accessibility-reset" data-accessibility-action="reset">
@@ -1054,7 +1118,7 @@
   </aside>
 
   <!-- Routine modal (Ebru overlay paper-sheet) -->
-  <div id="routine-modal-legacy" class="routine-modal-overlay" aria-labelledby="routine-modal-title" role="dialog" aria-modal="true">
+  <div id="routine-modal-legacy" class="routine-modal-overlay hidden" aria-labelledby="routine-modal-title" role="dialog" aria-modal="true">
     <div class="routine-modal-sheet">
       <header class="routine-modal-header">
         <h3 id="routine-modal-title">Nueva Rutina</h3>
@@ -1119,6 +1183,30 @@
       </div>
     </div>
   </div>
+
+  <!-- ==================== MAIN NAVIGATION (above footer) ==================== -->
+  <nav id="main-navigation" class="main-navigation" role="navigation" aria-label="Navegación principal">
+    <button id="nav-progress" class="nav-item active" data-screen="progress" aria-label="Progreso" aria-current="true">
+      <i data-lucide="trending-up" aria-hidden="true"></i>
+      <span>Progreso</span>
+    </button>
+    <button id="nav-workout" class="nav-item" data-screen="workout" aria-label="Entrenamiento">
+      <i data-lucide="dumbbell" aria-hidden="true"></i>
+      <span>Entrenamiento</span>
+    </button>
+    <button id="nav-routines" class="nav-item" data-screen="routines" aria-label="Mis Rutinas">
+      <i data-lucide="list-todo" aria-hidden="true"></i>
+      <span>Mis Rutinas</span>
+    </button>
+    <button id="nav-map" class="nav-item" data-screen="map" aria-label="Mapa y Ubicación">
+      <i data-lucide="map" aria-hidden="true"></i>
+      <span>Mapa</span>
+    </button>
+    <button id="nav-profile" class="nav-item" data-screen="profile" aria-label="Mi Perfil">
+      <i data-lucide="user" aria-hidden="true"></i>
+      <span>Perfil</span>
+    </button>
+  </nav>
 
   <!-- Footer with Legal Links -->
   <footer class="site-footer" role="contentinfo">

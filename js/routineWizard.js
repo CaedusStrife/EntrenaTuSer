@@ -128,9 +128,37 @@ class RoutineWizard {
             panel.classList.toggle('active', index + 1 === this.currentStep);
         });
 
+        // Update Ebru progress trail (data-step on wizard-progress)
+        const wizardProgress = document.querySelector('.wizard-progress');
+        if (wizardProgress) {
+            wizardProgress.setAttribute('data-step', this.currentStep);
+        }
+
+        // Trigger trail drop animations for the current step
+        this.animateTrailDrops();
+
         this.wizardPrev.disabled = this.currentStep === 1;
         this.wizardNext.disabled = this.currentStep === this.maxSteps;
         this.wizardSubmit.classList.toggle('hidden', this.currentStep !== this.maxSteps);
+    }
+
+    animateTrailDrops() {
+        const wizardProgress = document.querySelector('.wizard-progress');
+        if (!wizardProgress) return;
+        
+        const trailDrops = wizardProgress.querySelectorAll('.trail-drop');
+        trailDrops.forEach((drop, index) => {
+            // Only show drops up to current step
+            if (index + 1 <= this.currentStep) {
+                // Force reflow before adding class to trigger transition
+                drop.offsetHeight;
+                drop.classList.add('show');
+                // Only the current step's drop gets the pulse animation
+                drop.classList.toggle('active-drop', index + 1 === this.currentStep);
+            } else {
+                drop.classList.remove('show', 'active-drop');
+            }
+        });
     }
 
     nextStep(direction) {

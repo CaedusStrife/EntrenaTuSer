@@ -12,7 +12,7 @@ const conversation = [];
 let chatbotProfile = null;
 
 function setChatbotOpen(isOpen) {
-  chatbotPanel.classList.toggle('active', isOpen);
+  chatbotPanel.classList.toggle('hidden', !isOpen);
   chatbotToggle.setAttribute('aria-expanded', String(isOpen));
 
   if (isOpen) {
@@ -26,14 +26,40 @@ function addMessage(text, type) {
     type === 'bot-message' &&
     lastMessage &&
     !lastMessage.classList.contains('loading-message') &&
-    lastMessage.textContent.trim() === text.trim()
+    lastMessage.querySelector('.chat-content')?.textContent.trim() === text.trim()
   ) {
     return lastMessage;
   }
 
   const message = document.createElement('div');
   message.className = `chat-message ${type}`;
-  message.textContent = text;
+
+  const isUser = type.includes('user-message');
+  const isLoading = type.includes('loading-message');
+
+  // Avatar
+  const avatar = document.createElement('div');
+  avatar.className = 'chat-avatar';
+  avatar.textContent = isUser ? 'T' : 'E'; // T for Tú, E for Entrena
+
+  // Content wrapper
+  const content = document.createElement('div');
+  content.className = 'chat-content';
+
+  if (isLoading) {
+    content.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  } else {
+    content.textContent = text;
+  }
+
+  if (isUser) {
+    message.appendChild(content);
+    message.appendChild(avatar);
+  } else {
+    message.appendChild(avatar);
+    message.appendChild(content);
+  }
+
   chatbotMessages.appendChild(message);
   chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
   return message;
@@ -224,7 +250,7 @@ function initChatbot() {
   // Null checks for chatbot elements
   if (chatbotToggle && chatbotPanel) {
     chatbotToggle.addEventListener('click', () => {
-      setChatbotOpen(!chatbotPanel.classList.contains('active'));
+      setChatbotOpen(chatbotPanel.classList.contains('hidden'));
     });
   }
 

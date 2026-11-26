@@ -1,93 +1,63 @@
 /**
- * Lógica para la visualización de estadísticas en el Dashboard
- * Utiliza Chart.js para renderizar el progreso semanal
+ * dashboard-chart.js
+ * Weekly progress chart for the Dashboard screen — now fully on-brand via chartTheme.
  */
+
+import { chartTheme } from './chart-theme.js';
+import Chart from 'chart.js/auto';
 
 document.addEventListener('DOMContentLoaded', () => {
     initWeeklyChart();
 });
 
 function initWeeklyChart() {
-    const ctx = document.getElementById('weeklyChart');
-    
-    if (!ctx) return;
+    const canvas = document.getElementById('weeklyChart');
 
-    // Colores temáticos
-    const orangeColor = '#FF7E21';
-    const tealColor = '#2D9CDB';
+    if (!canvas) return;
 
-    // Crear un gradiente para las barras
-    const canvasCtx = ctx.getContext('2d');
-    const gradient = canvasCtx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(255, 126, 33, 0.8)'); // Naranja vibrante
-    gradient.addColorStop(1, 'rgba(255, 126, 33, 0.1)'); // Transparente
+    const ctx = canvas.getContext('2d');
 
-    // Chart.js transforma los datos de actividad en una gráfica que se puede ver fácilmente.
+    // Brand gradient using chartTheme helper (top-to-bottom fade)
+    const gradient = chartTheme.createVerticalGradient(ctx, 'primary', 300);
+
     new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
             datasets: [{
                 label: 'Minutos de Actividad',
-                data: [45, 60, 25, 80, 55, 90, 40], // Datos de ejemplo
+                data: [45, 60, 25, 80, 55, 90, 40], // Sample data — replaced by progress.js at runtime
                 backgroundColor: gradient,
-                borderColor: orangeColor,
+                borderColor: chartTheme.colors.primary,
                 borderWidth: 2,
                 borderRadius: 10,
                 borderSkipped: false,
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            ...chartTheme.defaults,
             plugins: {
-                legend: {
-                    display: false // Ocultamos la leyenda para un look más limpio
-                },
+                ...chartTheme.defaults.plugins,
                 tooltip: {
-                    backgroundColor: '#1a202c',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false
+                    ...chartTheme.defaults.plugins.tooltip,
+                    callbacks: {
+                        label: (context) => `${context.parsed.y} min`
+                    }
                 }
             },
             scales: {
+                ...chartTheme.defaults.scales,
                 y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.05)',
-                        drawBorder: false
-                    },
+                    ...chartTheme.defaults.scales.y,
                     ticks: {
-                        color: '#828282',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 12
-                        },
-                        callback: function(value) {
-                            return value + ' min';
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    },
-                    ticks: {
-                        color: '#828282',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 12
-                        }
+                        ...chartTheme.defaults.scales.y.ticks,
+                        callback: (value) => `${value} min`
                     }
                 }
             },
             animation: {
-                duration: 2000,
-                easing: 'easeOutQuart'
+                ...chartTheme.defaults.animation,
+                duration: 1200, // Slightly faster for dashboard feel
             }
         }
     });

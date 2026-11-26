@@ -95,7 +95,7 @@ function switchTab(tabId, btnElement) {
     sheet.classList.remove('sheet-enter');
     sheet.classList.remove('active');
   });
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.main-navigation .nav-item, .bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
   const activeSheet = document.getElementById(tabId);
   if (activeSheet) {
     activeSheet.classList.remove('hidden');
@@ -145,15 +145,17 @@ document.addEventListener('DOMContentLoaded', () => {
     appLayout.classList.add('hidden');
   }
 
-  // Initialize bottom navigation
-  const bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav) {
-    bottomNav.querySelectorAll('.nav-item').forEach(button => {
-      button.addEventListener('click', () => {
-        // The onclick in HTML handles the switchTab call
-      });
+  // Initialize navigation (both main-navigation and bottom-nav for legacy)
+  const navContainers = document.querySelectorAll('.main-navigation, .bottom-nav');
+  navContainers.forEach(navContainer => {
+    navContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-item[data-screen]');
+      if (btn) {
+        const screenId = 'screen-' + btn.dataset.screen;
+        switchTab(screenId, btn);
+      }
     });
-  }
+  });
 
   // Initialize lucide icons
   if (typeof lucide !== 'undefined') lucide.createIcons();

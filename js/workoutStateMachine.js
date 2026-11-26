@@ -3,6 +3,7 @@
 /**
  * Manages the state and flow of a single workout session.
  * Wraps and orchestrates the existing exercises.js logic.
+ * v2 - DOMContentLoaded fix
  */
 class WorkoutStateMachine {
     constructor() {

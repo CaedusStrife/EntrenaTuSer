@@ -3,18 +3,18 @@
 /**
  * Manages Chart.js integration for the Progress screen.
  * Handles weekly chart rendering, updates, and responsive behavior.
+ * Now fully on-brand via chartTheme.
  */
+
+import { chartTheme } from './chart-theme.js';
+import Chart from 'chart.js/auto';
+
 class ProgressCharts {
     constructor() {
         this.weeklyChart = null;
         this.canvas = document.getElementById('progress-weeklyChart');
-        this.chartColors = {
-            primary: 'rgba(74, 222, 205, 0.8)',
-            primaryBorder: 'rgba(74, 222, 205, 1)',
-            background: 'rgba(74, 222, 205, 0.1)',
-            grid: 'rgba(0, 0, 0, 0.05)'
-        };
-        
+        this.currentMetricType = 'minutes';
+
         this.init();
     }
 
@@ -30,7 +30,7 @@ class ProgressCharts {
 
     setupChart() {
         const ctx = this.canvas.getContext('2d');
-        
+
         this.weeklyChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -38,68 +38,25 @@ class ProgressCharts {
                 datasets: [{
                     label: 'Minutos',
                     data: [0, 0, 0, 0, 0, 0, 0],
-                    backgroundColor: this.chartColors.primary,
-                    borderColor: this.chartColors.primaryBorder,
+                    backgroundColor: chartTheme.metricColors.minutes.bg,
+                    borderColor: chartTheme.metricColors.minutes.border,
                     borderWidth: 2,
                     borderRadius: 8,
                     borderSkipped: false,
-                    hoverBackgroundColor: this.chartColors.primaryBorder,
-                    hoverBorderColor: this.chartColors.primary
+                    hoverBackgroundColor: chartTheme.metricColors.minutes.hoverBg,
+                    hoverBorderColor: chartTheme.metricColors.minutes.hoverBorder,
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
+                ...chartTheme.defaults,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
+                    ...chartTheme.defaults.plugins,
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        padding: 12,
-                        cornerRadius: 8,
-                        displayColors: false,
+                        ...chartTheme.defaults.plugins.tooltip,
                         callbacks: {
-                            label: (context) => {
-                                const minutes = context.parsed.y;
-                                return `${minutes} min`;
-                            }
+                            label: (context) => `${context.parsed.y} min`
                         }
                     }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: 'var(--ink-muted)',
-                            font: { size: 12 }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: this.chartColors.grid,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: 'var(--ink-muted)',
-                            font: { size: 11 },
-                            stepSize: 10,
-                            callback: (value) => `${value} min`
-                        }
-                    }
-                },
-                animation: {
-                    duration: 800,
-                    easing: 'easeOutQuart'
                 }
             }
         });
@@ -126,18 +83,15 @@ class ProgressCharts {
      * @param {number[]} data - Weekly data array
      */
     updateChartByType(type, data) {
-        const colors = {
-            minutes: { bg: 'rgba(74, 222, 205, 0.8)', border: 'rgba(74, 222, 205, 1)' },
-            exercises: { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },
-            points: { bg: 'rgba(59, 130, 246, 0.8)', border: 'rgba(59, 130, 246, 1)' }
-        };
-
-        const color = colors[type] || colors.minutes;
+        const colors = chartTheme.metricColors[type] || chartTheme.metricColors.minutes;
 
         if (this.weeklyChart) {
-            this.weeklyChart.data.datasets[0].backgroundColor = color.bg;
-            this.weeklyChart.data.datasets[0].borderColor = color.border;
+            this.weeklyChart.data.datasets[0].backgroundColor = colors.bg;
+            this.weeklyChart.data.datasets[0].borderColor = colors.border;
+            this.weeklyChart.data.datasets[0].hoverBackgroundColor = colors.hoverBg;
+            this.weeklyChart.data.datasets[0].hoverBorderColor = colors.hoverBorder;
             this.weeklyChart.data.datasets[0].label = type.charAt(0).toUpperCase() + type.slice(1);
+            this.currentMetricType = type;
             this.updateChart(data);
         }
     }
@@ -149,11 +103,11 @@ class ProgressCharts {
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 = Sunday
         const labels = [];
-        
+
         // Get Monday of this week
         const monday = new Date(today);
         monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
-        
+
         for (let i = 0; i < 7; i++) {
             const date = new Date(monday);
             date.setDate(monday.getDate() + i);
