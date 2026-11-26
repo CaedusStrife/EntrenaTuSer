@@ -18,20 +18,19 @@ BEGIN
         creado_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
         actualizado_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
         -- Preferencias de accesibilidad (Fase 2)
-        tema NVARCHAR(20) NOT NULL DEFAULT 'light',           -- 'light' | 'dark'
-        tamano_texto NVARCHAR(20) NOT NULL DEFAULT 'normal',  -- 'small' | 'normal' | 'large' | 'xlarge'
+        tema NVARCHAR(20) NOT NULL DEFAULT 'light',
+        tamano_texto NVARCHAR(20) NOT NULL DEFAULT 'normal',
         alto_contraste BIT NOT NULL DEFAULT 0,
         reducir_movimiento BIT NOT NULL DEFAULT 0,
         escala_grises BIT NOT NULL DEFAULT 0,
         -- Avatar / foto
-        avatar_color NVARCHAR(7) NULL,        -- Hex color
-        avatar_iniciales NVARCHAR(10) NULL,   -- Initials (expanded from 3 to 10)
-        foto_url NVARCHAR(500) NULL           -- Profile photo URL
+        avatar_color NVARCHAR(7) NULL,
+        avatar_iniciales NVARCHAR(10) NULL,
+        foto_url NVARCHAR(500) NULL
     );
 END
 ELSE
 BEGIN
-    -- Add missing columns if table exists but columns don't
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.usuarios') AND name = 'tema')
         ALTER TABLE dbo.usuarios ADD tema NVARCHAR(20) NOT NULL DEFAULT 'light';
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.usuarios') AND name = 'tamano_texto')
@@ -51,9 +50,11 @@ BEGIN
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.usuarios') AND name = 'actualizado_en')
         ALTER TABLE dbo.usuarios ADD actualizado_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME();
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_usuarios_email' AND object_id = OBJECT_ID('dbo.usuarios'))
     CREATE INDEX IX_usuarios_email ON dbo.usuarios(email);
+GO
 
 -- EJERCICIOS
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ejercicios' AND schema_id = SCHEMA_ID('dbo'))
@@ -69,6 +70,7 @@ BEGIN
         dificultad NVARCHAR(20) NULL DEFAULT 'principiante'
     );
 END
+GO
 
 -- RUTINAS
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'rutinas' AND schema_id = SCHEMA_ID('dbo'))
@@ -82,9 +84,11 @@ BEGIN
         actualizada_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_rutinas_usuario_id' AND object_id = OBJECT_ID('dbo.rutinas'))
     CREATE INDEX IX_rutinas_usuario_id ON dbo.rutinas(usuario_id);
+GO
 
 -- RUTINA_EJERCICIOS
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'rutina_ejercicios' AND schema_id = SCHEMA_ID('dbo'))
@@ -99,9 +103,11 @@ BEGIN
         tiempo_descanso_seg INT NOT NULL DEFAULT 60
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_rutina_ejercicios_rutina_id' AND object_id = OBJECT_ID('dbo.rutina_ejercicios'))
     CREATE INDEX IX_rutina_ejercicios_rutina_id ON dbo.rutina_ejercicios(rutina_id);
+GO
 
 -- SESIONES_ENTRENAMIENTO
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'sesiones_entrenamiento' AND schema_id = SCHEMA_ID('dbo'))
@@ -118,6 +124,7 @@ BEGIN
         estado NVARCHAR(20) NOT NULL DEFAULT 'iniciada' CHECK (estado IN ('iniciada', 'completada', 'cancelada'))
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_sesiones_usuario_id' AND object_id = OBJECT_ID('dbo.sesiones_entrenamiento'))
     CREATE INDEX IX_sesiones_usuario_id ON dbo.sesiones_entrenamiento(usuario_id);
@@ -125,6 +132,7 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_sesiones_rutina_id' AN
     CREATE INDEX IX_sesiones_rutina_id ON dbo.sesiones_entrenamiento(rutina_id);
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_sesiones_estado' AND object_id = OBJECT_ID('dbo.sesiones_entrenamiento'))
     CREATE INDEX IX_sesiones_estado ON dbo.sesiones_entrenamiento(estado);
+GO
 
 -- SESION_EJERCICIOS
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'sesion_ejercicios' AND schema_id = SCHEMA_ID('dbo'))
@@ -138,6 +146,7 @@ BEGIN
         completado BIT NOT NULL DEFAULT 1
     );
 END
+GO
 
 -- PROGRESO
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'progreso' AND schema_id = SCHEMA_ID('dbo'))
@@ -151,6 +160,7 @@ BEGIN
         actualizado_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
+GO
 
 -- METAS_USUARIO
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'metas_usuario' AND schema_id = SCHEMA_ID('dbo'))
@@ -164,9 +174,11 @@ BEGIN
         creada_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_metas_usuario_id' AND object_id = OBJECT_ID('dbo.metas_usuario'))
     CREATE INDEX IX_metas_usuario_id ON dbo.metas_usuario(usuario_id);
+GO
 
 -- MEDALLAS (catálogo)
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'medallas' AND schema_id = SCHEMA_ID('dbo'))
@@ -176,13 +188,12 @@ BEGIN
         nombre NVARCHAR(50) NOT NULL UNIQUE,
         descripcion NVARCHAR(200) NULL,
         icono NVARCHAR(50) NULL,
-        condicion_tipo NVARCHAR(50) NOT NULL,  -- 'first_session', 'streak_3', 'streak_7', 'points_1000', 'level_3', 'routine_complete', 'goal_reached'
+        condicion_tipo NVARCHAR(50) NOT NULL,
         condicion_valor INT NULL
     );
 END
 ELSE
 BEGIN
-    -- Add missing columns if table exists
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.medallas') AND name = 'icono')
         ALTER TABLE dbo.medallas ADD icono NVARCHAR(50) NULL;
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.medallas') AND name = 'condicion_tipo')
@@ -190,6 +201,7 @@ BEGIN
     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.medallas') AND name = 'condicion_valor')
         ALTER TABLE dbo.medallas ADD condicion_valor INT NULL;
 END
+GO
 
 -- USUARIO_MEDALLAS
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'usuario_medallas' AND schema_id = SCHEMA_ID('dbo'))
@@ -202,9 +214,11 @@ BEGIN
         UNIQUE (usuario_id, medalla_id)
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_usuario_medallas_usuario_id' AND object_id = OBJECT_ID('dbo.usuario_medallas'))
     CREATE INDEX IX_usuario_medallas_usuario_id ON dbo.usuario_medallas(usuario_id);
+GO
 
 -- COMENTARIOS (social)
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'comentarios' AND schema_id = SCHEMA_ID('dbo'))
@@ -217,11 +231,13 @@ BEGIN
         creada_en DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_comentarios_ejercicio_id' AND object_id = OBJECT_ID('dbo.comentarios'))
     CREATE INDEX IX_comentarios_ejercicio_id ON dbo.comentarios(ejercicio_id);
+GO
 
--- Seed medallas (only if table is empty)
+-- Seed medallas (only if table is empty) - separate batch after all DDL
 IF NOT EXISTS (SELECT 1 FROM dbo.medallas)
 BEGIN
     INSERT INTO dbo.medallas (nombre, descripcion, icono, condicion_tipo, condicion_valor) VALUES
