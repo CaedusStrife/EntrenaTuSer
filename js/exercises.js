@@ -679,6 +679,10 @@ async function completeSelectedExercise() {
 
 // Expose globally for inline onclick handlers
 window.completeSelectedExercise = completeSelectedExercise;
+window.selectPreviousExercise = selectPreviousExercise;
+window.selectNextExercise = selectNextExercise;
+window.toggleTrainingTimer = toggleTrainingTimer;
+window.finishTraining = finishTraining;
 
 // Load exercises when DOM is ready
 async function loadExercises() {
