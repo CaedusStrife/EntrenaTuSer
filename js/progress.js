@@ -6,6 +6,9 @@ function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('entrena-user')); } catch { return null; }
 }
 
+// Export globally for other modules
+window.getCurrentUser = getCurrentUser;
+
 async function loadProgress() {
   const user = getCurrentUser();
   if (!user) return;
