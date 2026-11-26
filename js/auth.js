@@ -319,6 +319,7 @@
     if (loginForm) {
       handleFormSubmit(loginForm, '/api/auth/login', (result, form) => {
         localStorage.setItem('entrena-user', JSON.stringify(result));
+        localStorage.setItem('auth_token', result.token);
         form.reset();
         setTimeout(() => {
           window.switchScreen('screen-progress');
@@ -336,6 +337,7 @@
     if (registerForm) {
       handleFormSubmit(registerForm, '/api/auth/register', (result, form) => {
         localStorage.setItem('entrena-user', JSON.stringify(result));
+        localStorage.setItem('auth_token', result.token);
         form.reset();
         setTimeout(() => {
           window.switchScreen('screen-progress');
@@ -368,6 +370,7 @@
       handleFormSubmit(resetForm, '/api/auth/reset-password', (result) => {
         if (result && result.token) {
           localStorage.setItem('entrena-user', JSON.stringify(result));
+          localStorage.setItem('auth_token', result.token);
           setTimeout(() => {
             window.switchScreen('screen-progress');
             window.dispatchEvent(new Event('user-authenticated'));
