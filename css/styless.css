@@ -1792,7 +1792,7 @@ p { color: var(--ink-muted); }
 .category-exercises { padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm); max-height: 0; overflow: hidden; transition: max-height var(--transition-slow) ease-out; }
 .category-section.open .category-exercises { max-height: 500px; }
 
-/* New categorized workout layout */
+/* New categorized workout layout - collapsible */
 .exercise-category-section { 
   background: white; 
   border-radius: var(--radius-md); 
@@ -1808,6 +1808,12 @@ p { color: var(--ink-muted); }
   padding: var(--space-md) var(--space-lg);
   background: var(--water);
   border-bottom: 1px solid var(--fiber);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+.exercise-category-header:hover {
+  background: var(--fiber);
 }
 
 .exercise-category-icon { 
@@ -1841,11 +1847,35 @@ p { color: var(--ink-muted); }
   border-radius: var(--radius-full); 
 }
 
+.exercise-category-toggle { 
+  width: 24px; 
+  height: 24px; 
+  color: var(--ink-muted); 
+  flex-shrink: 0; 
+  transition: transform var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.exercise-category-section.open .exercise-category-toggle { 
+  transform: rotate(180deg); 
+}
+
 .exercise-category-grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
   gap: var(--space-md); 
   padding: var(--space-md); 
+  max-height: 0; 
+  overflow: hidden; 
+  transition: max-height var(--transition-slow) ease-out, padding var(--transition-slow) ease-out;
+}
+.exercise-category-section.open .exercise-category-grid { 
+  max-height: 800px; 
+  padding: var(--space-md); 
+}
+.exercise-category-section:not(.open) .exercise-category-grid { 
+  padding: 0 var(--space-md); 
 }
 
 .exercise-card {

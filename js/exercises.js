@@ -193,6 +193,9 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
           </div>
           <h2 class="exercise-category-title">${catInfo.label}</h2>
           <span class="exercise-category-count">${catExercises.length} ejercicios</span>
+          <div class="exercise-category-toggle" aria-label="Expandir/Colapsar">
+            <i data-lucide="chevron-down" aria-hidden="true"></i>
+          </div>
         </header>
         <div class="exercise-category-grid" role="list">
     `;
@@ -225,11 +228,26 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
   // Initialize lucide icons for new cards
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  // Add click handlers
+  // Add click handlers for exercise cards
   listEl.querySelectorAll('.exercise-card').forEach((card) => {
     const exercise = exercisesToRender.find((item) => String(item.id) === card.dataset.exerciseId);
     card.addEventListener('click', () => selectExercise(exercise, card));
   });
+
+  // Add click handlers for category headers (collapsible)
+  listEl.querySelectorAll('.exercise-category-header').forEach((header) => {
+    header.addEventListener('click', (e) => {
+      // Don't toggle if clicking on the toggle icon itself (event bubbles)
+      const section = header.closest('.exercise-category-section');
+      if (section) {
+        section.classList.toggle('open');
+      }
+    });
+  });
+
+  // Open first category by default
+  const firstSection = listEl.querySelector('.exercise-category-section');
+  if (firstSection) firstSection.classList.add('open');
 }
 
 // Exponer globalmente para que pueda ser llamada desde routines.js
