@@ -144,17 +144,18 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
     routineExercises.forEach(re => orderMap.set(re.exerciseId, re.order));
   }
 
-  // Ordenar: primero calentamiento (warmup), luego por orden de la rutina
+  // Ordenar: primero calentamiento (warmup), luego principal, luego recuperación
+  const categoryOrder = { warmup: 0, main: 1, recovery: 2 };
   exercisesToRender.sort((a, b) => {
     const catA = getExerciseCategory(a);
     const catB = getExerciseCategory(b);
+    const orderA = categoryOrder[catA] ?? 999;
+    const orderB = categoryOrder[catB] ?? 999;
+    if (orderA !== orderB) return orderA - orderB;
     
-    if (catA === 'warmup' && catB !== 'warmup') return -1;
-    if (catA !== 'warmup' && catB === 'warmup') return 1;
-    
-    const orderA = orderMap.get(a.id) ?? 999;
-    const orderB = orderMap.get(b.id) ?? 999;
-    return orderA - orderB;
+    const routineOrderA = orderMap.get(a.id) ?? 999;
+    const routineOrderB = orderMap.get(b.id) ?? 999;
+    return routineOrderA - routineOrderB;
   });
 
   const exerciseCount = document.getElementById('exercise-count');
@@ -169,26 +170,57 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
   }
   if (emptyEl) emptyEl.classList.add('hidden');
 
-  // Render as flat grid of exercise-card (new Hoja de Identidad structure)
+  // Group exercises by category
+  const categories = {
+    warmup: { label: 'Calentamiento', icon: 'sunrise', color: 'var(--color-amber)' },
+    main: { label: 'Principal', icon: 'dumbbell', color: 'var(--color-sage)' },
+    recovery: { label: 'Recuperación', icon: 'leaf', color: 'var(--color-sienna)' }
+  };
+
+  // Build categorized HTML
   let exerciseNumber = 0;
-  listEl.innerHTML = exercisesToRender.map((exercise) => {
-    exerciseNumber += 1;
-    const category = getExerciseCategory(exercise);
-    const categoryLabels = { warmup: 'Calentamiento', main: 'Principal', recovery: 'Recuperación' };
-    return `
-      <article class="exercise-card" data-exercise-id="${exercise.id}" data-category="${category}">
-        <header class="exercise-card-header">
-          <span class="exercise-card-number">${String(exerciseNumber).padStart(2, '0')}</span>
-          <span class="exercise-card-category">${categoryLabels[category]}</span>
+  let html = '';
+  
+  Object.entries(categories).forEach(([catKey, catInfo]) => {
+    const catExercises = exercisesToRender.filter(ex => getExerciseCategory(ex) === catKey);
+    if (catExercises.length === 0) return;
+    
+    html += `
+      <section class="exercise-category-section" data-category="${catKey}">
+        <header class="exercise-category-header">
+          <div class="exercise-category-icon" style="color: ${catInfo.color};">
+            <i data-lucide="${catInfo.icon}" aria-hidden="true"></i>
+          </div>
+          <h2 class="exercise-category-title">${catInfo.label}</h2>
+          <span class="exercise-category-count">${catExercises.length} ejercicios</span>
         </header>
-        <h3>${escapeExerciseText(exercise.name)}</h3>
-        <div class="exercise-card-meta">
-          <span><i data-lucide="clock" aria-hidden="true"></i> ${Math.ceil(exercise.durationSeconds / 60)} min</span>
-          ${exercise.points ? `<span><i data-lucide="star" aria-hidden="true"></i> ${exercise.points} pts</span>` : ''}
-        </div>
-      </article>
+        <div class="exercise-category-grid" role="list">
     `;
-  }).join('');
+    
+    catExercises.forEach((exercise) => {
+      exerciseNumber += 1;
+      html += `
+        <article class="exercise-card" data-exercise-id="${exercise.id}" data-category="${catKey}" role="listitem">
+          <header class="exercise-card-header">
+            <span class="exercise-card-number">${String(exerciseNumber).padStart(2, '0')}</span>
+            <span class="exercise-card-category">${catInfo.label}</span>
+          </header>
+          <h3>${escapeExerciseText(exercise.name)}</h3>
+          <div class="exercise-card-meta">
+            <span><i data-lucide="clock" aria-hidden="true"></i> ${Math.ceil(exercise.durationSeconds / 60)} min</span>
+            ${exercise.points ? `<span><i data-lucide="star" aria-hidden="true"></i> ${exercise.points} pts</span>` : ''}
+          </div>
+        </article>
+      `;
+    });
+    
+    html += `
+        </div>
+      </section>
+    `;
+  });
+  
+  listEl.innerHTML = html;
 
   // Initialize lucide icons for new cards
   if (typeof lucide !== 'undefined') lucide.createIcons();
