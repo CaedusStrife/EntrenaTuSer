@@ -4,7 +4,8 @@ let selectedExercisePanel = null;
 let selectedExerciseTitle = null;
 let selectedExerciseDescription = null;
 let exerciseVideo = null;
-let getYoutubeContainer = () => document.getElementById('exercise-youtube');
+let getYoutubeWrapper = () => document.getElementById('exercise-youtube-wrapper');
+let getYoutubePlayerEl = () => document.getElementById('exercise-youtube-player');
 let trainingControls = null;
 let trainingProgressLabel = null;
 let trainingTimer = null;
@@ -42,7 +43,8 @@ function handleYoutubeStateChange(event) {
 }
 
 function ensureYoutubePlayer(youtubeId) {
-  if (!window.YT?.Player || !getYoutubeContainer()) return false;
+  const playerEl = getYoutubePlayerEl();
+  if (!window.YT?.Player || !playerEl) return false;
   if (youtubePlayer) {
     if (youtubePlayerReady) {
       youtubePlayer.cueVideoById(youtubeId);
@@ -51,7 +53,7 @@ function ensureYoutubePlayer(youtubeId) {
     }
     return true;
   }
-  youtubePlayer = new YT.Player('exercise-youtube', {
+  youtubePlayer = new YT.Player(playerEl, {
     videoId: youtubeId,
     playerVars: { rel: 0 },
     events: {
@@ -83,7 +85,6 @@ function initExercises() {
   selectedExerciseTitle = document.getElementById('selected-exercise-title');
   selectedExerciseDescription = document.getElementById('selected-exercise-description');
   exerciseVideo = document.getElementById('exercise-video');
-  getYoutubeContainer = () => document.getElementById('exercise-youtube');
   trainingControls = document.getElementById('training-controls');
   trainingProgressLabel = document.getElementById('training-progress-label');
   trainingTimer = document.getElementById('training-timer');
@@ -253,24 +254,24 @@ function selectExercise(exercise, selectedCard) {
 
   // Preferir el video de YouTube del ejercicio si existe; si no, usar video_url de la API
   const youtubeId = window.EXERCISE_YOUTUBE_VIDEOS?.[exercise.id];
-  const youtubeContainer = getYoutubeContainer();
-  if (youtubeId && youtubeContainer) {
+  const youtubeWrapper = getYoutubeWrapper();
+  if (youtubeId && youtubeWrapper) {
     exerciseVideo.pause();
     exerciseVideo.removeAttribute('src');
     exerciseVideo.load();
     exerciseVideo.classList.add('hidden');
-    youtubeContainer.classList.remove('hidden');
-    youtubeContainer.style.display = ''; // Remove inline display:none
+    youtubeWrapper.classList.remove('hidden');
+    youtubeWrapper.style.display = ''; // Remove inline display:none
     if (!ensureYoutubePlayer(youtubeId)) {
       pendingYoutubeId = youtubeId;
     }
   } else {
-    if (youtubeContainer) {
+    if (youtubeWrapper) {
       if (youtubePlayerReady && youtubePlayer?.stopVideo) {
         youtubePlayer.stopVideo();
       }
-      youtubeContainer.classList.add('hidden');
-      youtubeContainer.style.display = 'none';
+      youtubeWrapper.classList.add('hidden');
+      youtubeWrapper.style.display = 'none';
     }
     exerciseVideo.classList.remove('hidden');
     if (exercise.videoUrl) {
@@ -304,13 +305,13 @@ function closeSelectedExercise() {
   exerciseVideo.pause();
   exerciseVideo.removeAttribute('src');
   exerciseVideo.load();
-  const youtubeContainer = getYoutubeContainer();
-  if (youtubeContainer) {
+  const youtubeWrapper = getYoutubeWrapper();
+  if (youtubeWrapper) {
     if (youtubePlayerReady && youtubePlayer?.stopVideo) {
       youtubePlayer.stopVideo();
     }
-    youtubeContainer.classList.add('hidden');
-    youtubeContainer.style.display = 'none';
+    youtubeWrapper.classList.add('hidden');
+    youtubeWrapper.style.display = 'none';
   }
   exerciseVideo.classList.remove('hidden');
   
