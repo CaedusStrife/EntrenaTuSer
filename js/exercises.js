@@ -253,6 +253,26 @@ function renderExercises(exercises, routineExerciseIds = null, routineExercises 
 // Exponer globalmente para que pueda ser llamada desde routines.js
 window.renderExercises = renderExercises;
 
+// Initialize workout screen buttons (called once on module load)
+function initWorkoutButtons() {
+  const changeRoutineBtn = document.getElementById('workout-change-routine');
+  if (changeRoutineBtn && !changeRoutineBtn.dataset.handlerAttached) {
+    changeRoutineBtn.addEventListener('click', () => {
+      if (typeof window.openRoutineModal === 'function') {
+        window.openRoutineModal();
+      }
+    });
+    changeRoutineBtn.dataset.handlerAttached = 'true';
+  }
+}
+
+// Run on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWorkoutButtons);
+} else {
+  initWorkoutButtons();
+}
+
 function escapeExerciseText(value) {
   const element = document.createElement('span');
   element.textContent = value;
