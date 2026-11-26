@@ -260,6 +260,7 @@ function selectExercise(exercise, selectedCard) {
     exerciseVideo.load();
     exerciseVideo.classList.add('hidden');
     youtubeContainer.classList.remove('hidden');
+    youtubeContainer.style.display = ''; // Remove inline display:none
     if (!ensureYoutubePlayer(youtubeId)) {
       pendingYoutubeId = youtubeId;
     }
@@ -269,6 +270,7 @@ function selectExercise(exercise, selectedCard) {
         youtubePlayer.stopVideo();
       }
       youtubeContainer.classList.add('hidden');
+      youtubeContainer.style.display = 'none';
     }
     exerciseVideo.classList.remove('hidden');
     if (exercise.videoUrl) {
@@ -308,6 +310,7 @@ function closeSelectedExercise() {
       youtubePlayer.stopVideo();
     }
     youtubeContainer.classList.add('hidden');
+    youtubeContainer.style.display = 'none';
   }
   exerciseVideo.classList.remove('hidden');
   
