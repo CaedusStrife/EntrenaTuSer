@@ -683,6 +683,7 @@ window.selectPreviousExercise = selectPreviousExercise;
 window.selectNextExercise = selectNextExercise;
 window.toggleTrainingTimer = toggleTrainingTimer;
 window.finishTraining = finishTraining;
+window.closeSelectedExercise = closeSelectedExercise;
 
 // Load exercises when DOM is ready
 async function loadExercises() {
