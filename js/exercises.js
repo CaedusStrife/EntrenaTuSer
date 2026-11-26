@@ -280,7 +280,9 @@ function escapeExerciseText(value) {
 }
 
 function selectExercise(exercise, selectedCard) {
+  console.log('[selectExercise] trainingSession before:', trainingSession);
   if (!trainingSession) {
+    console.log('[selectExercise] Initializing trainingSession');
     trainingSession = {
       routineId: window.activeRoutineId || null,
       routineName: window.activeRoutineName || 'Entrenamiento libre',
@@ -289,6 +291,9 @@ function selectExercise(exercise, selectedCard) {
       minutes: 0,
       points: 0
     };
+    console.log('[selectExercise] trainingSession initialized:', trainingSession);
+  } else {
+    console.log('[selectExercise] trainingSession already exists:', trainingSession);
   }
   window.selectedExercise = exercise;
   const exerciseIndex = window.trainingExercises.findIndex((item) => item.id === exercise.id);
