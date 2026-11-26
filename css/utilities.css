@@ -1,0 +1,253 @@
+/* ==========================================================================
+   UTILITIES — Ebru Utilities, Animations, Skeleton, Toast, Responsive, Print
+   ========================================================================== */
+
+/* ==========================================================================
+   EBru UTILITIES — Brand signature visual language
+   ========================================================================== */
+
+/* Subtle Ebru wash — radial gradient for backgrounds, charts, modals, empty states */
+.ebru-wash {
+  position: relative;
+  overflow: hidden;
+}
+.ebru-wash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(141, 163, 153, 0.06) 0%, transparent 65%),
+              radial-gradient(ellipse at 30% 70%, rgba(166, 124, 82, 0.04) 0%, transparent 55%),
+              radial-gradient(ellipse at 70% 30%, rgba(212, 197, 185, 0.03) 0%, transparent 45%);
+  animation: waterBloom 12s ease-in-out infinite;
+}
+
+/* Reduced pigment drops for loading/skeleton states */
+.ebru-drops {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.ebru-drop {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pigment-sage), var(--pigment-sienna));
+  opacity: 0.12;
+  animation: floatDrop 16s ease-in-out infinite;
+}
+.ebru-drop.drop-1 { width: 40px; height: 40px; top: 10%; left: 8%; animation-delay: 0s; }
+.ebru-drop.drop-2 { width: 30px; height: 30px; top: 55%; right: 12%; animation-delay: -4s; }
+.ebru-drop.drop-3 { width: 50px; height: 50px; bottom: 15%; left: 15%; animation-delay: -8s; }
+
+/* Comb trail for wizard progress, loading bars */
+.ebru-comb {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(141, 163, 153, 0.25), transparent);
+  animation: combFlow 18s linear infinite;
+}
+.ebru-comb.trail-1 { top: 25%; width: 50%; left: 25%; animation-delay: 0s; }
+.ebru-comb.trail-2 { top: 50%; width: 70%; left: 15%; animation-delay: -6s; }
+.ebru-comb.trail-3 { top: 75%; width: 40%; right: 10%; animation-delay: -12s; }
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes waterBloom {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes floatDrop {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.1; }
+  25% { transform: translate(20px, -15px) rotate(90deg); opacity: 0.2; }
+  50% { transform: translate(-10px, 20px) rotate(180deg); opacity: 0.15; }
+  75% { transform: translate(15px, 10px) rotate(270deg); opacity: 0.2; }
+}
+
+@keyframes combFlow {
+  0% { transform: translateX(-100%) skewX(-5deg); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateX(100%) skewX(5deg); opacity: 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pigmentDrop {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-6px) scale(1.2); opacity: 1; }
+}
+
+@keyframes pigmentPulse {
+  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.8; transform: translateX(-50%) scale(1.15); }
+}
+
+/* ==========================================================================
+   LOADING / SKELETON
+   ========================================================================== */
+
+.skeleton { background: linear-gradient(90deg, var(--fiber) 25%, var(--water) 50%, var(--fiber) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm); }
+.skeleton-text { height: 16px; margin-bottom: var(--space-sm); }
+.skeleton-title { height: 24px; width: 60%; margin-bottom: var(--space-md); }
+.skeleton-card { height: 120px; border-radius: var(--radius-md); }
+.skeleton-avatar { width: 72px; height: 72px; border-radius: var(--radius-md); }
+
+/* Ebru-themed skeleton — uses animated pigment drops */
+.skeleton-ebru {
+  position: relative;
+  overflow: hidden;
+  background: var(--water);
+  border-radius: var(--radius-md);
+}
+.skeleton-ebru::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse at 50% 50%, rgba(141, 163, 153, 0.06) 0%, transparent 65%),
+              radial-gradient(ellipse at 30% 70%, rgba(166, 124, 82, 0.04) 0%, transparent 55%);
+}
+.skeleton-ebru .ebru-drops {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+.skeleton-ebru .ebru-drop {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pigment-sage), var(--pigment-sienna));
+  opacity: 0.12;
+  animation: floatDrop 16s ease-in-out infinite;
+}
+.skeleton-ebru .ebru-drop.drop-1 { width: 40px; height: 40px; top: 10%; left: 8%; animation-delay: 0s; }
+.skeleton-ebru .ebru-drop.drop-2 { width: 30px; height: 30px; top: 55%; right: 12%; animation-delay: -4s; }
+.skeleton-ebru .ebru-drop.drop-3 { width: 50px; height: 50px; bottom: 15%; left: 15%; animation-delay: -8s; }
+
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ==========================================================================
+   TOAST / NOTIFICATIONS
+   ========================================================================== */
+
+.toast-container {
+  position: fixed;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 360px;
+}
+
+.toast {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: 0 12px 32px var(--lift-shadow-hover);
+  border: 1px solid var(--fiber);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  animation: slideInRight var(--transition-base);
+}
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error { border-left: 4px solid var(--error); }
+.toast.info { border-left: 4px solid var(--pigment-sage); }
+
+.toast-icon { width: 24px; height: 24px; flex-shrink: 0; }
+.toast.success .toast-icon { color: var(--success); }
+.toast.error .toast-icon { color: var(--error); }
+.toast.info .toast-icon { color: var(--pigment-sage); }
+.toast-message { flex: 1; font-size: var(--text-sm); color: var(--ink); }
+.toast-close { color: var(--ink-light); cursor: pointer; padding: var(--space-xs); transition: color var(--transition-fast); }
+.toast-close:hover { color: var(--ink); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root { --text-3xl: 2rem; --text-2xl: 1.75rem; --text-xl: 1.25rem; }
+  .login-container { padding: var(--space-xl); border-radius: var(--radius-md); }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .routines-grid { grid-template-columns: 1fr; }
+  .goal-form { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .chatbot-panel { width: calc(100vw - 24px); bottom: 90px; inset-inline: 12px; max-height: 60vh; }
+  .accessibility-panel { width: calc(100vw - 24px); bottom: 90px; inset-inline: 12px; }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid { grid-template-columns: 1fr; }
+  .medals-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-item span { display: none; }
+  .nav-item { min-width: 56px; padding: 8px; }
+}
+
+/* Safe area for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+  .chatbot-panel { bottom: calc(100px + env(safe-area-inset-bottom)); }
+  .accessibility-panel { bottom: calc(100px + env(safe-area-inset-bottom)); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  :root {
+    --fiber: var(--ink);
+    --lift-shadow: rgba(0,0,0,0.5);
+  }
+  [data-theme="dark"] { --fiber: var(--paper); }
+}
+
+/* ==========================================================================
+   PRINT
+   ========================================================================== */
+
+@media print {
+  .bottom-nav, .chatbot-toggle, .accessibility-toggle, .toast-container { display: none !important; }
+  .screen-tab { display: block !important; page-break-inside: avoid; }
+  body::before { display: none; }
+}
+
+/* ==========================================================================
+   LEGAL MODALS (Footer links)
+   ========================================================================== */
+
+.legal-nav { display: flex; gap: var(--space-lg); margin-top: var(--space-xl); padding-top: var(--space-xl); border-top: 1px solid var(--fiber); justify-content: center; flex-wrap: wrap; }
+.legal-link { color: var(--ink-muted); font-size: var(--text-sm); text-decoration: none; transition: color var(--transition-fast); }
+.legal-link:hover { color: var(--pigment-sage); }
+
+.copyright { text-align: center; margin-top: var(--space-lg); font-size: var(--text-xs); color: var(--ink-light); }

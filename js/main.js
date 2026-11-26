@@ -1,7 +1,11 @@
 // Entry point for Vite build
 // Import styles first so Vite includes them in the bundle
-// v5 - DOMContentLoaded fixes + Chart.js global registration
-import '../css/styless.css';
+// v7 - Modular CSS: tokens, base, components, screens, utilities
+import '../css/tokens.css';
+import '../css/base.css';
+import '../css/components.css';
+import '../css/screens.css';
+import '../css/utilities.css';
 
 // Import Chart.js and register globally for modules that expect it (dashboard-chart, progressCharts)
 import Chart from 'chart.js/auto';

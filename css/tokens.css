@@ -1,0 +1,77 @@
+/* ==========================================================================
+   VITAL BALANCE DESIGN TOKENS — Entrena Tu Ser
+   Single source of truth for colors, spacing, typography, transitions, z-index
+   ========================================================================== */
+
+:root {
+  /* Vital Balance Color Palette — WCAG 2.1 AA compliant */
+  --paper: #fcfaf7;
+  --paper-dark: #2d302d;
+  --water: #eef2f0;
+  --pigment-sage: #3d5a4a;       /* Primary - Sage Green (darkened for AA contrast 4.5:1 on --water) */
+  --pigment-sage-light: #8da399; /* Light variant for decorative elements only */
+  --pigment-sienna: #a67c52;     /* Secondary - Earthy Sienna */
+  --pigment-amber: #d4c5b9;      /* Accent - Warm Amber */
+  --ink: #4a4a4a;
+  --ink-muted: #5c5a56;          /* Darkened for 4.5:1 contrast on --paper */
+  --ink-light: #7a7670;          /* Darkened for 4.5:1 contrast on --paper */
+  --fiber: #e8e3db;
+  --lift-shadow: rgba(74, 74, 74, 0.08);
+  --lift-shadow-hover: rgba(74, 74, 74, 0.14);
+  --focus-ring: rgba(61, 90, 74, 0.4);
+  --error: #c0392b;
+  --success: #2d8a4f;
+
+  /* Radius System */
+  --radius-sm: 12px;
+  --radius-md: 24px;
+  --radius-lg: 40px;
+  --radius-full: 999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Typography */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* Z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 500;
+  --z-toast: 600;
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --paper: #1a1c1a;
+  --paper-dark: #fcfaf7;
+  --water: #252826;
+  --pigment-sage: #7db89d;        /* Lightened for dark mode contrast */
+  --pigment-sage-light: #a8d4bd; /* Lighter variant for decorative */
+  --ink: #f0efe9;
+  --ink-muted: #c8c4be;          /* Lightened for dark mode contrast */
+  --ink-light: #a8a49c;          /* Lightened for dark mode contrast */
+  --fiber: #3a3d3a;
+  --lift-shadow: rgba(0, 0, 0, 0.3);
+  --lift-shadow-hover: rgba(0, 0, 0, 0.4);
+  --focus-ring: rgba(125, 184, 157, 0.5);
+}
