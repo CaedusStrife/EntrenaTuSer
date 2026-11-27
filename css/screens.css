@@ -1536,7 +1536,7 @@
 
 /* Font Size Select */
 .accessibility-option select {
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) calc(var(--space-md) + 1.5em) var(--space-sm) var(--space-md);
   border: 2px solid var(--fiber);
   border-radius: var(--radius-md);
   font-family: var(--font-body);
@@ -1548,12 +1548,25 @@
   transition: all var(--transition-fast);
   text-align: center;
   letter-spacing: 0.02em;
+  /* Custom styling to hide native arrow and style it */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzRDVBNDUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSI+PC9wb2x5bGluZT48L3N2Zz4=");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em;
 }
 
 .accessibility-option select:focus {
   outline: none;
   border-color: var(--pigment-sage);
   box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.accessibility-option select:hover {
+  border-color: var(--pigment-sage);
+  background: var(--ebru-wash);
 }
 
 /* Accessibility Label (for font-size select) */
