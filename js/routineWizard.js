@@ -241,11 +241,8 @@ class RoutineWizard {
 function initRoutineWizard() {
   window.routineWizard = new RoutineWizard();
 
-  // Export for global access
-  window.openRoutineModal = () => {
-    document.getElementById('routine-modal').classList.remove('hidden');
-    window.routineWizard.goToStep(1);
-  };
+  // Note: openRoutineModal is defined in routines.js and handles exercise loading
+  // We only export the wizard navigation functions here
   window.closeRoutineModal = () => {
     window.routineWizard.closeModal();
   };
