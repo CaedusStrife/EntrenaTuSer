@@ -182,7 +182,7 @@ class RoutineWizard {
         // Only validate when moving forward (direction > 0)
         // Going backwards should not require validation
         if (direction > 0 && !this.validateCurrentStep()) {
-            alert('Por favor, completa los campos obligatorios antes de avanzar.');
+            // Silently prevent advance if validation fails (no alert)
             return;
         }
         this.goToStep(this.currentStep + direction);
