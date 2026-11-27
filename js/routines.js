@@ -326,6 +326,7 @@ function toggleExerciseSelection(exerciseId) {
   const exercise = exercises.find(ex => String(ex.id) === String(exerciseId));
   if (!exercise) return;
 
+  // Actualizar el estado interno (usando la lógica existente)
   const { selectedList, countEl, filterChips, searchInput } = getWizardElements();
   if (!selectedList) return;
 
@@ -333,12 +334,10 @@ function toggleExerciseSelection(exerciseId) {
   if (emptyEl) emptyEl.remove();
 
   const existingItem = selectedList.querySelector(`[data-exercise-id="${exerciseId}"]`);
-  
+
   if (existingItem) {
-    // Remove
     existingItem.remove();
   } else {
-    // Add
     const item = document.createElement('li');
     item.className = 'selected-exercise-item';
     item.dataset.exerciseId = exerciseId;
