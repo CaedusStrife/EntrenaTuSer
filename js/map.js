@@ -363,10 +363,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function refreshWorkoutMap() {
-  initializeMap();
-
-  if (workoutMap) {
+  const mapContainer = document.getElementById('workout-map');
+  
+  // If map is already initialized and container has dimensions, just invalidate size
+  if (workoutMap && mapContainer && mapContainer.offsetWidth > 0 && mapContainer.offsetHeight > 0) {
     window.requestAnimationFrame(() => workoutMap.invalidateSize());
+    return;
+  }
+  
+  // Otherwise, re-initialize the map (container might have been hidden during initial init)
+  if (workoutMap) {
+    workoutMap.remove();
+    workoutMap = null;
+    userMarker = null;
+    placesLayer = null;
+  }
+  
+  initializeMap();
+  
+  if (workoutMap && mapContainer) {
+    // Give layout time to calculate dimensions, then invalidate
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => workoutMap.invalidateSize());
+    });
   }
 }
 
