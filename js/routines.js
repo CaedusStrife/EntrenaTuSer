@@ -243,9 +243,11 @@ async function loadExercisesForWizard() {
   try {
     const res = await fetch(`${API_BASE}/api/exercises`);
     allExercises = await res.json();
+    window.allExercises = allExercises; // Also set on window for safety
     return allExercises;
   } catch {
     allExercises = [];
+    window.allExercises = [];
     return [];
   }
 }
@@ -318,7 +320,8 @@ function getExerciseCategory(exercise) {
 }
 
 function toggleExerciseSelection(exerciseId) {
-  const exercise = allExercises.find(ex => ex.id === exerciseId);
+  const exercises = allExercises || window.allExercises || [];
+  const exercise = exercises.find(ex => ex.id === exerciseId);
   if (!exercise) return;
 
   const { selectedList, countEl, filterChips, searchInput } = getWizardElements();
