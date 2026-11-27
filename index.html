@@ -1032,24 +1032,24 @@
             <h3 id="accessibility-heading" class="section-title">Preferencias de Accesibilidad</h3>
             <div class="accessibility-options">
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-dark-mode" aria-label="Activar modo oscuro">
+                <input type="checkbox" id="pref-dark-mode" data-pref="darkmode" aria-label="Activar modo oscuro">
                 <span><i data-lucide="moon"></i> Modo Oscuro</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-high-contrast" aria-label="Activar alto contraste">
+                <input type="checkbox" id="pref-high-contrast" data-pref="contrast" aria-label="Activar alto contraste">
                 <span><i data-lucide="contrast"></i> Alto Contraste</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-reduced-motion" aria-label="Reducir animaciones">
+                <input type="checkbox" id="pref-reduced-motion" data-pref="motion" aria-label="Reducir animaciones">
                 <span><i data-lucide="pause-circle"></i> Reducir Animaciones</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-grayscale" aria-label="Activar escala de grises">
+                <input type="checkbox" id="pref-grayscale" data-pref="grayscale" aria-label="Activar escala de grises">
                 <span><i data-lucide="circle-slash"></i> Escala de Grises</span>
               </label>
               <div class="accessibility-option">
                 <label for="pref-font-size" class="field-label">Tamaño de Texto</label>
-                <select id="pref-font-size" class="form-select" style="width: auto;">
+                <select id="pref-font-size" data-pref="fontsize" class="form-select" style="width: auto;">
                   <option value="small">Pequeño</option>
                   <option value="normal" selected>Normal</option>
                   <option value="large">Grande</option>
