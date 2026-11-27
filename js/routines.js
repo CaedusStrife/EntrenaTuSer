@@ -250,8 +250,20 @@ async function loadExercisesForWizard() {
   }
 }
 
+// Helper to get correct element IDs based on which modal is open
+function getWizardElements() {
+  const isWizard = document.getElementById('routine-modal') && !document.getElementById('routine-modal').classList.contains('hidden');
+  return {
+    container: isWizard ? document.getElementById('wizard-exercise-list') : document.getElementById('exercise-selector-list'),
+    searchInput: isWizard ? document.getElementById('wizard-exercise-search') : document.getElementById('exercise-search'),
+    selectedList: isWizard ? document.getElementById('wizard-selected-exercises') : document.getElementById('selected-exercises-list'),
+    countEl: document.getElementById('selected-count'),
+    filterChips: isWizard ? document.querySelectorAll('#routine-modal .filter-chip') : document.querySelectorAll('#routine-modal-legacy .filter-chip')
+  };
+}
+
 function renderExerciseSelector(filter = 'all', search = '') {
-  const container = document.getElementById('exercise-selector-list');
+  const { container, searchInput, selectedList, countEl } = getWizardElements();
   if (!container) return;
 
   let filtered = allExercises;
@@ -272,7 +284,8 @@ function renderExerciseSelector(filter = 'all', search = '') {
 
   // Get currently selected exercise IDs
   const selectedIds = new Set();
-  document.querySelectorAll('.selected-exercise-item').forEach(item => {
+  const items = selectedList ? selectedList.querySelectorAll('.selected-exercise-item') : [];
+  items.forEach(item => {
     const id = item.dataset.exerciseId;
     if (id) selectedIds.add(id);
   });
@@ -308,13 +321,13 @@ function toggleExerciseSelection(exerciseId) {
   const exercise = allExercises.find(ex => ex.id === exerciseId);
   if (!exercise) return;
 
-  const list = document.getElementById('selected-exercises-list');
-  const countEl = document.getElementById('selected-count');
-  const emptyEl = list.querySelector('.empty-selected');
+  const { selectedList, countEl, filterChips, searchInput } = getWizardElements();
+  if (!selectedList) return;
 
+  const emptyEl = selectedList.querySelector('.wizard-selected-empty') || selectedList.querySelector('.empty-selected');
   if (emptyEl) emptyEl.remove();
 
-  const existingItem = list.querySelector(`[data-exercise-id="${exerciseId}"]`);
+  const existingItem = selectedList.querySelector(`[data-exercise-id="${exerciseId}"]`);
   
   if (existingItem) {
     // Remove
@@ -335,19 +348,21 @@ function toggleExerciseSelection(exerciseId) {
         <i data-lucide="x" aria-hidden="true"></i>
       </button>
     `;
-    list.appendChild(item);
+    selectedList.appendChild(item);
     
     // Add drag and drop handlers
     addDragHandlers(item);
   }
 
   // Update count
-  const count = list.querySelectorAll('.selected-exercise-item').length;
+  const count = selectedList.querySelectorAll('.selected-exercise-item').length;
   if (countEl) countEl.textContent = count;
 
   // Re-render selector to update button states
-  const currentFilter = document.querySelector('.filter-chip.active')?.dataset.category || 'all';
-  const currentSearch = document.getElementById('exercise-search')?.value || '';
+  const currentFilter = filterChips?.length > 0 ? 
+    (document.querySelector('.filter-chip.active')?.dataset.category || 'all') : 
+    'all';
+  const currentSearch = searchInput?.value || '';
   renderExerciseSelector(currentFilter, currentSearch);
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -540,31 +555,37 @@ window.confirmDeleteRoutine = confirmDeleteRoutine;
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-  // Setup filter chips
-  document.querySelectorAll('#routine-modal .filter-chip').forEach(chip => {
+  // Setup filter chips for both modals
+  document.querySelectorAll('#routine-modal .filter-chip, #routine-modal-legacy .filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      document.querySelectorAll('#routine-modal .filter-chip').forEach(c => {
+      const isWizard = chip.closest('#routine-modal') && !document.getElementById('routine-modal').classList.contains('hidden');
+      const selector = isWizard ? '#routine-modal .filter-chip' : '#routine-modal-legacy .filter-chip';
+      document.querySelectorAll(selector).forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
       });
       chip.classList.add('active');
       chip.setAttribute('aria-pressed', 'true');
       const filter = chip.dataset.category;
-      const search = document.getElementById('exercise-search')?.value || '';
+      const searchInput = isWizard ? document.getElementById('wizard-exercise-search') : document.getElementById('exercise-search');
+      const search = searchInput?.value || '';
       renderExerciseSelector(filter, search);
     });
   });
   
-  // Setup search
-  const searchInput = document.getElementById('exercise-search');
-  if (searchInput) {
+  // Setup search for both modals
+  const searchInputs = document.querySelectorAll('#wizard-exercise-search, #exercise-search');
+  searchInputs.forEach(searchInput => {
     let searchTimeout;
     searchInput.addEventListener('input', () => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
-        const filter = document.querySelector('#routine-modal .filter-chip.active')?.dataset.category || 'all';
+        const isWizard = searchInput.id === 'wizard-exercise-search';
+        const filter = isWizard 
+          ? document.querySelector('#routine-modal .filter-chip.active')?.dataset.category || 'all'
+          : document.querySelector('#routine-modal-legacy .filter-chip.active')?.dataset.category || 'all';
         renderExerciseSelector(filter, searchInput.value);
       }, 300);
     });
-  }
+  });
 });
