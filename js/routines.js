@@ -265,10 +265,12 @@ function getWizardElements() {
 }
 
 function renderExerciseSelector(filter = 'all', search = '') {
+  const exercises = allExercises || window.allExercises || [];
+  console.log('[renderExerciseSelector] exercises:', typeof exercises, exercises?.length);
   const { container, searchInput, selectedList, countEl } = getWizardElements();
   if (!container) return;
 
-  let filtered = allExercises;
+  let filtered = exercises;
   if (filter !== 'all') {
     filtered = filtered.filter(ex => {
       const name = ex.name.toLowerCase();
@@ -289,11 +291,11 @@ function renderExerciseSelector(filter = 'all', search = '') {
   const items = selectedList ? selectedList.querySelectorAll('.selected-exercise-item') : [];
   items.forEach(item => {
     const id = item.dataset.exerciseId;
-    if (id) selectedIds.add(id);
+    if (id) selectedIds.add(String(id));
   });
 
   container.innerHTML = filtered.map((exercise) => {
-    const isSelected = selectedIds.has(exercise.id);
+    const isSelected = selectedIds.has(String(exercise.id));
     const category = getExerciseCategory(exercise);
     return `
       <article class="exercise-selector-item ${isSelected ? 'selected' : ''}" data-exercise-id="${exercise.id}">
