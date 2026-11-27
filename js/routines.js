@@ -321,7 +321,7 @@ function getExerciseCategory(exercise) {
 
 function toggleExerciseSelection(exerciseId) {
   const exercises = allExercises || window.allExercises || [];
-  const exercise = exercises.find(ex => ex.id === exerciseId);
+  const exercise = exercises.find(ex => String(ex.id) === String(exerciseId));
   if (!exercise) return;
 
   const { selectedList, countEl, filterChips, searchInput } = getWizardElements();
