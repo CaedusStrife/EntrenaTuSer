@@ -189,16 +189,24 @@ class RoutineWizard {
     validateCurrentStep() {
         // Simple validation check for Step 1
         if (this.currentStep === 1) {
-            const name = document.getElementById('routine-name').value.trim();
-            const goal = document.getElementById('routine-goal').value;
-            const level = document.getElementById('routine-level').value;
-            const time = parseInt(document.getElementById('routine-duration').value);
+            const nameEl = document.getElementById('routine-name');
+            const goalEl = document.getElementById('routine-goal');
+            const levelEl = document.getElementById('routine-level');
+            const timeEl = document.getElementById('routine-duration');
+            if (!nameEl || !goalEl || !levelEl || !timeEl) return false;
+            
+            const name = nameEl.value.trim();
+            const goal = goalEl.value;
+            const level = levelEl.value;
+            const time = parseInt(timeEl.value);
             
             return name.length > 2 && goal !== '' && level !== '' && time >= 5;
         }
         // Step 2 validation (check for exercises)
         if (this.currentStep === 2) {
-            const selectedCount = document.getElementById('selected-count').textContent.match(/\d+/);
+            const selectedCountEl = document.getElementById('selected-count');
+            if (!selectedCountEl) return false;
+            const selectedCount = selectedCountEl.textContent.match(/\d+/);
             return selectedCount && parseInt(selectedCount[0]) > 0;
         }
         // Step 3 validation (final review check)

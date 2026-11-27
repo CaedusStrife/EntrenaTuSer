@@ -905,6 +905,7 @@
                   <label class="visually-hidden" for="wizard-exercise-search">Buscar ejercicio</label>
                   <input type="search" id="wizard-exercise-search" placeholder="Buscar ejercicio..." class="form-input" aria-label="Buscar ejercicio">
                 </div>
+                <p id="selected-count" class="wizard-selected-count" style="font-size: var(--text-sm); color: var(--ink-muted); margin-bottom: var(--space-sm);">0 seleccionados</p>
                 <div class="wizard-exercise-categories" id="wizard-exercise-list" role="list">
                   <!-- Populated by routineWizard.js -->
                 </div>
@@ -921,7 +922,28 @@
               <section class="wizard-panel" data-panel="3" aria-labelledby="step3-heading">
                 <h3 id="step3-heading" class="visually-hidden">Paso 3: Revisar</h3>
                 <div class="wizard-review" id="wizard-review-content">
-                  <!-- Populated by routineWizard.js -->
+                  <div class="review-section">
+                    <h4 class="review-section-title">Datos básicos</h4>
+                    <dl class="review-list">
+                      <dt>Nombre</dt>
+                      <dd id="summary-name">—</dd>
+                      <dt>Descripción</dt>
+                      <dd id="summary-description">—</dd>
+                      <dt>Objetivo</dt>
+                      <dd id="summary-goal">—</dd>
+                      <dt>Nivel</dt>
+                      <dd id="summary-level">—</dd>
+                      <dt>Duración estimada</dt>
+                      <dd id="summary-time">— min</dd>
+                      <dt>Frecuencia semanal</dt>
+                      <dd id="summary-frequency">— días</dd>
+                    </dl>
+                  </div>
+                  <div class="review-section">
+                    <h4 class="review-section-title">Ejercicios seleccionados</h4>
+                    <p id="summary-exercise-count" class="review-count">0 ejercicios</p>
+                    <ul id="summary-exercises-list" class="review-exercise-list" role="list"></ul>
+                  </div>
                 </div>
               </section>
 
