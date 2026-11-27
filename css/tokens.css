@@ -58,6 +58,7 @@
   --z-sticky: 200;
   --z-modal: 500;
   --z-toast: 600;
+  --ebru-wash: #eef2f0; /* Corresponde a --water, usado como fondo sutil Ebru */
 }
 
 /* Dark mode */
@@ -74,4 +75,5 @@
   --lift-shadow: rgba(0, 0, 0, 0.3);
   --lift-shadow-hover: rgba(0, 0, 0, 0.4);
   --focus-ring: rgba(125, 184, 157, 0.5);
+  --ebru-wash: #252826; /* Corresponde a --water dark mode */
 }
