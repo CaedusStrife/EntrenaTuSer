@@ -552,6 +552,7 @@ window.startRoutine = startRoutine;
 window.editRoutine = editRoutine;
 window.duplicateRoutineAction = duplicateRoutineAction;
 window.confirmDeleteRoutine = confirmDeleteRoutine;
+window.toggleExerciseSelection = toggleExerciseSelection;
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
