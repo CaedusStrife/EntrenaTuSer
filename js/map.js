@@ -298,6 +298,8 @@ function locateUser() {
   // La ubicación del navegador permite centrar el mapa donde está la persona.
   if (!navigator.geolocation) {
     status.textContent = 'La geolocalización no está disponible en este navegador.';
+    // Fallback to default location
+    useDefaultLocation();
     return;
   }
 
@@ -308,7 +310,7 @@ function locateUser() {
     const longitude = position.coords.longitude;
     const coordinates = [latitude, longitude];
 
-    initializeMap();
+    ensureMapInitialized();
     workoutMap.setView(coordinates, 16);
 
     if (userMarker) {
@@ -329,12 +331,49 @@ function locateUser() {
       3: 'La solicitud de ubicación tardó demasiado.'
     };
 
-    status.textContent = messages[error.code] || 'No fue posible obtener tu ubicación.';
+    status.textContent = messages[error.code] || 'No fue posible obtener tu ubicación. Usando ubicación por defecto.';
+    // Fallback to default location after a brief delay
+    setTimeout(() => useDefaultLocation(), 1500);
   }, {
     enableHighAccuracy: true,
-    timeout: 10000,
+    timeout: 15000,
     maximumAge: 60000
   });
+}
+
+// Default location: Guadalajara, Mexico
+const DEFAULT_LOCATION = [20.6736, -103.344];
+
+function useDefaultLocation() {
+  const status = document.getElementById('location-status');
+  const [lat, lng] = DEFAULT_LOCATION;
+  
+  ensureMapInitialized();
+  workoutMap.setView(DEFAULT_LOCATION, 13);
+  
+  if (userMarker) {
+    userMarker.setLatLng(DEFAULT_LOCATION);
+  } else {
+    userMarker = L.marker(DEFAULT_LOCATION, { draggable: true }).addTo(workoutMap);
+    userMarker.on('dragend', () => {
+      const selectedPosition = userMarker.getLatLng();
+      updateLocation(selectedPosition.lat, selectedPosition.lng);
+    });
+  }
+  
+  updateLocation(lat, lng);
+  status.textContent = `Ubicación por defecto: ${formatCoordinates(lat, lng)} (arrastra el marcador para cambiar)`;
+}
+
+function ensureMapInitialized() {
+  if (!workoutMap) {
+    initializeMap();
+  }
+  // Ensure map has valid size
+  const mapContainer = document.getElementById('workout-map');
+  if (mapContainer && mapContainer.offsetWidth > 0 && mapContainer.offsetHeight > 0) {
+    window.requestAnimationFrame(() => workoutMap.invalidateSize());
+  }
 }
 
 // Initialize map controls when DOM is ready
