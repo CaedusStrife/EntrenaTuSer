@@ -115,8 +115,16 @@ function applyAccessibilityPreferences(preferences) {
   document.body.classList.toggle('accessibility-xlarge-text', fontSize === 'xlarge');
   document.body.classList.toggle('accessibility-high-contrast', Boolean(preferences.contrast));
   document.body.classList.toggle('accessibility-reduced-motion', Boolean(preferences.motion));
-  document.body.classList.toggle('dark-theme', Boolean(preferences.darkmode));
   document.body.classList.toggle('accessibility-grayscale', Boolean(preferences.grayscale));
+
+  // Dark mode: use data-theme attribute for tokens.css compatibility
+  if (preferences.darkmode) {
+    document.body.setAttribute('data-theme', 'dark');
+    document.body.classList.add('dark-theme');
+  } else {
+    document.body.removeAttribute('data-theme');
+    document.body.classList.remove('dark-theme');
+  }
 
   document
     .querySelector('[data-accessibility-action="contrast"]')
