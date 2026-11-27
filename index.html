@@ -1029,23 +1029,27 @@
 
           <!-- Accessibility Preferences -->
           <section class="profile-section" aria-labelledby="accessibility-heading">
-            <h3 id="accessibility-heading" class="section-title">Preferencias de Accesibilidad</h3>
+            <h3 id="accessibility-heading" class="section-title"><i data-lucide="accessibility" aria-hidden="true"></i> Preferencias de Accesibilidad</h3>
             <div class="accessibility-options">
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-dark-mode" data-pref="darkmode" aria-label="Activar modo oscuro">
-                <span><i data-lucide="moon"></i> Modo Oscuro</span>
+                <input type="checkbox" id="pref-dark-mode" data-pref="darkmode" class="accessibility-toggle-input" aria-label="Activar modo oscuro">
+                <span class="accessibility-slider" aria-hidden="true"></span>
+                <span><i data-lucide="moon" aria-hidden="true"></i> Modo Oscuro</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-high-contrast" data-pref="contrast" aria-label="Activar alto contraste">
-                <span><i data-lucide="contrast"></i> Alto Contraste</span>
+                <input type="checkbox" id="pref-high-contrast" data-pref="contrast" class="accessibility-toggle-input" aria-label="Activar alto contraste">
+                <span class="accessibility-slider" aria-hidden="true"></span>
+                <span><i data-lucide="contrast" aria-hidden="true"></i> Alto Contraste</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-reduced-motion" data-pref="motion" aria-label="Reducir animaciones">
-                <span><i data-lucide="pause-circle"></i> Reducir Animaciones</span>
+                <input type="checkbox" id="pref-reduced-motion" data-pref="motion" class="accessibility-toggle-input" aria-label="Reducir animaciones">
+                <span class="accessibility-slider" aria-hidden="true"></span>
+                <span><i data-lucide="pause-circle" aria-hidden="true"></i> Reducir Animaciones</span>
               </label>
               <label class="accessibility-option">
-                <input type="checkbox" id="pref-grayscale" data-pref="grayscale" aria-label="Activar escala de grises">
-                <span><i data-lucide="circle-slash"></i> Escala de Grises</span>
+                <input type="checkbox" id="pref-grayscale" data-pref="grayscale" class="accessibility-toggle-input" aria-label="Activar escala de grises">
+                <span class="accessibility-slider" aria-hidden="true"></span>
+                <span><i data-lucide="circle-slash" aria-hidden="true"></i> Escala de Grises</span>
               </label>
               <div class="accessibility-option">
                 <label for="pref-font-size" class="field-label">Tamaño de Texto</label>

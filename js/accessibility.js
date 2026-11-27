@@ -150,6 +150,20 @@ function applyAccessibilityPreferences(preferences) {
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
   }
+
+  // Update profile screen toggle switches
+  const profileToggles = {
+    'pref-dark-mode': preferences.darkmode,
+    'pref-high-contrast': preferences.contrast,
+    'pref-reduced-motion': preferences.motion,
+    'pref-grayscale': preferences.grayscale,
+  };
+  Object.entries(profileToggles).forEach(([id, checked]) => {
+    const input = document.getElementById(id);
+    if (input) input.checked = checked;
+  });
+  const fontSizeSelect = document.getElementById('pref-font-size');
+  if (fontSizeSelect) fontSizeSelect.value = preferences.fontSize || 'normal';
 }
 
 /**
