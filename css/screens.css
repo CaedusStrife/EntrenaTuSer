@@ -1382,7 +1382,33 @@
 .accessibility-options {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+}
+
+.accessibility-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.accessibility-group-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--fiber);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.accessibility-group-title svg {
+  width: 24px;
+  height: 24px;
+  color: var(--pigment-sage);
+  flex-shrink: 0;
 }
 
 .accessibility-option {
@@ -1396,25 +1422,34 @@
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   cursor: pointer;
+  position: relative;
 }
+
 .accessibility-option:hover {
   background: var(--ebru-wash);
   border-color: var(--pigment-sage);
 }
+
 .accessibility-option:has(input:checked) {
   background: var(--ebru-wash);
   border-color: var(--pigment-sage);
   box-shadow: inset 3px 0 0 var(--pigment-sage);
 }
+
 .accessibility-option:has(input:focus-visible) {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+
 .accessibility-option input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+  width: 1px;
+  height: 1px;
+  margin: 0;
 }
+
 .accessibility-option span {
   display: flex;
   align-items: center;
@@ -1423,6 +1458,7 @@
   color: var(--ink);
   flex: 1;
 }
+
 .accessibility-option i { 
   width: 22px; 
   height: 22px; 
@@ -1430,23 +1466,35 @@
   flex-shrink: 0;
   transition: color var(--transition-fast);
 }
+
 .accessibility-option:has(input:checked) i {
   color: var(--pigment-sienna);
+}
+
+.accessibility-option:has(input:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Custom Toggle Switch for Accessibility */
 .accessibility-toggle {
   position: relative;
-  width: 56px;
-  height: 30px;
+  width: 60px;
+  height: 32px;
   flex-shrink: 0;
 }
+
 .accessibility-toggle input {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
+  margin: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
+
 .accessibility-slider {
   position: absolute;
   inset: 0;
@@ -1454,28 +1502,36 @@
   border-radius: var(--radius-full);
   transition: background var(--transition-base);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  cursor: pointer;
 }
+
 .accessibility-slider::before {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
+  top: 4px;
+  left: 4px;
   width: 24px;
   height: 24px;
   background: white;
   border-radius: 50%;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   transition: transform var(--transition-base), box-shadow var(--transition-base);
+  border-radius: 50%;
 }
+
 .accessibility-toggle input:checked + .accessibility-slider {
   background: linear-gradient(135deg, var(--pigment-sage), var(--pigment-teal));
 }
+
 .accessibility-toggle input:checked + .accessibility-slider::before {
-  transform: translateX(26px);
+  transform: translateX(28px);
   box-shadow: 0 2px 6px rgba(141, 163, 153, 0.3);
 }
+
 .accessibility-toggle input:focus-visible + .accessibility-slider {
   box-shadow: 0 0 0 3px var(--focus-ring), inset 0 2px 4px rgba(0,0,0,0.05);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Font Size Select */
@@ -1488,13 +1544,41 @@
   color: var(--ink);
   background: var(--paper);
   cursor: pointer;
-  min-width: 160px;
+  min-width: 180px;
   transition: all var(--transition-fast);
+  text-align: center;
+  letter-spacing: 0.02em;
 }
+
 .accessibility-option select:focus {
   outline: none;
   border-color: var(--pigment-sage);
   box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* Font Size Option Label */
+.font-size-option .field-label {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--fiber);
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--water);
+}
+
+.font-size-option select {
+  min-width: 180px;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 /* Change Password Section */
