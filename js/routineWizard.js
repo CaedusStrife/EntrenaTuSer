@@ -192,17 +192,11 @@ class RoutineWizard {
         // Simple validation check for Step 1
         if (this.currentStep === 1) {
             const nameEl = document.getElementById('routine-name');
-            const goalEl = document.getElementById('routine-goal');
-            const levelEl = document.getElementById('routine-level');
-            const timeEl = document.getElementById('routine-duration');
-            if (!nameEl || !goalEl || !levelEl || !timeEl) return false;
+            if (!nameEl) return false;
             
             const name = nameEl.value.trim();
-            const goal = goalEl.value;
-            const level = levelEl.value;
-            const time = parseInt(timeEl.value);
             
-            return name.length > 2 && goal !== '' && level !== '' && time >= 5;
+            return name.length > 2;
         }
         // Step 2 validation (check for exercises)
         if (this.currentStep === 2) {
