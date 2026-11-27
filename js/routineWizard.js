@@ -179,11 +179,13 @@ class RoutineWizard {
     }
 
     nextStep(direction) {
-        if (this.validateCurrentStep()) {
-            this.goToStep(this.currentStep + direction);
-        } else {
+        // Only validate when moving forward (direction > 0)
+        // Going backwards should not require validation
+        if (direction > 0 && !this.validateCurrentStep()) {
             alert('Por favor, completa los campos obligatorios antes de avanzar.');
+            return;
         }
+        this.goToStep(this.currentStep + direction);
     }
 
     validateCurrentStep() {
