@@ -552,6 +552,8 @@ window.startRoutine = startRoutine;
 window.editRoutine = editRoutine;
 window.duplicateRoutineAction = duplicateRoutineAction;
 window.confirmDeleteRoutine = confirmDeleteRoutine;
+window.loadExercisesForWizard = loadExercisesForWizard;
+window.renderExerciseSelector = renderExerciseSelector;
 window.toggleExerciseSelection = toggleExerciseSelection;
 
 // Initialize on DOM ready
