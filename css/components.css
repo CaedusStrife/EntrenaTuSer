@@ -804,6 +804,9 @@
 .modal-sheet.routine-wizard {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .modal-sheet.routine-wizard::before {
   content: '';
@@ -814,6 +817,51 @@
   background: radial-gradient(ellipse at 20% 10%, rgba(141, 163, 153, 0.06) 0%, transparent 50%),
               radial-gradient(ellipse at 80% 90%, rgba(166, 124, 82, 0.04) 0%, transparent 40%);
   animation: waterBloom 20s ease-in-out infinite;
+}
+
+#routine-wizard-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.wizard-panels-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: var(--space-lg);
+  z-index: 1;
+}
+
+.wizard-progress {
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.wizard-actions {
+  flex-shrink: 0;
+  z-index: 2;
+  display: flex;
+  gap: var(--space-md);
+  margin-top: auto; /* Push to bottom */
+  padding: var(--space-md) var(--space-lg);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-top: 1px solid var(--fiber);
+  background: white;
+  position: sticky;
+  bottom: 0;
+  border-bottom: 1px solid var(--fiber);
+  z-index: 2;
+  padding: var(--space-md) var(--space-lg);
+  gap: var(--space-md);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wizard-actions .btn {
+  min-width: 120px;
 }
 
 /* Confirm Dialog */
@@ -917,7 +965,28 @@
   padding-top: var(--space-lg);
   border-top: 1px solid var(--fiber);
 }
-.wizard-actions { display: flex; gap: var(--space-md); }
+.wizard-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: auto; /* Push to bottom */
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  z-index: 2; /* Ensure it stays above content */
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+  border-top: 1px solid var(--fiber);
+  padding: var(--space-md) var(--space-lg);
+  gap: var(--space-md);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.wizard-actions .btn {
+  min-width: 120px;
+}
 
 /* ==========================================================================
    WIZARD - EXERCISE SELECTOR (Step 2)

@@ -841,8 +841,9 @@
             </div>
 
             <form id="routine-wizard-form" novalidate>
-              <!-- Step 1: Basic Data -->
-              <section class="wizard-panel active" data-panel="1" aria-labelledby="step1-heading">
+              <div class="wizard-panels-container">
+                <!-- Step 1: Basic Data -->
+                <section class="wizard-panel active" data-panel="1" aria-labelledby="step1-heading">
                 <h3 id="step1-heading" class="visually-hidden">Paso 1: Datos de la rutina</h3>
                 <input type="hidden" id="routine-edit-id">
                 <div class="form-group">
@@ -946,6 +947,8 @@
                   </div>
                 </div>
               </section>
+
+              </div> <!-- /.wizard-panels-container -->
 
               <div class="wizard-actions">
                 <button type="button" class="btn btn-ghost" id="wizard-prev" onclick="routineWizardPrev()" aria-label="Paso anterior"><i data-lucide="chevron-left" aria-hidden="true"></i> Anterior</button>
