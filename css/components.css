@@ -992,8 +992,37 @@
    WIZARD - EXERCISE SELECTOR (Step 2)
    ========================================================================== */
 
+/* Step 2: Exercise Selector Layout */
+.wizard-panel[data-panel="2"] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--space-md);
+}
+
 .wizard-exercise-search {
+  flex-shrink: 0;
   margin-bottom: var(--space-lg);
+}
+
+.wizard-selected-count {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+}
+
+.wizard-selected {
+  flex-shrink: 0;
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--ebru-wash);
+  border: 1px solid var(--pigment-sage-light);
+  border-radius: var(--radius-md);
+  min-height: 150px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .wizard-selected-count {
@@ -1004,12 +1033,14 @@
 }
 
 .wizard-exercise-categories {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  max-height: 50vh;
+  flex: 1;
   overflow-y: auto;
+  max-height: 280px; /* Shows ~3 exercises */
   padding-right: var(--space-xs);
+  padding-bottom: var(--space-sm);
+  border: 1px solid var(--fiber);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
 }
 
 .exercise-category-group {
