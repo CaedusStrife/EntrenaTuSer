@@ -993,7 +993,7 @@
    ========================================================================== */
 
 /* Step 2: Exercise Selector Layout */
-.wizard-panel[data-panel="2"] {
+.wizard-panel[data-panel="2"].active {
   display: flex;
   flex-direction: column;
   height: 100%;
