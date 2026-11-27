@@ -14,7 +14,8 @@ class RoutineWizard {
             description: '',
             goal: 'strength',
             level: 'intermediate',
-            estimatedTime: 30,
+            duration: 30,
+            frequency: 3,
             exercises: [] // Array of { exerciseId: string, order: number }
         };
         
@@ -87,24 +88,40 @@ class RoutineWizard {
         if (goalEl) goalEl.value = this.routineData.goal;
         const levelEl = document.getElementById('routine-level');
         if (levelEl) levelEl.value = this.routineData.level;
-        const timeEl = document.getElementById('routine-estimated-time');
-        if (timeEl) timeEl.value = this.routineData.estimatedTime;
+        const durationEl = document.getElementById('routine-duration');
+        if (durationEl) durationEl.value = this.routineData.duration;
+        const frequencyEl = document.getElementById('routine-frequency');
+        if (frequencyEl) frequencyEl.value = this.routineData.frequency;
         
         // Update Step 3 summary
         const summaryName = document.getElementById('summary-name');
         if (summaryName) summaryName.textContent = this.routineData.name;
+        const summaryDesc = document.getElementById('summary-description');
+        if (summaryDesc) summaryDesc.textContent = this.routineData.description || '—';
         const summaryGoal = document.getElementById('summary-goal');
         if (summaryGoal) summaryGoal.textContent = this.routineData.goal;
         const summaryLevel = document.getElementById('summary-level');
         if (summaryLevel) summaryLevel.textContent = this.routineData.level;
         const summaryTime = document.getElementById('summary-time');
-        if (summaryTime) summaryTime.textContent = this.routineData.estimatedTime;
+        if (summaryTime) summaryTime.textContent = `${this.routineData.duration} min`;
+        const summaryFreq = document.getElementById('summary-frequency');
+        if (summaryFreq) summaryFreq.textContent = `${this.routineData.frequency} días`;
         const summaryCount = document.getElementById('summary-exercise-count');
-        if (summaryCount) summaryCount.textContent = this.routineData.exercises.length;
+        if (summaryCount) summaryCount.textContent = `${this.routineData.exercises.length} ejercicio${this.routineData.exercises.length !== 1 ? 's' : ''}`;
         
         // Update exercise list in Step 3
         const listEl = document.getElementById('summary-exercises-list');
-        if (listEl) listEl.innerHTML = this.routineData.exercises.map(ex => `<li>${ex.exerciseId}</li>`).join('');
+        if (listEl) {
+            if (this.routineData.exercises.length === 0) {
+                listEl.innerHTML = '<li class="review-empty">No hay ejercicios seleccionados</li>';
+            } else {
+                listEl.innerHTML = this.routineData.exercises.map((ex, i) => `<li>${i + 1}. ${ex.exerciseId}</li>`).join('');
+            }
+        }
+        
+        // Update selected count in Step 2 (for validation)
+        const selectedCountEl = document.getElementById('selected-count');
+        if (selectedCountEl) selectedCountEl.textContent = `${this.routineData.exercises.length} seleccionado${this.routineData.exercises.length !== 1 ? 's' : ''}`;
         
         // Update exercise selector list (requires integration with exercise data)
         // TODO: Re-render exercise selector list based on global exercise data
@@ -175,7 +192,7 @@ class RoutineWizard {
             const name = document.getElementById('routine-name').value.trim();
             const goal = document.getElementById('routine-goal').value;
             const level = document.getElementById('routine-level').value;
-            const time = parseInt(document.getElementById('routine-estimated-time').value);
+            const time = parseInt(document.getElementById('routine-duration').value);
             
             return name.length > 2 && goal !== '' && level !== '' && time >= 5;
         }

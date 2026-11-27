@@ -517,7 +517,7 @@ async function confirmDeleteRoutine(routineId) {
 window.loadRoutines = loadRoutines;
 window.openRoutineModal = () => {
   // Reset wizard for new routine
-  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', estimatedTime: 30, exercises: [] };
+  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', duration: 30, frequency: 3, exercises: [] };
   window.routineWizard.goToStep(1);
   document.getElementById('routine-modal').classList.remove('hidden');
   
@@ -529,7 +529,7 @@ window.openRoutineModal = () => {
 window.closeRoutineModal = () => {
   document.getElementById('routine-modal').classList.add('hidden');
   // Cleanup
-  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', estimatedTime: 30, exercises: [] };
+  window.routineWizard.routineData = { id: null, name: '', description: '', goal: 'strength', level: 'intermediate', duration: 30, frequency: 3, exercises: [] };
   window.routineWizard.currentStep = 1;
   window.routineWizard.updateUI();
 };
